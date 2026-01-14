@@ -51,8 +51,8 @@ export default function CartaoRespostaPage() {
               </Select>
             </div>
 
-            <Alert variant="destructive" className="bg-yellow-100/80 dark:bg-yellow-900/40 border-yellow-300/80 dark:border-yellow-800/60 text-yellow-800 dark:text-yellow-200">
-                <AlertTriangle className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+            <Alert variant="destructive">
+                <AlertTriangle className="h-4 w-4" />
                 <AlertTitle>Atenção</AlertTitle>
               <AlertDescription>
                 Lembre-se que você tem 50 minutos para responder esta prova.
@@ -65,7 +65,7 @@ export default function CartaoRespostaPage() {
                   key={qNumber} 
                   className={cn(
                     "flex items-center justify-between rounded-lg p-3",
-                    index % 2 !== 0 && "bg-slate-100 dark:bg-muted"
+                    index % 2 !== 0 && "bg-muted"
                   )}
                 >
                   <div className="font-medium">{qNumber}</div>
