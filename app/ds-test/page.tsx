@@ -1,5 +1,7 @@
-import { Button } from "@/components/ui/button"
-import { PlusIcon } from "lucide-react"
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { PlusIcon } from "lucide-react";
 
 export default function DsTestPage() {
   return (
@@ -17,9 +19,7 @@ export default function DsTestPage() {
           <Button variant="ghost">Ghost</Button>
           <Button variant="destructive">Destructive</Button>
           <Button variant="link" asChild>
-            <a href="#">
-              Link
-            </a>
+            <a href="#">Link</a>
           </Button>
         </div>
       </div>
@@ -103,5 +103,5 @@ export default function DsTestPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
