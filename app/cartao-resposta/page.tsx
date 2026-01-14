@@ -20,6 +20,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { AlertTriangle } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function CartaoRespostaPage() {
   const questions = Array.from({ length: 180 - 136 + 1 }, (_, i) => 136 + i);
@@ -58,9 +59,15 @@ export default function CartaoRespostaPage() {
               </AlertDescription>
             </Alert>
 
-            <div className="space-y-4">
-              {questions.map((qNumber) => (
-                <div key={qNumber} className="flex items-center justify-between rounded-lg border p-3">
+            <div className="space-y-2">
+              {questions.map((qNumber, index) => (
+                <div 
+                  key={qNumber} 
+                  className={cn(
+                    "flex items-center justify-between rounded-lg border p-3",
+                    index % 2 === 0 ? "bg-card" : "bg-muted/50"
+                  )}
+                >
                   <div className="font-medium">{qNumber}</div>
                   <RadioGroup name={`question-${qNumber}`} className="flex space-x-4">
                     {options.map((option) => (
