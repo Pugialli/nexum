@@ -65,13 +65,9 @@ export default function CartaoRespostaPage() {
                   <RadioGroup name={`question-${qNumber}`} className="flex space-x-4">
                     {options.map((option) => (
                       <div key={option} className="flex items-center space-x-2">
-                        <RadioGroupItem value={option} id={`q${qNumber}-${option}`} className="peer" />
-                        <Label
-                          htmlFor={`q${qNumber}-${option}`}
-                          className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-primary-foreground"
-                        >
+                        <RadioGroupItem value={option} id={`q${qNumber}-${option}`}>
                           {option}
-                        </Label>
+                        </RadioGroupItem>
                       </div>
                     ))}
                   </RadioGroup>
