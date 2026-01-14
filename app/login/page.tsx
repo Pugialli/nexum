@@ -18,7 +18,7 @@ export default function LoginPage() {
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
           <CardDescription>
-            Digite seu email e senha para acessar o sistema.
+            Digite seu email e senha para acessar o Nexum Academy.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
