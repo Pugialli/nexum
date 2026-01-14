@@ -64,7 +64,7 @@ export default function CartaoRespostaPage() {
                 <div 
                   key={qNumber} 
                   className={cn(
-                    "flex items-center justify-between rounded-lg border p-3",
+                    "flex items-center justify-between rounded-lg p-3",
                     index % 2 === 0 ? "bg-card" : "bg-muted/50"
                   )}
                 >
