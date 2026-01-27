@@ -177,39 +177,6 @@
   --nexum-gray-950: oklch(0.10 0.002 264);
 }
 
-@layer theme {
-  .dark {
-    /* Dark Theme Colors */
-    --color-background: oklch(0.2 0.02 186);
-    --color-foreground: oklch(0.88 0.1 105);
-    
-    --color-card: oklch(0.25 0.02 186);
-    --color-card-foreground: oklch(0.88 0.1 105);
-    
-    --color-popover: oklch(0.25 0.02 186);
-    --color-popover-foreground: oklch(0.88 0.1 105);
-    
-    --color-primary: oklch(0.7 0.2 35);
-    --color-primary-foreground: oklch(1 0 0);
-    
-    --color-secondary: oklch(0.55 0.08 186);
-    --color-secondary-foreground: oklch(1 0 0);
-    
-    --color-muted: oklch(0.3 0.015 186);
-    --color-muted-foreground: oklch(0.65 0.02 0);
-    
-    --color-accent: oklch(0.88 0.15 105);
-    --color-accent-foreground: oklch(0.2 0.02 186);
-    
-    --color-destructive: oklch(0.55 0.17 27);
-    --color-destructive-foreground: oklch(0.98 0 0);
-    
-    --color-border: oklch(0.35 0.02 186);
-    --color-input: oklch(0.35 0.02 186);
-    --color-ring: oklch(0.7 0.2 35);
-  }
-}
-
 @layer base {
   * {
     border-color: var(--color-border);
