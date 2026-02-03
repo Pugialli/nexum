@@ -1,15 +1,18 @@
-import { Header } from "@/components/header"
+import AppSessionProvider from "@/components/session-provider";
+import { Header } from "@/components/header";
 
 export default function CenteredLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
-    // <div className="from-gradient-primary to-gradient-secondary h-auto bg-gradient-to-r">
-    <div className="z-50 h-screen w-auto bg-background">
-      <Header />
-      <div className="flex z-40 h-auto bg-background">{children}</div>
-    </div>
-  )
+    <AppSessionProvider>
+      {/* <div className="from-gradient-primary to-gradient-secondary h-auto bg-gradient-to-r"> */}
+      <div className="z-50 h-screen w-auto bg-background">
+        <Header />
+        <div className="flex z-40 h-auto bg-background">{children}</div>
+      </div>
+    </AppSessionProvider>
+  );
 }

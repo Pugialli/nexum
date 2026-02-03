@@ -1,0 +1,70 @@
+import { prisma } from "@/lib/prisma";
+import { NextRequest, NextResponse } from "next/server";
+import { hash } from "bcryptjs";
+import { z } from "zod";
+import { getServerSession } from "next-auth/next";
+// import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+
+const completeProfileSchema = z.object({
+  nome: z.string().min(3),
+  password: z.string().min(8),
+  dataNascimento: z.string().refine((val) => !isNaN(Date.parse(val)), {
+    message: "Data de nascimento inválida",
+  }),
+  telefone: z.string().optional(),
+  carreira: z.string().optional(),
+});
+
+export async function POST(request: NextRequest) {
+  // Note: authOptions should be imported from your `[...nextauth]` route file.
+  const session = await getServerSession(/* authOptions */);
+
+  if (!session || !session.user || !session.user.email) {
+    return NextResponse.json({ message: "Não autorizado" }, { status: 401 });
+  }
+
+  try {
+    const body = await request.json();
+    const validation = completeProfileSchema.safeParse(body);
+
+    if (!validation.success) {
+      return NextResponse.json(
+        { message: "Dados inválidos.", error: validation.error.format() },
+        { status: 400 }
+      );
+    }
+
+    const {
+      nome,
+      password,
+      dataNascimento,
+      telefone,
+      carreira,
+    } = validation.data;
+    const passwordHash = await hash(password, 8);
+
+    // Using 'alunoDesde' for date of birth as the schema doesn't have a dedicated field.
+    // This could be updated if the schema changes.
+    await prisma.user.update({
+      where: { email: session.user.email },
+      data: {
+        nome,
+        passwordHash,
+        alunoDesde: new Date(dataNascimento), 
+        telefone,
+        carreira,
+      },
+    });
+
+    return NextResponse.json(
+      { message: "Perfil atualizado com sucesso!" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Erro ao atualizar perfil:", error);
+    return NextResponse.json(
+      { message: "Ocorreu um erro no servidor." },
+      { status: 500 }
+    );
+  }
+}

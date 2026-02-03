@@ -71,7 +71,7 @@ export default function CartaoRespostaPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
+            <div className="flex flex-col gap-2">
               <Label htmlFor="prova">Prova</Label>
               <Select>
                 <SelectTrigger id="prova">
@@ -112,13 +112,14 @@ export default function CartaoRespostaPage() {
                     className="flex space-x-4"
                   >
                     {options.map((option) => (
-                      <div key={option} className="flex items-center space-x-2">
-                        <RadioGroupItem
-                          value={option}
-                          id={`q${qNumber}-${option}`}
-                        />
-                        <Label htmlFor={`q${qNumber}-${option}`}>{option}</Label>
-                      </div>
+                      <RadioGroupItem
+                        key={option}
+                        value={option}
+                        id={`q${qNumber}-${option}`}
+                        aria-label={`Opção ${option}`}
+                      >
+                        {option}
+                      </RadioGroupItem>
                     ))}
                   </RadioGroup>
                 </div>
