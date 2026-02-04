@@ -21,23 +21,39 @@ F - Frontend feito; B - Backend feito ; X - Completo
 
 ## Pontos de correção antes do go-live
 - A parte de autenticação ainda não está funcionando.
+- As chamadas de API nos formulários de cadastro e login estão comentadas para desenvolvimento do frontend.
 
 
 ## Versions
+# 0.1.7
+- Corrigidos erros de build do Prisma atualizando caminhos de importação.
+- Realizado downgrade dos pacotes do Prisma para a versão `5.16.1` para garantir compatibilidade com o ambiente Node.js.
+
+# 0.1.6
+- Implementado o fluxo de cadastro de aluno em duas etapas (Frontend e Backend).
+- Adicionado o `<SessionProvider>` do NextAuth para envolver o layout principal da aplicação.
+- Adicionada a dependência `next-auth`.
+
+# 0.1.5
+- Melhorias de UI/UX:
+  - Adicionado `cursor-pointer` para botões e radio buttons.
+  - Redesenhado os radio buttons na página de cartão-resposta.
+  - Adicionada funcionalidade de visualizar/ocultar senha na página de login e de completar perfil.
+
 # 0.1.4
-folder structure
-create aluno (frontend)
+- Estrutura de pastas.
+- Criação da tela de cadastro de aluno (frontend inicial).
 
 # 0.1.3
-Login and cartao-resposta created
+- Criação das páginas de Login e Cartão-Resposta.
 
 # 0.1.2
-Firebase added
+- Adicionado Firebase ao projeto.
 
 # 0.1.1
-Prisma and neon integration
+- Integração do Prisma e Neon.
 
 # 0.1.0
-Next project creation
+- Criação do projeto Next.js.
 
 <!-- ❌ -->
