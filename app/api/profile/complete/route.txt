@@ -1,8 +1,7 @@
 import { prisma } from "@/lib/prisma";
-import { NextRequest, NextResponse } from "next/server";
 import { hash } from "bcryptjs";
+import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getServerSession } from "next-auth/next";
 // import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 const completeProfileSchema = z.object({
@@ -17,11 +16,11 @@ const completeProfileSchema = z.object({
 
 export async function POST(request: NextRequest) {
   // Note: authOptions should be imported from your `[...nextauth]` route file.
-  const session = await getServerSession(/* authOptions */);
+  // const session = await getServerSession(/* authOptions */);
 
-  if (!session || !session.user || !session.user.email) {
-    return NextResponse.json({ message: "Não autorizado" }, { status: 401 });
-  }
+  // if (!session || !session.user || !session.user.email) {
+  //   return NextResponse.json({ message: "Não autorizado" }, { status: 401 });
+  // }
 
   try {
     const body = await request.json();

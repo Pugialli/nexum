@@ -1,8 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,14 +9,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Eye, EyeOff } from "lucide-react";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -28,9 +24,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Eye, EyeOff } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export function CompleteProfileForm() {
-  const { data: session } = useSession();
+  // const { data: session } = useSession()
   const router = useRouter();
   const [formData, setFormData] = useState({
     nome: "",
@@ -46,15 +45,15 @@ export function CompleteProfileForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (session?.user) {
-      setFormData((prev) => ({
-        ...prev,
-        nome: session.user.name || "",
-        email: session.user.email || "",
-      }));
-    }
-  }, [session]);
+  // useEffect(() => {
+  //   if (session?.user) {
+  //     setFormData((prev) => ({
+  //       ...prev,
+  //       nome: session.user.name || "",
+  //       email: session.user.email || "",
+  //     }));
+  //   }
+  // }, [session]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -73,22 +72,22 @@ export function CompleteProfileForm() {
     setLoading(true);
     setError(null);
 
-    const res = await fetch("/api/profile/complete", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
+    // const res = await fetch("/api/profile/complete", {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify(formData),
+    // });
 
     setLoading(false);
 
-    if (!res.ok) {
-      const data = await res.json();
-      setError(data.message || "Erro ao completar o cadastro.");
-      return;
-    }
+    // if (!res.ok) {
+    //   const data = await res.json();
+    //   setError(data.message || "Erro ao completar o cadastro.");
+    //   return;
+    // }
 
-    // Redirect to home or dashboard on success
-    router.push("/");
+    // // Redirect to home or dashboard on success
+    // router.push("/");
   };
 
   return (
