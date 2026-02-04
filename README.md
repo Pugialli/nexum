@@ -2,9 +2,7 @@
 Este projeto foi desenvolvido para um cliente que é professor de matemática que tem um objetivo de criar uma plataforma que consiga mostrar aos seus alunas o seu progresso nos estudos para o enem.
 
 ## Legenda
-F - Frontend feito
-B - Backend feito
-X - Completo
+F - Frontend feito; B - Backend feito ; X - Completo
 
 ## Casos de uso para o professor
 - [F] deve poder cadastrar um novo aluno com suas informações básicas
