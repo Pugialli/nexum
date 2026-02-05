@@ -21,6 +21,7 @@ F - Frontend feito; B - Backend feito ; X - Completo
 
 ## Pontos de correção antes do go-live
 - A parte de autenticação ainda não está funcionando.
+- As fontes estão fazendo requisições constantes e estão falhando com 404
 
 
 ## Versions

@@ -5,8 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../lib/generated"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -14,19 +13,24 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(uuid())
-  nome          String
-  email         String    @unique
-  emailVerified DateTime? @map("email_verified")
-  image         String?
+  id             String    @id @default(uuid())
+  nome           String
+  email          String    @unique
+  slug           String    @unique
+  dataNascimento DateTime?
+  idProfessor    String?
+  passwordHash   String
+  avatarUrl      String?
+  role           Role      @default(ALUNO)
 
-  passwordHash String?   @map("password_hash")
-  alunoDesde   DateTime? @map("aluno_desde")
-  telefone     String?
-  carreira     String?
-  role         Role      @default(ALUNO)
+  alunoDesde DateTime @default(now())
+  telefone   String?
+  carreira   String?
 
-  accouts  Account[]
+  professor User?  @relation("ProfessorAluno", fields: [idProfessor], references: [id])
+  alunos    User[] @relation("ProfessorAluno")
+
+  accounts Account[]
   sessions Session[]
 
   @@map("users")
