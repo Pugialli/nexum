@@ -21,8 +21,8 @@ F - Frontend feito; B - Backend feito ; X - Completo
 
 ## Pontos de correção antes do go-live
 - A parte de autenticação ainda não está funcionando.
+- As fontes estão fazendo requisições constantes e estão falhando com 404
 - As chamadas de API nos formulários de cadastro e login estão comentadas para desenvolvimento do frontend.
-
 
 ## Versions
 # 0.1.7
