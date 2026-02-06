@@ -1,5 +1,6 @@
 'use client'
 
+import Image from "next/image"
 import Link from "next/link"
 
 export function Header() {
@@ -8,9 +9,12 @@ export function Header() {
         <div className="container flex h-14 items-center">
             <div className="mr-4 flex">
                 <Link href="/" className="mr-6 flex items-center space-x-2">
-                    <span className="font-bold">
-                        Nexum
-                    </span>
+                    <Image
+                      src="/images/horizontal_gray_orange.svg"
+                      width={120}
+                      height={32}
+                      alt="Nexum Logo"
+                    />
                 </Link>
                 <nav className="flex items-center space-x-6 text-sm font-medium">
                   <Link href="/aluno/dashboard">
