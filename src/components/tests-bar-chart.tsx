@@ -1,6 +1,6 @@
 "use client"
 
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
 
 import {
   Card,
@@ -57,7 +57,9 @@ export function TestsBarChart() {
             />
             <YAxis domain={[0, 45]} />
             <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-            <Bar dataKey="score" fill="var(--color-primary)" radius={8} />
+            <Bar dataKey="score" fill="var(--color-primary)" radius={8}>
+              <LabelList dataKey="score" position="top" />
+            </Bar>
           </BarChart>
         </ChartContainer>
       </CardContent>
