@@ -1,9 +1,57 @@
+'use client'
+
+import Link from "next/link"
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu"
+
 export function Header() {
   return (
-    <div className="from-gradient-primary to-gradient-secondary h-auto bg-gradient-to-r">
-      <div className="bg-orange-400 w-auto p-4 text-white font-bold text-2xl">
-        Nexum
-      </div>
-    </div>
-  );
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container flex h-14 items-center">
+            <div className="mr-4 flex">
+                <Link href="/" className="mr-6 flex items-center space-x-2">
+                    <span className="font-bold">
+                        Nexum
+                    </span>
+                </Link>
+                <NavigationMenu>
+                    <NavigationMenuList>
+                        <NavigationMenuItem>
+                            <Link href="/aluno/dashboard" legacyBehavior passHref>
+                                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                                    Dashboard
+                                </NavigationMenuLink>
+                            </Link>
+                        </NavigationMenuItem>
+                        <NavigationMenuItem>
+                            <Link href="/professor/cadastro-aluno" legacyBehavior passHref>
+                                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                                    Cadastrar Aluno
+                                </NavigationMenuLink>
+                            </Link>
+                        </NavigationMenuItem>
+                    </NavigationMenuList>
+                </NavigationMenu>
+            </div>
+            <div className="flex flex-1 items-center justify-end space-x-2">
+                <nav className="flex items-center">
+                    <Link
+                      href="/auth/login"
+                      legacyBehavior
+                      passHref
+                    >
+                      <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                        Login
+                      </NavigationMenuLink>
+                    </Link>
+                </nav>
+            </div>
+        </div>
+    </header>
+  )
 }
