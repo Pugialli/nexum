@@ -7,6 +7,7 @@ import { getInitials } from '@/utils/get-initials'
 import { getRingColor } from '@/utils/ring-color'
 import Image from 'next/image'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { AlunoTabs } from './aluno-tabs'
 import { ProfessorTabs } from './professor-tabs'
@@ -18,6 +19,10 @@ interface HeaderClientProps {
 
 export function HeaderClient({ user }: HeaderClientProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+
+  const pathname = usePathname()
+
+  const tempRole = pathname.split('/')[1]
 
   const role = user?.role || ''
 
@@ -38,11 +43,12 @@ export function HeaderClient({ user }: HeaderClientProps) {
           />
         </Link>
 
-        {user && user.role === 'PROFESSOR' ? (
+        {tempRole === 'professor' ? <ProfessorTabs /> : <AlunoTabs />}
+        {/* {user && user.role === 'PROFESSOR' ? (
           <ProfessorTabs />
         ) : (
           <AlunoTabs />
-        )}
+        )} */}
 
       </div>
 
