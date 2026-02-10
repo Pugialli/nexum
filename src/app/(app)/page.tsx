@@ -1,15 +1,11 @@
 import { auth } from "@/auth/auth";
 import { redirect } from "next/navigation";
 
-export default async function Page() {
-  const user = await auth()
-
-  switch (user.role) {
-    case 'ALUNO':
-      redirect('/aluno')
-    case 'PROFESSOR':
-      redirect('/professor')
-    default:
-      redirect('/auth/login')
-  }
+export default function Page() {
+  return (
+    <div className="w-full p-4 sm:p-10">
+      <h1 className="text-2xl font-bold">Bem-vindo ao Nexum</h1>
+      <p>Selecione uma opção no menu de navegação.</p>
+    </div>
+  );
 }
