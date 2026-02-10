@@ -1,22 +1,26 @@
 import { prisma } from '@/lib/prisma'
+import bcrypt from 'bcryptjs'
 
-export interface CompleteAlunoProps {
+
+export interface UpdateAlunoProps {
   nome: string
   email: string
   dataNascimento: string
   telefone: string
-  passwordHash: string
+  password: string
   carreira: string
 }
 
-export async function completeAluno({
+export async function updateAluno({
   nome,
   email,
   dataNascimento,
   telefone,
-  passwordHash,
+  password,
   carreira,
-}: CompleteAlunoProps) {
+}: UpdateAlunoProps) {
+  const passwordHash = await bcrypt.hash(password, 10)
+
   return await prisma.user.update({
     where: {
       email,
@@ -26,7 +30,7 @@ export async function completeAluno({
       dataNascimento,
       telefone,
       passwordHash,
-      carreira,
+      carreiraValue: carreira,
     },
   })
 }

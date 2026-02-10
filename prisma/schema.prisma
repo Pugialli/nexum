@@ -5,7 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-1.1.x", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -18,21 +19,21 @@ model User {
   nome           String
   email          String    @unique
   slug           String    @unique
-  dataNascimento DateTime?
-  idProfessor    String?
-  passwordHash   String
-  avatarUrl      String?
+  dataNascimento DateTime? @map("data_nascimento")
+  idProfessor    String?   @map("id_professor")
+  passwordHash   String    @map("password_hash")
+  avatarUrl      String?   @map("avatar_url")
   role           Role      @default(ALUNO)
 
-  alunoDesde DateTime @default(now())
-  telefone   String?
-  carreira   String?
+  alunoDesde    DateTime @default(now()) @map("aluno_desde")
+  telefone      String?
+  carreiraValue String?  @map("carreira_value")
 
-  professor User?  @relation("ProfessorAluno", fields: [idProfessor], references: [id])
-  alunos    User[] @relation("ProfessorAluno")
-
-  accounts Account[]
-  sessions Session[]
+  professor User?           @relation("ProfessorAluno", fields: [idProfessor], references: [id])
+  alunos    User[]          @relation("ProfessorAluno")
+  Carreira  DomainCarreira? @relation(fields: [carreiraValue], references: [carreiraValue])
+  accounts  Account[]
+  sessions  Session[]
 
   @@map("users")
 }
@@ -81,4 +82,13 @@ enum Role {
   PROFESSOR
   ALUNO
   EXALUNO
+}
+
+model DomainCarreira {
+  carreiraLabel String @unique @map("carreira_label")
+  carreiraValue String @id @map("carreira_value")
+
+  alunos User[]
+
+  @@map("@carreiras")
 }

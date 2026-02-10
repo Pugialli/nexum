@@ -11,5 +11,5 @@ export default function CenteredLayout({
         <Header />
         <div className="flex z-40 h-auto bg-background">{children}</div>
       </div>
-  );
+  )
 }

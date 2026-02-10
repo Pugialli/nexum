@@ -5,25 +5,17 @@ import { cookies } from 'next/headers'
 import { z } from 'zod'
 
 import { signInWithPassword } from '@/http/sign-in-with-password'
-
-const signInSchema = z.object({
-  email: z.string().email({ error: 'Email inválido' }),
-  password: z.string().min(1, { error: 'Senha inválida' }),
-})
+import { signInSchema } from '@/lib/validators/auth'
 
 export async function signInWithEmailAndPassword(data: FormData) {
-  console.log('FormData recebido:', Object.fromEntries(data)) // <- Debug
-
   const result = signInSchema.safeParse(Object.fromEntries(data))
 
   if (!result.success) {
     const errors = z.flattenError(result.error).fieldErrors
-    console.log('Erros de validação:', errors) // <- Debug
     return { success: false, message: null, errors }
   }
 
   const { email, password } = result.data
-  console.log('Dados validados:', { email, password }) // <- Debug
 
   try {
     const { token } = await signInWithPassword({

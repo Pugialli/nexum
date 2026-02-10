@@ -22,8 +22,6 @@ export interface SignInRequestResponse {
 }
 
 export async function signInRequest({ email, password }: LoginProps) {
-  console.log('signInRequest called with', { email, password })
-
   const userExists = await prisma.user.findUnique({
     where: {
       email,
