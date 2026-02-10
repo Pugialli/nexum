@@ -1,9 +1,8 @@
-export interface HeaderProps {}
+import { loggedUser } from '@/auth/auth'
+import { HeaderClient } from './header-client'
 
-export function Header() {
-  return (
-    <div className="bg-orange-400 w-auto p-4 text-white font-bold text-2xl">
-      Nexum
-    </div>
-  )
+export async function Header() {
+  const user = await loggedUser()
+
+  return <HeaderClient user={user} />
 }

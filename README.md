@@ -4,37 +4,29 @@ Plataforma para professores acompanharem o progresso de alunos nos estudos para 
 ## Status de Desenvolvimento
 **Legenda:** F - Frontend | B - Backend | X - Completo
 
+### Auth
+- [X] Login (com visualização de senha)
+- [X] Logout
+- [X] Foto de perfil
+- [ ] Editar perfil
+
 ### Professor
 - [X] Cadastrar aluno com informações básicas
-- [ ] Dashboard de alunos
+- [ ] Tabela de alunos
 
 ### Aluno
 - [F] Cadastrar respostas no cartão resposta
-- [X] Completar cadastro após registro inicial
-- [F] Login (com visualização de senha)
-- [ ] Editar perfil
-- [ ] Logout
+- [F] Completar cadastro após registro inicial
 
 ## Pendências
-- Autenticação não funcional
 - Fontes retornando 404
 - Chamadas de API comentadas nos formulários
 
-## Setup
-
-### Requisitos
-- Node.js 20.11.1
-- Prisma 5.22.0
-
-### Comandos
-```bash
-npm install
-npx prisma generate
-npx prisma migrate dev
-npm run dev
-```
-
 ## Changelog
+
+### 0.1.8
+- Autenticação funcional
+- Cadastro de aluno com sheet
 
 ### 0.1.7
 - Downgrade Prisma 7.3.0 → 5.22.0 (compatibilidade Node 20.11.1)
