@@ -4,10 +4,10 @@ import { decrypt } from '@/utils/crypto'
 import { api } from './api-client'
 
 export async function getProfile(token: string) {
-  const idProfile = decrypt(token)
+  const idDecrypted = decrypt(token)
 
   const result = await api
-    .get(`auth/profile/${idProfile}`)
+    .get(`auth/profile/${idDecrypted}`)
     .json<GetProfileResponse>()
 
   return result

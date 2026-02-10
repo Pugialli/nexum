@@ -1,12 +1,14 @@
 import { NextResponse } from 'next/server'
 
 import { prisma } from '@/lib/prisma'
+import type { Role } from '@prisma/client'
 
 export interface GetProfileResponse {
   id: string
-  nome: string | null
+  nome: string
   email: string
   avatarUrl: string | null
+  role: Role
 }
 
 interface GetProfileProps {
@@ -23,6 +25,7 @@ export async function getProfile({ id }: GetProfileProps) {
       nome: true,
       email: true,
       avatarUrl: true,
+      role: true,
     },
   })
 

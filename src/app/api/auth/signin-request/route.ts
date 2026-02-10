@@ -8,10 +8,7 @@ interface SignInWithPasswordRequest {
 }
 
 export async function POST(request: NextRequest) {
-  console.log('Received sign-in request')
   const credendials: SignInWithPasswordRequest = await request.json()
-  console.log('API sign-in request with', credendials)
-
   const userToken = await signInRequest(credendials)
 
   if (userToken instanceof NextResponse) {

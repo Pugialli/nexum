@@ -13,7 +13,9 @@ const alertVariants = cva(
         destructive:
           "border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive",
         warning:
-          "bg-[var(--nexum-lime-50)] text-[var(--nexum-lime-900)] border-[var(--nexum-lime-500)]"
+          "bg-[var(--nexum-lime-50)] text-[var(--nexum-lime-900)] border-[var(--nexum-lime-500)]",
+        success:
+          'border border-chart-2/20 bg-chart-2/10 text-chart-2 [&>svg]:text-chart-2',
       },
     },
     defaultVariants: {
