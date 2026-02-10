@@ -1,25 +1,11 @@
-import { NavLink } from './nav-link'
-import { Button } from './ui/button'
+// components/professor-tabs.tsx
+import { TabNav } from './tab-nav'
 
 export function ProfessorTabs() {
-  return (
-    <div>
-      <Button
-        asChild
-        variant="ghost"
-        size="sm"
-        className="border border-transparent text-muted-foreground data-[current=true]:border-border data-[current=true]:text-foreground"
-      >
-        <NavLink href={'/professor'}>Alunos</NavLink>
-      </Button>
-      <Button
-        asChild
-        variant="ghost"
-        size="sm"
-        className="border border-transparent text-muted-foreground data-[current=true]:border-border data-[current=true]:text-foreground"
-      >
-        <NavLink href={'/professor/cadastro-aluno'}>Cadastrar Aluno</NavLink>
-      </Button>
-    </div>
-  )
+  const tabs = [
+    { href: '/professor', label: 'Alunos' },
+    { href: '/professor/cadastro-aluno', label: 'Cadastrar Aluno' },
+  ]
+
+  return <TabNav tabs={tabs} />
 }
