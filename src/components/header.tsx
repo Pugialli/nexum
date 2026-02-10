@@ -1,9 +1,8 @@
 import { loggedUser } from "@/auth/auth"
-import { HeaderAmanda } from "./temp"
+import { HeaderClient } from "./header-client"
 
 export async function Header() {
   const user = await loggedUser()
 
-  // return <HeaderClient user={user} />
-  return <HeaderAmanda user={user} />
+  return <HeaderClient user={user} />
 }

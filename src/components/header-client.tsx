@@ -1,11 +1,15 @@
+// components/header-client.tsx
 'use client'
 
 import type { GetProfileResponse } from '@/app/api/auth/profile/[id]/get-profile'
 import { signOut } from '@/auth/actions'
 import { getInitials } from '@/utils/get-initials'
 import { getRingColor } from '@/utils/ring-color'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
+import { AlunoTabs } from './aluno-tabs'
+import { ProfessorTabs } from './professor-tabs'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 
 interface HeaderClientProps {
@@ -23,12 +27,28 @@ export function HeaderClient({ user }: HeaderClientProps) {
   }
 
   return (
-    <div className="bg-orange-400 w-auto p-4 text-white font-bold text-2xl flex items-center justify-between">
-      <div>Nexum</div>
+    <header className="w-auto p-4 border-b flex items-center justify-between">
+      <div className="flex items-center gap-4 w-full">
+        <Link href="/" className="flex items-center">
+          <Image
+            src="/images/horizontal_gray_orange.svg"
+            alt="Nexum Logo"
+            width={90}
+            height={45}
+          />
+        </Link>
 
-      <div className="relative">
+        {user && user.role === 'PROFESSOR' ? (
+          <ProfessorTabs />
+        ) : (
+          <AlunoTabs />
+        )}
+
+      </div>
+
+      <div className="flex flex-1 items-center justify-end p-4">
         {user ? (
-          <div>
+          <div className="relative">
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               className={`rounded-full ring-4 ${getRingColor(role)} cursor-pointer focus:outline-none`}
@@ -53,13 +73,13 @@ export function HeaderClient({ user }: HeaderClientProps) {
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     onClick={() => setIsDropdownOpen(false)}
                   >
-                    Update Profile
+                    Perfil
                   </Link>
                   <button
                     onClick={handleLogout}
                     className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
-                    Log Out
+                    Sair
                   </button>
                 </div>
               </>
@@ -68,12 +88,12 @@ export function HeaderClient({ user }: HeaderClientProps) {
         ) : (
           <Link
             href="/auth/login"
-            className="bg-white text-orange-400 px-6 py-2 rounded-lg text-base font-semibold hover:bg-orange-50 transition-colors"
+            className="bg-orange-400 text-white px-6 py-2 rounded-lg text-sm font-semibold hover:bg-orange-500 transition-colors"
           >
-            Logar
+            Login
           </Link>
         )}
       </div>
-    </div>
+    </header >
   )
 }

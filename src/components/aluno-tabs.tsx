@@ -1,9 +1,9 @@
 import { NavLink } from './nav-link'
 import { Button } from './ui/button'
 
-export async function AlunoTabs() {
+export function AlunoTabs() {
   return (
-    <div className="border-b py-4">
+    <div className="py-4">
       <Button
         asChild
         variant="ghost"

@@ -1,9 +1,9 @@
 import { NavLink } from './nav-link'
 import { Button } from './ui/button'
 
-export async function ProfessorTabs() {
+export function ProfessorTabs() {
   return (
-    <div className="border-b py-4">
+    <div>
       <Button
         asChild
         variant="ghost"
