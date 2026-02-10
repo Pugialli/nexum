@@ -53,7 +53,7 @@ function ChartContainer({
         id={id}
         data-chart-container
         className={cn(
-          "flex aspect-video justify-center text-xs [&_.recharts-cartesian-axis-tick_text]:fill-muted-foreground [&_.recharts-cartesian-grid_line]:stroke-border [&_.recharts-layer:focus-visible]:outline-none [&_.recharts-polar-grid_[text-anchor=middle]]:fill-muted-foreground [&_.recharts-radial-bar-background-sector]:fill-muted [&_.recharts-reference-line_line]:stroke-border [&_.recharts-sector[name=other]]:fill-muted [&_.recharts-tooltip-cursor]:stroke-border [&_.recharts-xAxis_line]:stroke-border [&_.recharts-yAxis_line]:stroke-border",
+          "flex justify-center text-xs [&_.recharts-cartesian-axis-tick_text]:fill-muted-foreground [&_.recharts-cartesian-grid_line]:stroke-border [&_.recharts-layer:focus-visible]:outline-none [&_.recharts-polar-grid_[text-anchor=middle]]:fill-muted-foreground [&_.recharts-radial-bar-background-sector]:fill-muted [&_.recharts-reference-line_line]:stroke-border [&_.recharts-sector[name=other]]:fill-muted [&_.recharts-tooltip-cursor]:stroke-border [&_.recharts-xAxis_line]:stroke-border [&_.recharts-yAxis_line]:stroke-border",
           className
         )}
         {...props}

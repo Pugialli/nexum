@@ -44,8 +44,8 @@ export function TestsBarChart() {
           Número de acertos nos últimos 10 simulados
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex-1">
-        <ChartContainer config={chartConfig} className="h-full w-full">
+      <CardContent className="flex-1 flex flex-col">
+        <ChartContainer config={chartConfig} className="flex-1">
           <BarChart data={chartData} accessibilityLayer>
             <CartesianGrid vertical={false} />
             <XAxis
