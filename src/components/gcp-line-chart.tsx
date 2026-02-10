@@ -37,15 +37,15 @@ const chartConfig = {
 
 export function GcpLineChart() {
   return (
-    <Card className="w-full">
+    <Card className="w-full h-full flex flex-col">
       <CardHeader>
         <CardTitle>Indicador GCP</CardTitle>
         <CardDescription>
           Percentual de aproveitamento do indicador GCP nos últimos 10 simulados
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
+      <CardContent className="flex-1">
+        <ChartContainer config={chartConfig} className="h-full w-full">
           <LineChart
             data={chartData}
             accessibilityLayer

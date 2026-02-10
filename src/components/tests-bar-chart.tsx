@@ -37,15 +37,15 @@ const chartConfig = {
 
 export function TestsBarChart() {
   return (
-    <Card className="w-full">
+    <Card className="w-full h-full flex flex-col">
       <CardHeader>
         <CardTitle>Desempenho nos Simulados</CardTitle>
         <CardDescription>
           Número de acertos nos últimos 10 simulados
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
+      <CardContent className="flex-1">
+        <ChartContainer config={chartConfig} className="h-full w-full">
           <BarChart data={chartData} accessibilityLayer>
             <CartesianGrid vertical={false} />
             <XAxis
