@@ -37,7 +37,7 @@ const chartConfig = {
 
 export function GcpLineChart() {
   return (
-    <Card className="w-full h-full flex flex-col">
+    <Card className="flex-1 flex w-full flex-col min-h-0">
       <CardHeader>
         <CardTitle>Indicador GCP</CardTitle>
         <CardDescription>

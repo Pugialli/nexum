@@ -37,7 +37,7 @@ const chartConfig = {
 
 export function TestsBarChart() {
   return (
-    <Card className="w-full h-full flex flex-col">
+    <Card className="flex-1 flex w-full flex-col min-h-0">
       <CardHeader>
         <CardTitle>Desempenho nos Simulados</CardTitle>
         <CardDescription>
