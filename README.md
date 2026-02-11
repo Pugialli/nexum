@@ -8,25 +8,30 @@ Plataforma para professores acompanharem o progresso de alunos nos estudos para 
 - [X] Login (com visualização de senha)
 - [X] Logout
 - [X] Foto de perfil
-- [ ] Editar perfil
+- [X] Editar perfil
 
 ### Professor
 - [X] Cadastrar aluno com informações básicas
 - [ ] Tabela de alunos
 
 ### Aluno
-- [F] Cadastrar respostas no cartão resposta
-- [F] Completar cadastro após registro inicial
+- [X] Puxar a lista de provas disponíveis para realizar
+- [X] Cadastrar respostas no cartão resposta
+- [X] Completar cadastro após registro inicial
 
 ## Pendências
 - Fontes retornando 404
-- Chamadas de API comentadas nos formulários
+- Foi removida a verificação para facilitar o desenvolvimento
 
 ## Changelog
+
+### 0.1.9
+- Cartão resposta funcional
 
 ### 0.1.8
 - Autenticação funcional
 - Cadastro de aluno com sheet
+- Editar perfil
 
 ### 0.1.7
 - Downgrade Prisma 7.3.0 → 5.22.0 (compatibilidade Node 20.11.1)

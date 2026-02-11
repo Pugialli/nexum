@@ -4,8 +4,8 @@ import { prisma } from '@/lib/prisma'
 import type { Role } from '@prisma/client'
 
 export interface GetProfileResponse {
-  id: string
   nome: string
+  slug: string
   email: string
   avatarUrl: string | null
   role: Role
@@ -21,9 +21,9 @@ export async function getProfile({ id }: GetProfileProps) {
       id,
     },
     select: {
-      id: true,
       nome: true,
       email: true,
+      slug: true,
       avatarUrl: true,
       role: true,
     },

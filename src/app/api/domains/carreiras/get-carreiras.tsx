@@ -3,11 +3,11 @@ import { prisma } from "@/lib/prisma";
 export async function getCarreiras() {
   return await prisma.domainCarreira.findMany({
     select: {
-      carreiraLabel: true,
-      carreiraValue: true,
+      label: true,
+      value: true,
     },
     orderBy: {
-      carreiraLabel: "asc",
+      label: "asc",
     },
   })
 }

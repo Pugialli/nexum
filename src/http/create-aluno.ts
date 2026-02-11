@@ -3,7 +3,7 @@ import { api } from './api-client'
 interface CreateAlunoRequest {
   nome: string
   email: string
-  idProfessor: string
+  slugProfessor: string
 }
 
 type CreateAlunoResponse = void
@@ -11,13 +11,13 @@ type CreateAlunoResponse = void
 export async function createAluno({
   nome,
   email,
-  idProfessor,
+  slugProfessor,
 }: CreateAlunoRequest): Promise<CreateAlunoResponse> {
-  await api.post(`professor/${idProfessor}/alunos`, {
+  await api.post(`professor/${slugProfessor}/alunos`, {
     json: {
       nome,
       email,
-      idProfessor,
+      slugProfessor,
     },
   })
 }

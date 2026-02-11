@@ -7,10 +7,5 @@ export async function GET(
 ) {
   const response = await getCarreiras()
 
-  const normalizedResponse = response.map((carreira) => ({
-    label: carreira.carreiraLabel,
-    value: carreira.carreiraValue,
-  }))
-
-  return NextResponse.json(normalizedResponse)
+  return NextResponse.json(response)
 }

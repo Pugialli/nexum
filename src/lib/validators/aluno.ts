@@ -8,22 +8,36 @@ export const createAlunoSchema = z
 
 export const completeProfileSchema = z
   .object({
-    nome: z.string().min(3, "Nome muito curto"),
-    email: z.email("Email inválido"),
-    password: z
-      .string()
-      .min(8, "A senha deve ter no mínimo 8 caracteres"),
-    confirmPassword: z.string(),
-    dataNascimento: z.string(),
+    slug: z.string().optional(),
+    nome: z.string().min(3, 'Nome deve ter no mínimo 3 caracteres'),
+    email: z.email({ message: 'Email inválido' }),
+    dataNascimento: z.string().min(1, 'Data de nascimento é obrigatória'),
     telefone: z.string().optional(),
-    carreira: z.string().optional(),
-    slug: z.string(),
+    carreira: z.string().min(1, 'Selecione uma carreira'),
+    password: z.string().optional(),
+    confirmPassword: z.string().optional(),
   })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "As senhas não coincidem",
-    path: ["confirmPassword"],
-  })
-
-export type CreateAlunoInput = z.infer<typeof createAlunoSchema>
-export type CompleteProfileInput = z.infer<typeof completeProfileSchema>
-
+  .refine(
+    (data) => {
+      if (data.password && data.password.length > 0) {
+        return data.password.length >= 6
+      }
+      return true
+    },
+    {
+      message: 'Senha deve ter no mínimo 6 caracteres',
+      path: ['password'],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.password && data.password.length > 0) {
+        return data.password === data.confirmPassword
+      }
+      return true
+    },
+    {
+      message: 'As senhas não coincidem',
+      path: ['confirmPassword'],
+    }
+  )

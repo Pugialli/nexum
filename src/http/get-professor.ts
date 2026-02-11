@@ -1,6 +1,6 @@
 'use server'
 
-import type { GetProfessorResponse } from '@/app/api/professor/[id]/get-professor'
+import type { GetProfessorResponse } from '@/app/api/professor/[slug]/get-professor'
 
 import { api } from './api-client'
 

@@ -4,9 +4,9 @@ import { getProfessor } from './get-professor'
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ slug: string }> },
 ) {
-  const response = await getProfessor({ id: (await params).id })
+  const response = await getProfessor({ slug: (await params).slug })
 
   return NextResponse.json(response)
 }

@@ -11,7 +11,7 @@ export async function createAlunoAction(data: FormData) {
 
   const result = createAlunoSchema.safeParse(Object.fromEntries(data))
 
-  const idProfessor = user!.id
+  const slugProfessor = user!.slug
 
   if (!result.success) {
     const errors = result.error.flatten().fieldErrors
@@ -25,7 +25,7 @@ export async function createAlunoAction(data: FormData) {
     await createAluno({
       nome,
       email,
-      idProfessor,
+      slugProfessor,
     })
 
     // revalidateTag(`${idProfessor}/alunos`)

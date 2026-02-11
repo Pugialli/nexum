@@ -9,9 +9,14 @@ import { completeProfileSchema } from '@/lib/validators/aluno'
 export async function updateAlunoAction(data: FormData) {
   const user = await loggedUser()
 
-  const result = completeProfileSchema.safeParse(Object.fromEntries(data))
+  const formData = Object.fromEntries(data)
+  
+  if (!formData.password || formData.password === '') {
+    delete formData.password
+    delete formData.confirmPassword
+  }
 
-  const idProfessor = user!.id
+  const result = completeProfileSchema.safeParse(formData)
 
   if (!result.success) {
     const errors = result.error.flatten().fieldErrors
@@ -32,8 +37,6 @@ export async function updateAlunoAction(data: FormData) {
         password,
         carreira,
       })
-
-      // revalidateTag(`${idProfessor}/alunos`)
     }
   } catch (err) {
     if (err instanceof HTTPError) {
@@ -52,7 +55,7 @@ export async function updateAlunoAction(data: FormData) {
 
   return {
     success: true,
-    message: 'Aluno atualizado com sucesso',
+    message: 'Perfil atualizado com sucesso',
     errors: null,
   }
 }
