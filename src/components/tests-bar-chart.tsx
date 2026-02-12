@@ -12,21 +12,7 @@ import {
 import {
   ChartContainer,
   ChartTooltip,
-  ChartTooltipContent,
 } from "@/components/ui/chart"
-
-const chartData = [
-  { test: "1", score: 32 },
-  { test: "2", score: 28 },
-  { test: "3", score: 41 },
-  { test: "4", score: 35 },
-  { test: "5", score: 42 },
-  { test: "6", score: 30 },
-  { test: "7", score: 37 },
-  { test: "8", score: 29 },
-  { test: "9", score: 33 },
-  { test: "10", score: 38 },
-]
 
 const chartConfig = {
   score: {
@@ -35,10 +21,32 @@ const chartConfig = {
   },
 }
 
-export function TestsBarChart() {
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    return (
+      <div className="rounded-lg border bg-background p-3 text-sm shadow-sm">
+        <p className="mb-2 font-medium">Simulado {label}</p>
+        <div className="space-y-1">
+          <p className="flex justify-between">
+            <span>Acertos:</span>
+            <span className="ml-4 font-semibold">{data.score}</span>
+          </p>
+          <p className="flex justify-between">
+            <span>GCP:</span>
+            <span className="ml-4 font-semibold">{data.gcp}%</span>
+          </p>
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
+
+export function TestsBarChart({ data }: { data: any[] }) {
   return (
     <Card className="flex h-full w-full flex-col">
-      <CardHeader>
+      <CardHeader className="pb-4">
         <CardTitle>Desempenho nos Simulados</CardTitle>
         <CardDescription>
           Número de acertos nos últimos 10 simulados
@@ -46,7 +54,7 @@ export function TestsBarChart() {
       </CardHeader>
       <CardContent className="flex flex-1 pb-0">
         <ChartContainer config={chartConfig} className="h-full w-full">
-          <BarChart data={chartData} accessibilityLayer>
+          <BarChart data={data} accessibilityLayer>
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="test"
@@ -56,7 +64,7 @@ export function TestsBarChart() {
               tickFormatter={(value) => `Sim. ${value}`}
             />
             <YAxis domain={[0, 45]} />
-            <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+            <ChartTooltip cursor={false} content={<CustomTooltip />} />
             <Bar dataKey="score" fill="var(--color-primary)" radius={8}>
               <LabelList dataKey="score" position="top" />
             </Bar>
