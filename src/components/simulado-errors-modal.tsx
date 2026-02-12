@@ -36,6 +36,8 @@ export function SimuladoErrorsModal({
   testNumber,
   errors,
 }: SimuladoErrorsModalProps) {
+  const sortedErrors = [...errors].sort((a, b) => a.number - b.number)
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl">
@@ -56,7 +58,7 @@ export function SimuladoErrorsModal({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {errors.map((error) => (
+              {sortedErrors.map((error) => (
                 <TableRow key={error.number}>
                   <TableCell>{error.number}</TableCell>
                   <TableCell>{error.difficulty}</TableCell>
