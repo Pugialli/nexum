@@ -1,6 +1,9 @@
+import { Button } from "@/components/ui/button";
 import { GcpLineChart } from "@/components/gcp-line-chart";
 import { HabilidadesChart } from "@/components/habilidades-chart";
 import { TestsBarChart } from "@/components/tests-bar-chart";
+import { PlusIcon } from "lucide-react";
+import Link from "next/link";
 
 const chartData = [
   { test: "1", score: 32, gcp: 58 },
@@ -17,8 +20,17 @@ const chartData = [
 
 export default function Page() {
   return (
-    <div className="h-[calc(100vh-theme(space.24))] w-full p-4 sm:p-10">
-      <div className="flex h-full w-full flex-col gap-4">
+    <div className="h-[calc(100vh-theme(space.24))] w-full p-4 sm:p-10 flex flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Dashboard</h1>
+        <Button asChild>
+          <Link href="/aluno/cartao-resposta">
+            <PlusIcon className="mr-2 size-4" />
+            Fazer nova prova
+          </Link>
+        </Button>
+      </div>
+      <div className="flex-1 min-h-0 flex flex-col gap-4">
         <div className="min-h-0 flex-1">
           <TestsBarChart data={chartData} />
         </div>
