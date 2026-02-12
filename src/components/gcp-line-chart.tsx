@@ -44,7 +44,7 @@ export function GcpLineChart() {
           Percentual de aproveitamento do indicador GCP nos últimos 10 simulados
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 pb-0">
+      <CardContent className="flex flex-1 pb-0">
         <ChartContainer config={chartConfig} className="h-full w-full">
           <LineChart
             data={chartData}

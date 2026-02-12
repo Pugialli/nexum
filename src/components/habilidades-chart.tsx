@@ -39,7 +39,7 @@ export function HabilidadesChart() {
           Top 5 habilidades com maior percentual de erro
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 pb-0">
+      <CardContent className="flex flex-1 pb-0">
         <ChartContainer config={chartConfig} className="h-full w-full">
           <BarChart
             data={chartData}
