@@ -21,7 +21,7 @@ const chartData = [
   { skill: "H5", errorRate: 78 },
   { skill: "H18", errorRate: 72 },
   { skill: "H30", errorRate: 65 },
-].reverse()
+]
 
 const chartConfig = {
   errorRate: {
