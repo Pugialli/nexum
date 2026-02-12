@@ -162,7 +162,7 @@ export default function CartaoRespostaPage() {
               <AlertTriangle className="h-4 w-4" />
               <AlertTitle>Atenção</AlertTitle>
               <AlertDescription>
-                Lembre-se que você tem 50 minutos para responder esta prova.
+                Lembre-se que você tem 135 minutos para responder esta prova.
               </AlertDescription>
             </Alert>
 
