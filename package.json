@@ -1,6 +1,6 @@
 {
   "name": "nexum",
-  "version": "0.1.9",
+  "version": "0.2.0",
   "private": true,
   "prisma": {
     "seed": "tsx prisma/seed.ts"

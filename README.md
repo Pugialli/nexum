@@ -12,18 +12,22 @@ Plataforma para professores acompanharem o progresso de alunos nos estudos para 
 
 ### Professor
 - [X] Cadastrar aluno com informações básicas
-- [ ] Tabela de alunos
+- [F] Tabela de alunos
 
 ### Aluno
 - [X] Puxar a lista de provas disponíveis para realizar
 - [X] Cadastrar respostas no cartão resposta
 - [X] Completar cadastro após registro inicial
+- [ ] Dashboard
 
 ## Pendências
 - Fontes retornando 404
 - Foi removida a verificação para facilitar o desenvolvimento
 
 ## Changelog
+
+### 0.2.0
+- Frontend da tabela de alunos concluído
 
 ### 0.1.9
 - Cartão resposta funcional
