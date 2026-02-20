@@ -61,15 +61,15 @@ export function SimuladoErrorsModal({
   const getDifficultyStyles = (difficulty: SimuladoError['difficulty']) => {
     switch (difficulty) {
       case 'Muito fácil':
-        return 'bg-red-500/10 text-red-700 border-red-200 hover:bg-red-500/20'
+        return 'bg-red-500/20 text-red-700 border-red-300'
       case 'Fácil':
-        return 'bg-orange-500/10 text-orange-700 border-orange-200 hover:bg-orange-500/20'
+        return 'bg-orange-500/20 text-orange-700 border-orange-300'
       case 'Médio':
-        return 'bg-yellow-400/20 text-yellow-800 border-yellow-300 hover:bg-yellow-400/30'
+        return 'bg-yellow-400/30 text-yellow-800 border-yellow-400'
       case 'Difícil':
-        return 'bg-lime-400/20 text-lime-800 border-lime-300 hover:bg-lime-400/30'
+        return 'bg-lime-400/30 text-lime-800 border-lime-400'
       case 'Muito difícil':
-        return 'bg-green-700/10 text-green-800 border-green-200 hover:bg-green-700/20'
+        return 'bg-green-700/20 text-green-800 border-green-300'
       default:
         return ''
     }
