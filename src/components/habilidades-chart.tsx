@@ -32,8 +32,8 @@ const chartConfig = {
 
 export function HabilidadesChart() {
   return (
-    <Card className="flex h-full w-full flex-col">
-      <CardHeader>
+    <Card className="flex h-full w-full flex-col py-2 gap-2">
+      <CardHeader className="pb-0">
         <CardTitle>Habilidades mais defasadas</CardTitle>
         <CardDescription>
           Top 5 habilidades com maior percentual de erro
