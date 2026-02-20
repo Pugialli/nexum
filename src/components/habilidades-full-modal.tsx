@@ -1,23 +1,29 @@
-"use client"
-
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
-import { useState, useMemo } from "react"
-import { Plus } from "lucide-react"
+'use client'
 
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from "@/components/ui/card"
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import {
   ChartContainer,
   ChartTooltip,
-} from "@/components/ui/chart"
-import { Button } from "@/components/ui/button"
-import { HabilidadesFullModal } from "./habilidades-full-modal"
+} from '@/components/ui/chart'
+import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
+
+interface HabilidadeData {
+  skill: string
+  errorRate: number
+  errorCount: number
+}
+
+interface HabilidadesFullModalProps {
+  isOpen: boolean
+  onOpenChange: (isOpen: boolean) => void
+  data: HabilidadeData[]
+}
 
 const skillDescriptions: Record<string, string> = {
   H1: "Reconhecer no contexto social diferentes formas de registro de números.",
@@ -63,39 +69,29 @@ const CustomTooltip = ({ active, payload }: any) => {
   return null;
 };
 
-export function HabilidadesChart() {
-  const [isModalOpen, setIsModalOpen] = useState(false)
-
-  // Generate mock data for all 30 skills
-  const allSkillsData = useMemo(() => {
-    return Array.from({ length: 30 }, (_, i) => ({
-      skill: `H${i + 1}`,
-      errorRate: Math.floor(Math.random() * 100),
-      errorCount: Math.floor(Math.random() * 50),
-    })).sort((a, b) => b.errorRate - a.errorRate)
-  }, [])
-
-  // Top 5 for the main card
-  const topSkillsData = allSkillsData.slice(0, 5)
-
+export function HabilidadesFullModal({
+  isOpen,
+  onOpenChange,
+  data,
+}: HabilidadesFullModalProps) {
   return (
-    <>
-      <Card className="flex h-full w-full flex-col py-2 gap-2 relative">
-        <CardHeader className="pb-0">
-          <CardTitle>Habilidades mais defasadas</CardTitle>
-          <CardDescription>
-            Top 5 habilidades com maior percentual de erro
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-1 pb-0">
-          <ChartContainer config={chartConfig} className="h-full w-full">
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
+        <DialogHeader>
+          <DialogTitle className="font-heading text-xl">Ranking Geral de Habilidades</DialogTitle>
+          <DialogDescription className="font-sans">
+            Desempenho detalhado em todas as 30 habilidades do ENEM, ordenado pelo percentual de erro.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex-1 overflow-y-auto mt-4 pr-4">
+          <ChartContainer config={chartConfig} className="min-h-[1200px] w-full">
             <BarChart
-              data={topSkillsData}
+              data={data}
               layout="vertical"
               accessibilityLayer
               margin={{
                 left: 10,
-                right: 40,
+                right: 60,
               }}
             >
               <CartesianGrid horizontal={false} />
@@ -106,6 +102,7 @@ export function HabilidadesChart() {
                 tickLine={false}
                 axisLine={false}
                 tickMargin={8}
+                width={40}
               />
               <ChartTooltip
                 cursor={false}
@@ -116,24 +113,8 @@ export function HabilidadesChart() {
               </Bar>
             </BarChart>
           </ChartContainer>
-        </CardContent>
-        <CardFooter className="justify-end p-2 pt-0">
-          <Button 
-            variant="ghost" 
-            size="icon-sm" 
-            onClick={() => setIsModalOpen(true)}
-            className="rounded-full hover:bg-muted"
-          >
-            <Plus className="size-4" />
-          </Button>
-        </CardFooter>
-      </Card>
-
-      <HabilidadesFullModal 
-        isOpen={isModalOpen} 
-        onOpenChange={setIsModalOpen} 
-        data={allSkillsData} 
-      />
-    </>
+        </div>
+      </DialogContent>
+    </Dialog>
   )
 }
