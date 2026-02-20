@@ -119,10 +119,10 @@ export function HabilidadesChart() {
         </CardContent>
         <CardFooter className="justify-end p-2 pt-0">
           <Button 
-            variant="ghost" 
+            variant="default" 
             size="icon-sm" 
             onClick={() => setIsModalOpen(true)}
-            className="rounded-full hover:bg-muted"
+            className="rounded-full shadow-md hover:scale-110 transition-transform duration-200"
           >
             <Plus className="size-4" />
           </Button>
