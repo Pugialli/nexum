@@ -16,6 +16,11 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 
 export interface SimuladoError {
@@ -30,6 +35,19 @@ interface SimuladoErrorsModalProps {
   onOpenChange: (isOpen: boolean) => void
   testNumber: string | null
   errors: SimuladoError[]
+}
+
+const skillDescriptions: Record<string, string> = {
+  H1: "Reconhecer no contexto social diferentes formas de registro de números.",
+  H5: "Avaliar propostas de intervenção na realidade utilizando conhecimentos numéricos.",
+  H12: "Uma habilidade normalmente relativa a identificação de números inteiros.",
+  H18: "Resolver situação-problema envolvendo a variação de grandezas, direta ou inversamente proporcionais.",
+  H25: "Resolver problema que envolva noções de probabilidade de ocorrência de um evento.",
+  H30: "Avaliar propostas de intervenção na realidade utilizando conhecimentos de estatística e probabilidade.",
+}
+
+function getSkillDescription(skill: string) {
+  return skillDescriptions[skill] || `${skill}: Descrição detalhada desta habilidade no contexto do ENEM.`
 }
 
 export function SimuladoErrorsModal({
@@ -94,9 +112,18 @@ export function SimuladoErrorsModal({
                     </Badge>
                   </TableCell>
                   <TableCell className="text-center">
-                    <span className="font-mono text-xs font-semibold bg-muted px-2 py-1 rounded-sm border">
-                      {error.skill}
-                    </span>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="font-mono text-xs font-semibold bg-muted px-2 py-1 rounded-sm border cursor-help">
+                          {error.skill}
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="max-w-[200px] text-center">
+                          {getSkillDescription(error.skill)}
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
                   </TableCell>
                   <TableCell className="text-sm font-medium">
                     {error.subject}

@@ -3,6 +3,7 @@
 import type { GetProfileResponse } from '@/app/api/auth/profile/[id]/get-profile'
 import type { ReactNode } from 'react'
 import { AuthProvider } from './auth-provider'
+import { TooltipProvider } from './ui/tooltip'
 
 interface ProvidersProps {
   children: ReactNode
@@ -10,5 +11,11 @@ interface ProvidersProps {
 }
 
 export function Providers({ children, user }: ProvidersProps) {
-  return <AuthProvider user={user}>{children}</AuthProvider>
+  return (
+    <AuthProvider user={user}>
+      <TooltipProvider>
+        {children}
+      </TooltipProvider>
+    </AuthProvider>
+  )
 }
