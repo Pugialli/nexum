@@ -1,3 +1,4 @@
+
 "use client"
 
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
@@ -122,7 +123,7 @@ export function HabilidadesChart() {
             variant="default" 
             size="icon-sm" 
             onClick={() => setIsModalOpen(true)}
-            className="rounded-full shadow-md hover:scale-110 transition-transform duration-200"
+            className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-full shadow-md hover:scale-110 transition-transform duration-200"
           >
             <Plus className="size-4" />
           </Button>
