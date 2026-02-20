@@ -1,6 +1,6 @@
 "use client"
 
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
+import { Bar, BarChart, CartesianGrid, LabelList, YAxis } from "recharts"
 
 import {
   Card,
@@ -57,11 +57,6 @@ export function HabilidadesChart() {
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-            />
-            <XAxis
-              type="number"
-              domain={[0, 100]}
-              tickFormatter={(value) => `${value}%`}
             />
             <ChartTooltip
               cursor={false}
