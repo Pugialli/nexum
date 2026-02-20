@@ -17,7 +17,7 @@ const chartData = [
 
 export default function Page() {
   return (
-    <div className="h-[calc(100vh-theme(space.24))] w-full p-4 sm:p-10 flex flex-col gap-4">
+    <div className="h-[calc(100vh-theme(space.24))] w-full p-4 sm:p-10 pt-2 sm:pt-4 flex flex-col gap-4">
       <div className="flex-1 min-h-0 flex flex-col gap-4">
         <div className="min-h-0 flex-1">
           <TestsBarChart data={chartData} />
