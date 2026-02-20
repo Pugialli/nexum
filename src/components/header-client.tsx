@@ -1,16 +1,18 @@
-// components/header-client.tsx
 'use client'
 
 import type { GetProfileResponse } from '@/app/api/auth/profile/[id]/get-profile'
 import { signOut } from '@/auth/actions'
 import { getInitials } from '@/utils/get-initials'
 import { getRingColor } from '@/utils/ring-color'
+import { PlusIcon } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { AlunoTabs } from './aluno-tabs'
 import { ProfessorTabs } from './professor-tabs'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
+import { Button } from './ui/button'
 
 interface HeaderClientProps {
   user: GetProfileResponse | null
@@ -18,8 +20,10 @@ interface HeaderClientProps {
 
 export function HeaderClient({ user }: HeaderClientProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const pathname = usePathname()
 
   const role = user?.role || ''
+  const isDashboard = pathname === '/aluno/dashboard'
 
   const handleLogout = async () => {
     setIsDropdownOpen(false)
@@ -43,10 +47,18 @@ export function HeaderClient({ user }: HeaderClientProps) {
         ) : (
           <AlunoTabs />
         )}
-
       </div>
 
-      <div className="flex flex-1 items-center justify-end p-4">
+      <div className="flex flex-1 items-center justify-end p-4 gap-4">
+        {isDashboard && (
+          <Button asChild size="sm" className="hidden sm:flex">
+            <Link href="/aluno/cartao-resposta">
+              <PlusIcon className="mr-2 size-4" />
+              Fazer nova prova
+            </Link>
+          </Button>
+        )}
+
         {user ? (
           <div className="relative">
             <button
@@ -94,6 +106,6 @@ export function HeaderClient({ user }: HeaderClientProps) {
           </Link>
         )}
       </div>
-    </header >
+    </header>
   )
 }
