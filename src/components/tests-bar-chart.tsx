@@ -30,13 +30,17 @@ const CustomTooltip = ({ active, payload, label }: any) => {
       <div className="rounded-lg border bg-background p-3 text-sm shadow-sm">
         <p className="mb-2 font-medium">Simulado {label}</p>
         <div className="space-y-1">
-          <p className="flex justify-between">
-            <span>Acertos:</span>
-            <span className="ml-4 font-semibold">{data.score}</span>
+          <p className="flex justify-between gap-4">
+            <span>Data da prova:</span>
+            <span className="font-semibold">{data.date}</span>
           </p>
-          <p className="flex justify-between">
+          <p className="flex justify-between gap-4">
+            <span>Acertos:</span>
+            <span className="font-semibold">{data.score}</span>
+          </p>
+          <p className="flex justify-between gap-4">
             <span>GCP:</span>
-            <span className="ml-4 font-semibold">{data.gcp}%</span>
+            <span className="font-semibold">{data.gcp}%</span>
           </p>
         </div>
       </div>
