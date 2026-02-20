@@ -46,7 +46,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 export function GcpLineChart({ data }: { data: any[] }) {
   return (
     <Card className="flex h-full w-full flex-col">
-      <CardHeader className="pb-4">
+      <CardHeader>
         <CardTitle>Indicador GCP</CardTitle>
         <CardDescription>
           Percentual de aproveitamento do indicador GCP nos últimos 10 simulados

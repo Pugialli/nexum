@@ -123,7 +123,7 @@ export function TestsBarChart({ data }: { data: any[] }) {
   return (
     <>
       <Card className="flex h-full w-full flex-col">
-        <CardHeader className="pb-4">
+        <CardHeader>
           <CardTitle>Desempenho nos Simulados</CardTitle>
           <CardDescription>
             Número de acertos nos últimos 10 simulados
