@@ -84,35 +84,38 @@ export function HabilidadesFullModal({
           </DialogDescription>
         </DialogHeader>
         <div className="flex-1 overflow-y-auto mt-4 pr-4">
-          <ChartContainer config={chartConfig} className="min-h-[1200px] w-full">
-            <BarChart
-              data={data}
-              layout="vertical"
-              accessibilityLayer
-              margin={{
-                left: 10,
-                right: 60,
-              }}
-            >
-              <CartesianGrid horizontal={false} />
-              <XAxis type="number" hide />
-              <YAxis
-                dataKey="skill"
-                type="category"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                width={40}
-              />
-              <ChartTooltip
-                cursor={false}
-                content={<CustomTooltip />}
-              />
-              <Bar dataKey="errorRate" fill="var(--color-destructive)" radius={5}>
-                <LabelList dataKey="errorRate" position="right" offset={8} formatter={(value: number) => `${value}%`} />
-              </Bar>
-            </BarChart>
-          </ChartContainer>
+          {/* Explicit fixed height for the scrollable chart content */}
+          <div className="h-[1200px] w-full">
+            <ChartContainer config={chartConfig} className="h-full w-full">
+              <BarChart
+                data={data}
+                layout="vertical"
+                accessibilityLayer
+                margin={{
+                  left: 10,
+                  right: 60,
+                }}
+              >
+                <CartesianGrid horizontal={false} />
+                <XAxis type="number" hide />
+                <YAxis
+                  dataKey="skill"
+                  type="category"
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                  width={40}
+                />
+                <ChartTooltip
+                  cursor={false}
+                  content={<CustomTooltip />}
+                />
+                <Bar dataKey="errorRate" fill="var(--color-destructive)" radius={5}>
+                  <LabelList dataKey="errorRate" position="right" offset={8} formatter={(value: number) => `${value}%`} />
+                </Bar>
+              </BarChart>
+            </ChartContainer>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
