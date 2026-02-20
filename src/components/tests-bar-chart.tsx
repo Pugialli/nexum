@@ -40,7 +40,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
           </p>
           <p className="flex justify-between gap-4">
             <span>Nota:</span>
-            <span className="font-semibold">{data.gcp}%</span>
+            <span className="font-semibold">{data.gcp}</span>
           </p>
         </div>
       </div>
