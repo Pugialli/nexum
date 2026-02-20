@@ -98,7 +98,7 @@ export function SimuladoErrorsModal({
               {sortedErrors.map((error) => (
                 <TableRow key={error.number} className="group transition-colors">
                   <TableCell className="font-bold text-muted-foreground group-hover:text-foreground">
-                    #{error.number}
+                    {error.number}
                   </TableCell>
                   <TableCell className="text-center">
                     <Badge 
