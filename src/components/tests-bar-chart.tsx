@@ -1,6 +1,6 @@
 "use client"
 
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts"
+import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
 import { useState } from "react"
 
 import {
@@ -140,6 +140,7 @@ export function TestsBarChart({ data }: { data: any[] }) {
                 axisLine={false}
                 tickFormatter={(value) => `Sim. ${value}`}
               />
+              <YAxis hide />
               <ChartTooltip cursor={false} content={<CustomTooltip />} />
               <Bar dataKey="score" fill="var(--color-primary)" radius={8} onClick={handleBarClick} className="cursor-pointer">
                 <LabelList dataKey="score" position="top" />

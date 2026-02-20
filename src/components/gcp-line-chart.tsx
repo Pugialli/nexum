@@ -1,6 +1,6 @@
 "use client"
 
-import { CartesianGrid, LabelList, Line, LineChart, XAxis } from "recharts"
+import { CartesianGrid, LabelList, Line, LineChart, XAxis, YAxis } from "recharts"
 
 import {
   Card,
@@ -70,6 +70,7 @@ export function GcpLineChart({ data }: { data: any[] }) {
               tickMargin={8}
               tickFormatter={(value) => `Sim. ${value}`}
             />
+            <YAxis hide />
             <ChartTooltip cursor={false} content={<CustomTooltip />} />
             <Line
               dataKey="gcp"

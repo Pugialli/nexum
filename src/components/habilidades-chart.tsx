@@ -1,6 +1,6 @@
 "use client"
 
-import { Bar, BarChart, CartesianGrid, LabelList, YAxis } from "recharts"
+import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
 
 import {
   Card,
@@ -51,6 +51,7 @@ export function HabilidadesChart() {
             }}
           >
             <CartesianGrid horizontal={false} />
+            <XAxis type="number" hide />
             <YAxis
               dataKey="skill"
               type="category"
