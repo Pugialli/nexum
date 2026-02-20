@@ -49,68 +49,28 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-// Mock data for errors
+// Mock data for errors with expanded difficulty levels
+const generateMockErrors = (count: number): SimuladoError[] => {
+  const levels: SimuladoError['difficulty'][] = ['Muito fácil', 'Fácil', 'Médio', 'Difícil', 'Muito difícil'];
+  return Array.from({ length: count }, (_, i) => ({
+    number: Math.floor(Math.random() * 45) + 1,
+    difficulty: levels[Math.floor(Math.random() * levels.length)],
+    skill: `H${Math.floor(Math.random() * 30) + 1}`,
+    subject: ['Matemática', 'Física', 'Química', 'Biologia'][Math.floor(Math.random() * 4)],
+  }));
+}
+
 const mockErrors: { [key: string]: SimuladoError[] } = {
-  "1": Array.from({ length: 13 }, (_, i) => ({
-    number: Math.floor(Math.random() * 45) + 1,
-    difficulty: ['Fácil', 'Médio', 'Difícil'][Math.floor(Math.random() * 3)] as any,
-    skill: `H${Math.floor(Math.random() * 30) + 1}`,
-    subject: ['Matemática', 'Física', 'Química', 'Biologia'][Math.floor(Math.random() * 4)],
-  })),
-  "2": Array.from({ length: 17 }, (_, i) => ({
-    number: Math.floor(Math.random() * 45) + 1,
-    difficulty: ['Fácil', 'Médio', 'Difícil'][Math.floor(Math.random() * 3)] as any,
-    skill: `H${Math.floor(Math.random() * 30) + 1}`,
-    subject: ['Matemática', 'Física', 'Química', 'Biologia'][Math.floor(Math.random() * 4)],
-  })),
-  "3": Array.from({ length: 4 }, (_, i) => ({
-    number: Math.floor(Math.random() * 45) + 1,
-    difficulty: ['Fácil', 'Médio', 'Difícil'][Math.floor(Math.random() * 3)] as any,
-    skill: `H${Math.floor(Math.random() * 30) + 1}`,
-    subject: ['Matemática', 'Física', 'Química', 'Biologia'][Math.floor(Math.random() * 4)],
-  })),
-  "4": Array.from({ length: 10 }, (_, i) => ({
-    number: Math.floor(Math.random() * 45) + 1,
-    difficulty: ['Fácil', 'Médio', 'Difícil'][Math.floor(Math.random() * 3)] as any,
-    skill: `H${Math.floor(Math.random() * 30) + 1}`,
-    subject: ['Matemática', 'Física', 'Química', 'Biologia'][Math.floor(Math.random() * 4)],
-  })),
-  "5": Array.from({ length: 3 }, (_, i) => ({
-    number: Math.floor(Math.random() * 45) + 1,
-    difficulty: ['Fácil', 'Médio', 'Difícil'][Math.floor(Math.random() * 3)] as any,
-    skill: `H${Math.floor(Math.random() * 30) + 1}`,
-    subject: ['Matemática', 'Física', 'Química', 'Biologia'][Math.floor(Math.random() * 4)],
-  })),
-  "6": Array.from({ length: 15 }, (_, i) => ({
-    number: Math.floor(Math.random() * 45) + 1,
-    difficulty: ['Fácil', 'Médio', 'Difícil'][Math.floor(Math.random() * 3)] as any,
-    skill: `H${Math.floor(Math.random() * 30) + 1}`,
-    subject: ['Matemática', 'Física', 'Química', 'Biologia'][Math.floor(Math.random() * 4)],
-  })),
-  "7": Array.from({ length: 8 }, (_, i) => ({
-    number: Math.floor(Math.random() * 45) + 1,
-    difficulty: ['Fácil', 'Médio', 'Difícil'][Math.floor(Math.random() * 3)] as any,
-    skill: `H${Math.floor(Math.random() * 30) + 1}`,
-    subject: ['Matemática', 'Física', 'Química', 'Biologia'][Math.floor(Math.random() * 4)],
-  })),
-  "8": Array.from({ length: 16 }, (_, i) => ({
-    number: Math.floor(Math.random() * 45) + 1,
-    difficulty: ['Fácil', 'Médio', 'Difícil'][Math.floor(Math.random() * 3)] as any,
-    skill: `H${Math.floor(Math.random() * 30) + 1}`,
-    subject: ['Matemática', 'Física', 'Química', 'Biologia'][Math.floor(Math.random() * 4)],
-  })),
-  "9": Array.from({ length: 12 }, (_, i) => ({
-    number: Math.floor(Math.random() * 45) + 1,
-    difficulty: ['Fácil', 'Médio', 'Difícil'][Math.floor(Math.random() * 3)] as any,
-    skill: `H${Math.floor(Math.random() * 30) + 1}`,
-    subject: ['Matemática', 'Física', 'Química', 'Biologia'][Math.floor(Math.random() * 4)],
-  })),
-  "10": Array.from({ length: 7 }, (_, i) => ({
-    number: Math.floor(Math.random() * 45) + 1,
-    difficulty: ['Fácil', 'Médio', 'Difícil'][Math.floor(Math.random() * 3)] as any,
-    skill: `H${Math.floor(Math.random() * 30) + 1}`,
-    subject: ['Matemática', 'Física', 'Química', 'Biologia'][Math.floor(Math.random() * 4)],
-  })),
+  "1": generateMockErrors(13),
+  "2": generateMockErrors(17),
+  "3": generateMockErrors(4),
+  "4": generateMockErrors(10),
+  "5": generateMockErrors(3),
+  "6": generateMockErrors(15),
+  "7": generateMockErrors(8),
+  "8": generateMockErrors(16),
+  "9": generateMockErrors(12),
+  "10": generateMockErrors(7),
 }
 
 export function TestsBarChart({ data }: { data: any[] }) {
