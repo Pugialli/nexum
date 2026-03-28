@@ -12,21 +12,7 @@ import {
 import {
   ChartContainer,
   ChartTooltip,
-  ChartTooltipContent,
 } from "@/components/ui/chart"
-
-const chartData = [
-  { test: "1", gcp: 58 },
-  { test: "2", gcp: 62 },
-  { test: "3", gcp: 65 },
-  { test: "4", gcp: 70 },
-  { test: "5", gcp: 68 },
-  { test: "6", gcp: 72 },
-  { test: "7", gcp: 75 },
-  { test: "8", gcp: 80 },
-  { test: "9", gcp: 85 },
-  { test: "10", gcp: 88 },
-]
 
 const chartConfig = {
   gcp: {
@@ -35,19 +21,41 @@ const chartConfig = {
   },
 }
 
-export function GcpLineChart() {
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    return (
+      <div className="rounded-lg border bg-background p-3 text-sm shadow-sm">
+        <p className="mb-2 font-medium">Simulado {label}</p>
+        <div className="space-y-1">
+          <p className="flex justify-between">
+            <span>GCP:</span>
+            <span className="ml-4 font-semibold">{data.gcp}%</span>
+          </p>
+          <p className="flex justify-between">
+            <span>Acertos:</span>
+            <span className="ml-4 font-semibold">{data.score}</span>
+          </p>
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
+
+export function GcpLineChart({ data }: { data: any[] }) {
   return (
-    <Card className="flex-1 flex w-full flex-col min-h-0">
-      <CardHeader>
+    <Card className="flex h-full w-full flex-col py-2 gap-2">
+      <CardHeader className="pb-0">
         <CardTitle>Indicador GCP</CardTitle>
         <CardDescription>
           Percentual de aproveitamento do indicador GCP nos últimos 10 simulados
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 flex flex-col">
-        <ChartContainer config={chartConfig} className="flex-1">
+      <CardContent className="flex flex-1 pb-0">
+        <ChartContainer config={chartConfig} className="h-full w-full">
           <LineChart
-            data={chartData}
+            data={data}
             accessibilityLayer
             margin={{
               left: 12,
@@ -62,11 +70,8 @@ export function GcpLineChart() {
               tickMargin={8}
               tickFormatter={(value) => `Sim. ${value}`}
             />
-            <YAxis
-              domain={[0, 100]}
-              tickFormatter={(value) => `${value}%`}
-            />
-            <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+            <YAxis hide />
+            <ChartTooltip cursor={false} content={<CustomTooltip />} />
             <Line
               dataKey="gcp"
               type="monotone"
