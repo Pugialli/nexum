@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma'
 
 interface GetAlunosProps {
-  idProfessor: string
+  slug: string
 }
 
 export interface GetAlunosWithTreinoResponse {
@@ -11,10 +11,10 @@ export interface GetAlunosWithTreinoResponse {
   idProfessor: string
 }
 
-export async function getAlunos({ idProfessor }: GetAlunosProps) {
+export async function getAlunos({ slug }: GetAlunosProps) {
   return await prisma.user.findMany({
     where: {
-      idProfessor,
+      slug,
     },
     select: {
       id: true,

@@ -5,9 +5,9 @@ import { getAlunos } from './get-alunos'
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ slug: string }> },
 ) {
-  const response = await getAlunos({ idProfessor: (await params).id })
+  const response = await getAlunos({ slug: (await params).slug })
 
   return NextResponse.json(response)
 }

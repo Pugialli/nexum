@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma'
 
 interface GetProfessorProps {
-  id: string
+  slug: string
 }
 
 export interface GetProfessorResponse {
@@ -11,10 +11,10 @@ export interface GetProfessorResponse {
   avatarUrl: string | null
 }
 
-export async function getProfessor({ id }: GetProfessorProps) {
+export async function getProfessor({ slug }: GetProfessorProps) {
   return prisma.user.findUnique({
     where: {
-      id,
+      slug,
     },
     select: {
       id: true,

@@ -1,17 +1,10 @@
-import { NavLink } from './nav-link'
-import { Button } from './ui/button'
+import { TabNav } from './tab-nav'
 
 export function AlunoTabs() {
-  return (
-    <div className="py-4">
-      <Button
-        asChild
-        variant="ghost"
-        size="sm"
-        className="border border-transparent text-muted-foreground data-[current=true]:border-border data-[current=true]:text-foreground"
-      >
-        <NavLink href={'/aluno/dashboard'}>Dashboard</NavLink>
-      </Button>
-    </div>
-  )
+  const tabs = [
+    { href: '/aluno/dashboard', label: 'Dashboard' },
+    { href: '/aluno/cartao-resposta', label: 'Cartão Resposta' },
+  ]
+
+  return <TabNav tabs={tabs} />
 }

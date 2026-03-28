@@ -22,6 +22,7 @@ model User {
   dataNascimento DateTime? @map("data_nascimento")
   idProfessor    String?   @map("id_professor")
   passwordHash   String    @map("password_hash")
+  resetPassword  Boolean   @default(false) @map("reset_password")
   avatarUrl      String?   @map("avatar_url")
   role           Role      @default(ALUNO)
 
@@ -31,9 +32,10 @@ model User {
 
   professor User?           @relation("ProfessorAluno", fields: [idProfessor], references: [id])
   alunos    User[]          @relation("ProfessorAluno")
-  Carreira  DomainCarreira? @relation(fields: [carreiraValue], references: [carreiraValue])
+  Carreira  DomainCarreira? @relation(fields: [carreiraValue], references: [value])
   accounts  Account[]
   sessions  Session[]
+  respostas Resposta[]
 
   @@map("users")
 }
@@ -84,11 +86,68 @@ enum Role {
   EXALUNO
 }
 
+model Prova {
+  id          String   @id @default(uuid())
+  ano         String
+  dataCriacao DateTime @default(now()) @map("data_criacao")
+
+  questoes Questao[]
+
+  @@map("provas")
+}
+
+model Questao {
+  id              String  @id @default(uuid())
+  numero          Int
+  gabarito        String
+  dificuldade     Int
+  habilidadeValue Int     @map("habilidade_value")
+  assuntoValue    String  @map("assunto_value")
+  idProva         String? @map("id_prova")
+
+  prova      Prova?         @relation(fields: [idProva], references: [id])
+  habilidade Habilidade     @relation(fields: [habilidadeValue], references: [value])
+  assunto    DomainAssuntos @relation(fields: [assuntoValue], references: [value])
+  respostas  Resposta[]
+
+  @@map("questoes")
+}
+
+model Habilidade {
+  value     Int    @id
+  descricao String
+
+  questaos Questao[]
+
+  @@map("@habilidades")
+}
+
+model Resposta {
+  idAluno   String  @map("id_aluno")
+  idQuestao String  @map("id_questao")
+  resposta  String
+  resultado Boolean
+
+  aluno   User    @relation(fields: [idAluno], references: [id])
+  questao Questao @relation(fields: [idQuestao], references: [id])
+
+  @@id([idAluno, idQuestao])
+  @@map("respostas")
+}
+
 model DomainCarreira {
-  carreiraLabel String @unique @map("carreira_label")
-  carreiraValue String @id @map("carreira_value")
+  value String @id
+  label String @unique
 
   alunos User[]
 
   @@map("@carreiras")
+}
+
+model DomainAssuntos {
+  value    String    @id
+  label    String
+  questaos Questao[]
+
+  @@map("@assuntos")
 }
