@@ -21,10 +21,22 @@ Plataforma para professores acompanharem o progresso de alunos nos estudos para 
 - [F] Dashboard
 
 ## Pendências
-- Fontes retornando 404
 - Reset de senha via email (estrutura pronta, envio não implementado)
 
 ## Changelog
+
+### 0.3.1
+- Correção do fluxo de autenticação com Better Auth
+- Login migrado para fetch direto ao endpoint do Better Auth com repasse manual de cookie
+- Removido `passwordHash` do modelo `User` — senha agora gerenciada pelo `Account` do Better Auth
+- Seed atualizado para criar `Account` vinculado ao `User` com senha hasheada via bcrypt
+- `create-aluno` e `create-user` migrados para `auth.api.signUpEmail`
+- Removidas rotas legadas: `signin-request`, `sign-out`, `api-client-server`
+- Removido `crypto.ts` (token criptografado não é mais usado)
+- `sign-in-form` mantido com `useFormState` — login via Server Action com fetch interno
+- Middleware corrigido para usar `request.headers` em vez de `next/headers`
+- `auth/actions.ts` corrigido para usar `auth.api.signOut` do Better Auth
+- Dashboard adicionado ao status de desenvolvimento (frontend em progresso)
 
 ### 0.3.0
 - Migração Prisma 5 → 7 com driver adapter (`@prisma/adapter-pg`)

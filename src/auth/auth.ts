@@ -7,7 +7,9 @@ import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 
 async function getSession() {
-  return auth.api.getSession({ headers: await headers() })
+  const h = await headers()
+  console.log('COOKIES:', h.get('cookie'))
+  return auth.api.getSession({ headers: h })
 }
 
 export async function isAuthenticated() {
@@ -21,6 +23,7 @@ export async function logUserOut() {
 
 export async function loggedUser(): Promise<GetProfileResponse | null> {
   const session = await getSession()
+  
   if (!session) return null
 
   return {

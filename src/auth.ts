@@ -3,6 +3,11 @@ import { betterAuth } from 'better-auth'
 import { prismaAdapter } from 'better-auth/adapters/prisma'
 
 export const auth = betterAuth({
+  trustedOrigins: [process.env.BETTER_AUTH_URL ?? 'http://localhost:9002'],
+
+  baseURL: process.env.BETTER_AUTH_URL,
+  secret: process.env.BETTER_AUTH_SECRET,
+
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
   }),
@@ -28,7 +33,6 @@ export const auth = betterAuth({
     },
   },
 
-  // Campos extras do modelo User que o Better Auth deve preservar
   user: {
     additionalFields: {
       nome: { type: 'string', required: true },
@@ -46,12 +50,12 @@ export const auth = betterAuth({
   },
 
   session: {
-    expiresIn: 60 * 60 * 24 * 7, // 7 dias
-    updateAge: 60 * 60 * 24,     // renova se usada dentro de 1 dia do vencimento
-    cookieCache: {
-      enabled: true,
-      maxAge: 60 * 5,            // cache do cookie por 5 minutos
-    },
+    expiresIn: 60 * 60 * 24 * 7,
+    updateAge: 60 * 60 * 24,
+    // cookieCache: {
+    //   enabled: true,
+    //   maxAge: 60 * 5,
+    // },
   },
 })
 

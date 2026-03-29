@@ -15,7 +15,6 @@ model User {
   slug           String    @unique
   dataNascimento DateTime? @map("data_nascimento")
   idProfessor    String?   @map("id_professor")
-  passwordHash   String    @map("password_hash")
   resetPassword  Boolean   @default(false) @map("reset_password")
   avatarUrl      String?   @map("avatar_url")
   role           Role      @default(ALUNO)
@@ -28,10 +27,31 @@ model User {
   professor User?           @relation("ProfessorAluno", fields: [idProfessor], references: [id])
   alunos    User[]          @relation("ProfessorAluno")
   carreira  DomainCarreira? @relation(fields: [carreiraValue], references: [value])
+  accounts  Account[]
   sessions  Session[]
   respostas Resposta[]
 
   @@map("users")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  userId                String    @map("user_id")
+  accountId             String    @map("account_id")
+  providerId            String    @map("provider_id")
+  accessToken           String?   @map("access_token")
+  refreshToken          String?   @map("refresh_token")
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at")
+  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at")
+  scope                 String?
+  idToken               String?   @map("id_token")
+  password              String?
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("accounts")
 }
 
 model Session {

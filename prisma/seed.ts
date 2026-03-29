@@ -1,7 +1,8 @@
 import { PrismaClient } from '@/generated'
 import { PrismaPg } from '@prisma/adapter-pg'
-import { hash } from 'bcryptjs'
+import bcrypt from 'bcryptjs'
 import 'dotenv/config'
+const { hash } = bcrypt
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL!,
@@ -9,10 +10,60 @@ const adapter = new PrismaPg({
 
 const prisma = new PrismaClient({ adapter })
 
-async function main() {
-  const passwordHash = await hash('nexum2026', 10)
-  const passwordAdminHash = await hash('nexum123', 10)
+async function upsertUserWithAccount(data: {
+  email: string
+  password: string
+  nome: string
+  slug: string
+  avatarUrl: string
+  dataNascimento?: Date
+  role: 'PROFESSOR' | 'ALUNO' | 'EXALUNO'
+}) {
+  const passwordHash = await hash(data.password, 10)
 
+  const user = await prisma.user.upsert({
+    where: { email: data.email },
+    update: {
+      nome: data.nome,
+      slug: data.slug,
+      avatarUrl: data.avatarUrl,
+      dataNascimento: data.dataNascimento,
+      role: data.role,
+    },
+    create: {
+      email: data.email,
+      nome: data.nome,
+      slug: data.slug,
+      avatarUrl: data.avatarUrl,
+      dataNascimento: data.dataNascimento,
+      role: data.role,
+    },
+  })
+
+  const existingAccount = await prisma.account.findFirst({
+    where: { userId: user.id, providerId: 'credential' },
+  })
+
+  if (existingAccount) {
+    await prisma.account.update({
+      where: { id: existingAccount.id },
+      data: { password: passwordHash },
+    })
+  } else {
+    await prisma.account.create({
+      data: {
+        userId: user.id,
+        accountId: user.id,
+        providerId: 'credential',
+        password: passwordHash,
+      },
+    })
+  }
+
+  return user
+}
+
+async function main() {
   const carreiras = [
     { label: 'Pedagogia', value: 'pedagogia' },
     { label: 'Direito', value: 'direito' },
@@ -37,34 +88,23 @@ async function main() {
   ]
 
   const assuntos = [
-    // Análise Combinatória e Probabilidade (AC)
     { value: 'AC-01', label: 'Análise Combinatória' },
     { value: 'AC-02', label: 'Probabilidade' },
-
-    // Geometria (GE)
     { value: 'GE-01', label: 'Áreas de Figuras Planas' },
     { value: 'GE-02', label: 'Cilindros' },
     { value: 'GE-03', label: 'Circunferência e Círculo' },
     { value: 'GE-04', label: 'Relações Métricas no Triângulo Retângulo' },
     { value: 'GE-05', label: 'Visão Espacial' },
-
-    // Álgebra (AL)
     { value: 'AL-01', label: 'Conjuntos Numéricos' },
     { value: 'AL-02', label: 'Sistemas Lineares' },
-
-    // Funções (FN)
     { value: 'FN-01', label: 'Função Afim' },
     { value: 'FN-02', label: 'Função Exponencial' },
     { value: 'FN-03', label: 'Função Logarítmica' },
     { value: 'FN-04', label: 'Função Quadrática' },
     { value: 'FN-05', label: 'Função Trigonométrica' },
     { value: 'FN-06', label: 'Gráficos' },
-
-    // Estatística (ES)
     { value: 'ES-01', label: 'Estatística' },
     { value: 'ES-02', label: 'Média Aritmética' },
-
-    // Matemática Aplicada (MA)
     { value: 'MA-01', label: 'Escala' },
     { value: 'MA-02', label: 'Matemática Financeira' },
     { value: 'MA-03', label: 'Porcentagem' },
@@ -74,45 +114,32 @@ async function main() {
   ]
 
   const habilidades = [
-    // Competência 1
     { value: 1, descricao: 'Reconhecer, no contexto social, diferentes significados e representações dos números e operações - naturais, inteiros, racionais ou reais.' },
     { value: 2, descricao: 'Identificar padrões numéricos ou princípios de contagem.' },
     { value: 3, descricao: 'Resolver situação-problema envolvendo conhecimentos numéricos.' },
     { value: 4, descricao: 'Avaliar a razoabilidade de um resultado numérico na construção de argumentos sobre afirmações quantitativas.' },
     { value: 5, descricao: 'Avaliar propostas de intervenção na realidade utilizando conhecimentos numéricos.' },
-
-    // Competência 2
     { value: 6, descricao: 'Interpretar a localização e a movimentação de pessoas/objetos no espaço tridimensional e sua representação no espaço bidimensional.' },
     { value: 7, descricao: 'Identificar características de figuras planas ou espaciais.' },
     { value: 8, descricao: 'Resolver situação-problema que envolva conhecimentos geométricos de espaço e forma.' },
     { value: 9, descricao: 'Utilizar conhecimentos geométricos de espaço e forma na seleção de argumentos propostos como solução de problemas do cotidiano.' },
-
-    // Competência 3
     { value: 10, descricao: 'Identificar relações entre grandezas e unidades de medida.' },
     { value: 11, descricao: 'Utilizar a noção de escalas na leitura de representação de situação do cotidiano.' },
     { value: 12, descricao: 'Resolver situação-problema que envolva medidas de grandezas.' },
     { value: 13, descricao: 'Avaliar o resultado de uma medição na construção de um argumento consistente.' },
     { value: 14, descricao: 'Avaliar proposta de intervenção na realidade utilizando conhecimentos geométricos relacionados a grandezas e medidas.' },
-
-    // Competência 4
     { value: 15, descricao: 'Identificar a relação de dependência entre grandezas.' },
     { value: 16, descricao: 'Resolver situação-problema envolvendo a variação de grandezas, direta ou inversamente proporcionais.' },
     { value: 17, descricao: 'Analisar informações envolvendo a variação de grandezas como recurso para a construção de argumentação.' },
     { value: 18, descricao: 'Avaliar propostas de intervenção na realidade envolvendo variação de grandezas.' },
-
-    // Competência 5
     { value: 19, descricao: 'Identificar representações algébricas que expressem a relação entre grandezas.' },
     { value: 20, descricao: 'Interpretar gráfico cartesiano que represente relações entre grandezas.' },
     { value: 21, descricao: 'Resolver situação-problema cuja modelagem envolva conhecimentos algébricos.' },
     { value: 22, descricao: 'Utilizar conhecimentos algébricos/geométricos como recurso para a construção de argumentação.' },
     { value: 23, descricao: 'Avaliar propostas de intervenção na realidade utilizando conhecimentos algébricos.' },
-
-    // Competência 6
     { value: 24, descricao: 'Utilizar informações expressas em gráficos ou tabelas para fazer inferências.' },
     { value: 25, descricao: 'Resolver problema com dados apresentados em tabelas ou gráficos.' },
     { value: 26, descricao: 'Analisar informações expressas em gráficos ou tabelas como recurso para a construção de argumentos.' },
-
-    // Competência 7
     { value: 27, descricao: 'Calcular medidas de tendência central ou de dispersão de um conjunto de dados expressos em uma tabela de frequências de dados agrupados (não em classes) ou em gráficos.' },
     { value: 28, descricao: 'Resolver situação-problema que envolva conhecimentos de estatística e probabilidade.' },
     { value: 29, descricao: 'Utilizar conhecimentos de estatística e probabilidade como recurso para a construção de argumentação.' },
@@ -220,68 +247,34 @@ async function main() {
     })
   }
 
-  const user = await prisma.user.upsert({
-    where: { email: 'assis@nexum.com.br' },
-    update: {
-      nome: 'Felipe Assis',
-      email: 'assis@nexum.com.br',
-      slug: 'assis-0226',
-      avatarUrl: 'https://hexag.online/wp-content/uploads/2026/01/Felipe-Assis.png',
-      dataNascimento: new Date('1990-12-28'),
-      passwordHash,
-      role: 'PROFESSOR',
-    },
-    create: {
-      nome: 'Felipe Assis',
-      email: 'assis@nexum.com.br',
-      slug: 'assis-0226',
-      avatarUrl: 'https://hexag.online/wp-content/uploads/2026/01/Felipe-Assis.png',
-      dataNascimento: new Date('1990-12-28'),
-      passwordHash,
-      role: 'PROFESSOR',
-    },
+  // Seed Usuários
+  const user = await upsertUserWithAccount({
+    email: 'assis@nexum.com.br',
+    password: 'nexum2026',
+    nome: 'Felipe Assis',
+    slug: 'assis-0226',
+    avatarUrl: 'https://hexag.online/wp-content/uploads/2026/01/Felipe-Assis.png',
+    dataNascimento: new Date('1990-12-28'),
+    role: 'PROFESSOR',
   })
 
-  const professorDev = await prisma.user.upsert({
-    where: { email: 'professor_dev@nexum.com.br' },
-    update: {
-      nome: 'João Paulo Pugialli',
-      email: 'professor_dev@nexum.com.br',
-      slug: 'professor-dev-0226',
-      avatarUrl: 'https://github.com/Pugialli.png',
-      dataNascimento: new Date('1993-01-03'),
-      passwordHash: passwordAdminHash,
-      role: 'PROFESSOR',
-    },
-    create: {
-      nome: 'João Paulo Pugialli',
-      email: 'professor_dev@nexum.com.br',
-      slug: 'professor-dev-0226',
-      avatarUrl: 'https://github.com/Pugialli.png',
-      dataNascimento: new Date('1993-01-03'),
-      passwordHash: passwordAdminHash,
-      role: 'PROFESSOR',
-    },
+  const professorDev = await upsertUserWithAccount({
+    email: 'professor_dev@nexum.com.br',
+    password: 'nexum123',
+    nome: 'João Paulo Pugialli',
+    slug: 'professor-dev-0226',
+    avatarUrl: 'https://github.com/Pugialli.png',
+    dataNascimento: new Date('1993-01-03'),
+    role: 'PROFESSOR',
   })
 
-  const alunoDev = await prisma.user.upsert({
-    where: { email: 'aluno_dev@nexum.com.br' },
-    update: {
-      nome: 'Amanda Porto Padilha',
-      email: 'aluno_dev@nexum.com.br',
-      slug: 'aluno-dev-0226',
-      avatarUrl: 'https://github.com/Padilha04.png',
-      passwordHash: passwordAdminHash,
-      role: 'ALUNO',
-    },
-    create: {
-      nome: 'Amanda Porto Padilha',
-      email: 'aluno_dev@nexum.com.br',
-      slug: 'aluno-dev-0226',
-      avatarUrl: 'https://github.com/Padilha04.png',
-      passwordHash: passwordAdminHash,
-      role: 'ALUNO',
-    },
+  const alunoDev = await upsertUserWithAccount({
+    email: 'aluno_dev@nexum.com.br',
+    password: 'nexum123',
+    nome: 'Amanda Porto Padilha',
+    slug: 'aluno-dev-0226',
+    avatarUrl: 'https://github.com/Padilha04.png',
+    role: 'ALUNO',
   })
 
   // Seed Prova 2024.1

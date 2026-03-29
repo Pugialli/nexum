@@ -1,6 +1,6 @@
+import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { createSlug } from '@/utils/create-slug'
-import bcrypt from 'bcryptjs'
 
 export interface CreateAlunoProps {
   nome: string
@@ -14,27 +14,30 @@ export async function createAluno({
   slugProfessor,
 }: CreateAlunoProps) {
   const slug = createSlug(email)
-  const password = 'nexum123'
-
-  const passwordHash = await bcrypt.hash(password, 10)
 
   const professor = await prisma.user.findUnique({
-    where: {
-      slug: slugProfessor,
-    }
+    where: { slug: slugProfessor },
   })
 
-  if(!professor) {
+  if (!professor) {
     throw new Error('Professor not found')
   }
 
-  return await prisma.user.create({
-    data: {
-      nome,
+  const result = await auth.api.signUpEmail({
+    body: {
       email,
+      password: 'nexum123',
+      name: nome,
+      nome,
       slug,
-      passwordHash,
       idProfessor: professor.id,
+      role: 'ALUNO',
     },
   })
+
+  if (!result.user) {
+    throw new Error('Erro ao criar aluno')
+  }
+
+  return result.user
 }

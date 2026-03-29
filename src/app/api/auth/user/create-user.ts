@@ -1,6 +1,5 @@
-import { prisma } from '@/lib/prisma'
+import { auth } from '@/auth'
 import { createSlug } from '@/utils/create-slug'
-import bcrypt from 'bcryptjs'
 
 export interface CreateUserProps {
   nome: string
@@ -16,14 +15,21 @@ export async function createUser({
   password,
 }: CreateUserProps) {
   const slug = createSlug(email)
-  const passwordHash = await bcrypt.hash(password, 10)
 
-  return await prisma.user.create({
-    data: {
-      nome,
+  const result = await auth.api.signUpEmail({
+    body: {
       email,
+      password,
+      name: nome,
+      nome,
       slug,
-      passwordHash,
-      dataNascimento,},
+      dataNascimento: new Date(dataNascimento),
+    },
   })
+
+  if (!result.user) {
+    throw new Error('Erro ao criar usuário')
+  }
+
+  return result.user
 }
