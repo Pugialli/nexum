@@ -1,8 +1,10 @@
-import { loggedUser } from "@/auth/auth"
-import { HeaderClient } from "./header-client"
+import type { GetProfileResponse } from '@/app/api/auth/profile/[id]/get-profile'
+import { HeaderClient } from './header-client'
 
-export async function Header() {
-  const user = await loggedUser()
+interface HeaderProps {
+  user: GetProfileResponse | null
+}
 
+export function Header({ user }: HeaderProps) {
   return <HeaderClient user={user} />
 }

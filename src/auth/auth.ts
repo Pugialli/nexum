@@ -7,9 +7,7 @@ import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 
 async function getSession() {
-  const h = await headers()
-  console.log('COOKIES:', h.get('cookie'))
-  return auth.api.getSession({ headers: h })
+  return auth.api.getSession({ headers: await headers() })
 }
 
 export async function isAuthenticated() {

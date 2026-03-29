@@ -4,9 +4,7 @@ import type { Role } from '@/generated'
 import { headers } from 'next/headers'
 
 export async function getProfile(): Promise<GetProfileResponse | null> {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  })
+  const session = await auth.api.getSession({ headers: await headers() })
 
   if (!session) return null
 

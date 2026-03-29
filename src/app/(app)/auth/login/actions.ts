@@ -44,7 +44,8 @@ export async function signInWithEmailAndPassword(data: FormData): Promise<{
     const [nameValue, ...attrs] = parts
     const eqIndex = nameValue.indexOf('=')
     const name = nameValue.substring(0, eqIndex)
-    const value = decodeURIComponent(nameValue.substring(eqIndex + 1))
+    // Não decodifica — passa o valor raw para o Next.js não double-encode
+    const value = nameValue.substring(eqIndex + 1)
 
     const maxAge = attrs.find((a) => a.toLowerCase().startsWith('max-age'))?.split('=')[1]
     const path = attrs.find((a) => a.toLowerCase().startsWith('path'))?.split('=')[1]

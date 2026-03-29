@@ -2,22 +2,43 @@
 
 import { AlertTriangle, Loader2, Lock, Mail } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
+import { authClient } from '@/auth/client'
 import { FormInput } from '@/components/form-input'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import { useFormState } from '@/hooks/use-form-state'
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { signInWithEmailAndPassword } from './actions'
 
 export function SignInForm() {
   const router = useRouter()
+  const [isPending, setIsPending] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const [{ success, message, errors }, handleSubmit, isPending] = useFormState(
-    signInWithEmailAndPassword,
-    () => router.push('/'),
-  )
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setIsPending(true)
+    setError(null)
+
+    const formData = new FormData(e.currentTarget)
+    const email = formData.get('email')?.toString() ?? ''
+    const password = formData.get('password')?.toString() ?? ''
+
+    const { error: signInError } = await authClient.signIn.email({
+      email,
+      password,
+    })
+
+    setIsPending(false)
+
+    if (signInError) {
+      setError('Email ou senha incorretos.')
+      return
+    }
+
+    router.push('/')
+    router.refresh()
+  }
 
   return (
     <form onSubmit={handleSubmit}>
@@ -27,12 +48,12 @@ export function SignInForm() {
           <CardDescription>
             Digite seu email e senha para acessar o Nexum Academy.
           </CardDescription>
-          {success === false && message && (
+          {error && (
             <Alert variant="destructive">
               <AlertTriangle className="size-4" />
               <AlertTitle>Falha ao logar!</AlertTitle>
               <AlertDescription>
-                <p>{message}</p>
+                <p>{error}</p>
               </AlertDescription>
             </Alert>
           )}
@@ -40,7 +61,7 @@ export function SignInForm() {
         <CardContent className="grid gap-4">
           <FormInput
             label="E-mail"
-            errors={errors}
+            errors={{}}
             icon={Mail}
             name="email"
             id="email"
@@ -48,7 +69,7 @@ export function SignInForm() {
           />
           <FormInput
             label="Senha"
-            errors={errors}
+            errors={{}}
             icon={Lock}
             name="password"
             id="password"

@@ -25,6 +25,16 @@ Plataforma para professores acompanharem o progresso de alunos nos estudos para 
 
 ## Changelog
 
+### 0.3.2
+- Login migrado para `authClient.signIn.email` no client-side — cookie setado diretamente pelo browser sem passar pelo Next.js
+- Header atualizado para refletir estado correto após login/logout via `router.refresh()`
+- `signOut` remove redirect — `router.refresh()` no client cuida do redirecionamento via middleware
+- Tabs do header ocultadas quando não há usuário logado
+- `Header` simplificado para receber `user` como prop em vez de buscar sessão internamente
+- Correção de aspect ratio da logo no header (`height: auto`)
+- Query de provas disponíveis otimizada: 3 queries → 1 query com filtro aninhado no Prisma
+- Removida pendência de fontes 404
+
 ### 0.3.1
 - Correção do fluxo de autenticação com Better Auth
 - Login migrado para fetch direto ao endpoint do Better Auth com repasse manual de cookie
@@ -33,7 +43,6 @@ Plataforma para professores acompanharem o progresso de alunos nos estudos para 
 - `create-aluno` e `create-user` migrados para `auth.api.signUpEmail`
 - Removidas rotas legadas: `signin-request`, `sign-out`, `api-client-server`
 - Removido `crypto.ts` (token criptografado não é mais usado)
-- `sign-in-form` mantido com `useFormState` — login via Server Action com fetch interno
 - Middleware corrigido para usar `request.headers` em vez de `next/headers`
 - `auth/actions.ts` corrigido para usar `auth.api.signOut` do Better Auth
 - Dashboard adicionado ao status de desenvolvimento (frontend em progresso)

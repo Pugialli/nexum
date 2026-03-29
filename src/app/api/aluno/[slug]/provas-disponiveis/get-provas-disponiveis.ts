@@ -8,9 +8,18 @@ export async function getProvasDisponiveis(alunoSlug: string) {
     throw new Error('Aluno não encontrado')
   }
 
-  const alunoId = aluno.id
-
-  const todasProvas = await prisma.prova.findMany({
+  const provasDisponiveis = await prisma.prova.findMany({
+    where: {
+      questoes: {
+        none: {
+          respostas: {
+            some: {
+              idAluno: aluno.id,
+            },
+          },
+        },
+      },
+    },
     select: {
       id: true,
       ano: true,
@@ -19,30 +28,6 @@ export async function getProvasDisponiveis(alunoSlug: string) {
       ano: 'desc',
     },
   })
-
-  const provasRespondidas = await prisma.resposta.findMany({
-    where: {
-      idAluno: alunoId,
-    },
-    select: {
-      questao: {
-        select: {
-          idProva: true,
-        },
-      },
-    },
-    distinct: ['idQuestao'],
-  })
-
-  const idsProvasRespondidas = new Set(
-    provasRespondidas
-      .map((r) => r.questao.idProva)
-      .filter((id): id is string => id !== null)
-  )
-
-  const provasDisponiveis = todasProvas.filter(
-    (prova) => !idsProvasRespondidas.has(prova.id)
-  )
 
   return provasDisponiveis
 }

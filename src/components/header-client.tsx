@@ -7,7 +7,7 @@ import { getRingColor } from '@/utils/ring-color'
 import { PlusIcon } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { AlunoTabs } from './aluno-tabs'
 import { ProfessorTabs } from './professor-tabs'
@@ -21,12 +21,15 @@ interface HeaderClientProps {
 export function HeaderClient({ user }: HeaderClientProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const pathname = usePathname()
+  const router = useRouter()
 
   const role = user?.role || ''
   const isDashboard = pathname === '/aluno/dashboard'
 
   async function handleLogout() {
+    setIsDropdownOpen(false)
     await signOut()
+    router.refresh()
   }
 
   return (
@@ -38,13 +41,12 @@ export function HeaderClient({ user }: HeaderClientProps) {
             alt="Nexum Logo"
             width={90}
             height={45}
+            style={{ height: 'auto' }}
           />
         </Link>
 
-        {user && user.role === 'PROFESSOR' ? (
-          <ProfessorTabs />
-        ) : (
-          <AlunoTabs />
+        {user && (
+          user.role === 'PROFESSOR' ? <ProfessorTabs /> : <AlunoTabs />
         )}
       </div>
 
