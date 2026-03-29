@@ -12,6 +12,17 @@ interface UpdateAlunoRequest {
 
 type UpdateAlunoResponse = void
 
+interface UpdateAlunoBody {
+  nome: string
+  dataNascimento: string
+  email: string
+  carreira: string | undefined
+  telefone: string | undefined
+  slug: string
+  password?: string
+  resetPassword?: boolean
+}
+
 export async function updateAluno({
   nome,
   password,
@@ -21,7 +32,7 @@ export async function updateAluno({
   telefone,
   slug,
 }: UpdateAlunoRequest): Promise<UpdateAlunoResponse> {
-  const body: any = {
+  const body: UpdateAlunoBody = {
     nome,
     dataNascimento,
     email,

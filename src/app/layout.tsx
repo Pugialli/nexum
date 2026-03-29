@@ -2,10 +2,9 @@ import { Providers } from "@/components/providerts";
 import { getProfile } from "@/http/get-profile";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
-import { cookies } from "next/headers";
 import "./globals.css";
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
+const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,16 +26,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const token = (await cookies()).get('nexum-token')?.value;
-  let user = null;
-
-  if (token) {
-    try {
-      user = await getProfile(token);
-    } catch (err) {
-      // User will be null if token is invalid
-    }
-  }
+  const user = await getProfile()
 
   return (
     <html lang="en" className={inter.variable}>

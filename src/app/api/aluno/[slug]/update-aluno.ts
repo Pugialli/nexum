@@ -11,6 +11,15 @@ export interface UpdateAlunoProps {
   resetPassword?: boolean
 }
 
+interface UpdateAlunoData {
+  nome: string
+  dataNascimento: Date
+  telefone?: string
+  carreiraValue: string
+  passwordHash?: string
+  resetPassword?: boolean
+}
+
 export async function updateAluno({
   nome,
   email,
@@ -20,28 +29,23 @@ export async function updateAluno({
   carreira,
   resetPassword,
 }: UpdateAlunoProps) {
-  const data: any = {
+  const data: UpdateAlunoData = {
     nome,
     dataNascimento: new Date(dataNascimento),
     telefone,
     carreiraValue: carreira,
   }
 
-  // Só atualiza a senha se foi fornecida
   if (password) {
-    const passwordHash = await bcrypt.hash(password, 10)
-    data.passwordHash = passwordHash
+    data.passwordHash = await bcrypt.hash(password, 10)
   }
 
-  // Atualiza o resetPassword se foi fornecido
   if (resetPassword !== undefined) {
     data.resetPassword = resetPassword
   }
 
   return await prisma.user.update({
-    where: {
-      email,
-    },
+    where: { email },
     data,
   })
 }

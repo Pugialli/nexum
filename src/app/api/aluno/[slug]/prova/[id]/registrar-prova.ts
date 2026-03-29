@@ -23,6 +23,10 @@ export async function registrarProva({
   respostas,
 }: RegistrarProvaProps): Promise<RegistrarProvaResponse> {
   const aluno = await getAlunoSlug(alunoSlug)
+
+  if(aluno === null) {
+    throw new Error('Aluno não encontrado')
+  }
   const alunoId = aluno.id
 
   // Busca todas as questões da prova com gabaritos
@@ -36,11 +40,6 @@ export async function registrarProva({
       gabarito: true,
     },
   })
-
-  // Cria um mapa de número -> questão completa
-  const questaoMap = new Map(
-    questoes.map((q) => [q.numero, q])
-  )
 
   // Cria um mapa das respostas enviadas (número -> resposta)
   const respostasMap = new Map(

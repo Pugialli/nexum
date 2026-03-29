@@ -1,23 +1,17 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "debian-openssl-1.1.x", "debian-openssl-3.0.x"]
+  provider = "prisma-client"
+  output   = "./generated"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model User {
   id             String    @id @default(uuid())
   nome           String
   email          String    @unique
+  emailVerified  Boolean   @default(false) @map("email_verified")
   slug           String    @unique
   dataNascimento DateTime? @map("data_nascimento")
   idProfessor    String?   @map("id_professor")
@@ -25,59 +19,45 @@ model User {
   resetPassword  Boolean   @default(false) @map("reset_password")
   avatarUrl      String?   @map("avatar_url")
   role           Role      @default(ALUNO)
-
-  alunoDesde    DateTime @default(now()) @map("aluno_desde")
-  telefone      String?
-  carreiraValue String?  @map("carreira_value")
+  alunoDesde     DateTime  @default(now()) @map("aluno_desde")
+  telefone       String?
+  carreiraValue  String?   @map("carreira_value")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
 
   professor User?           @relation("ProfessorAluno", fields: [idProfessor], references: [id])
   alunos    User[]          @relation("ProfessorAluno")
-  Carreira  DomainCarreira? @relation(fields: [carreiraValue], references: [value])
-  accounts  Account[]
+  carreira  DomainCarreira? @relation(fields: [carreiraValue], references: [value])
   sessions  Session[]
   respostas Resposta[]
 
   @@map("users")
 }
 
-model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
-  @@map("accounts")
-}
-
 model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("sessions")
 }
 
-model VerificationToken {
+model Verification {
+  id         String   @id @default(cuid())
   identifier String
-  token      String   @unique
-  expires    DateTime
+  value      String
+  expiresAt  DateTime @map("expires_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
 
-  @@unique([identifier, token])
-  @@map("verification_tokens")
+  @@map("verifications")
 }
 
 enum Role {
@@ -89,6 +69,13 @@ enum Role {
 model Prova {
   id          String   @id @default(uuid())
   ano         String
+  notaMinima  Int      @map("nota_minima")
+  notaMaxima  Int      @map("nota_maxima")
+  peso1       Int      @map("peso_1")
+  peso2       Int      @map("peso_2")
+  peso3       Int      @map("peso_3")
+  peso4       Int      @map("peso_4")
+  statusProva Boolean  @default(false) @map("status_prova")
   dataCriacao DateTime @default(now()) @map("data_criacao")
 
   questoes Questao[]

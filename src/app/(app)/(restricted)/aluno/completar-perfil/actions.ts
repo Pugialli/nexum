@@ -2,12 +2,11 @@
 
 import { HTTPError } from 'ky'
 
-import { loggedUser } from '@/auth/auth'
 import { updateAluno } from '@/http/update-aluno'
 import { completeProfileSchema } from '@/lib/validators/aluno'
 
 export async function updateAlunoAction(data: FormData) {
-  const user = await loggedUser()
+  // const user = await loggedUser()
 
   const formData = Object.fromEntries(data)
   

@@ -25,6 +25,12 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@/generated": [
+        "./prisma/generated/client"
+      ],
+      "@/enums": [
+        "./prisma/generated/enums"
       ]
     }
   },

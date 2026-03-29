@@ -12,12 +12,6 @@ import { useState } from 'react'
 import { AlunoTabs } from './aluno-tabs'
 import { ProfessorTabs } from './professor-tabs'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
-import Image from 'next/image'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { AlunoTabs } from './aluno-tabs'
-import { ProfessorTabs } from './professor-tabs'
-import { ProfileButton } from './profile-button'
 import { Button } from './ui/button'
 
 interface HeaderClientProps {
@@ -30,11 +24,10 @@ export function HeaderClient({ user }: HeaderClientProps) {
 
   const role = user?.role || ''
   const isDashboard = pathname === '/aluno/dashboard'
-  const pathname = usePathname()
 
-  //retirar na versão final, isso é só pra renderizar as tabs corretas enquanto o sistema de autenticação não está ativo
-  const tempRole = pathname.split('/')[1]
-
+  async function handleLogout() {
+    await signOut()
+  }
 
   return (
     <header className="w-auto p-4 border-b flex items-center justify-between">
@@ -109,32 +102,8 @@ export function HeaderClient({ user }: HeaderClientProps) {
             className="bg-orange-400 text-white px-6 py-2 rounded-lg text-sm font-semibold hover:bg-orange-500 transition-colors"
           >
             Login
-    <header className="w-full border-b">
-      <div className="flex items-center justify-between p-4">
-        <div className="flex items-center gap-8">
-          <Link href="/" className="flex items-center shrink-0">
-            <Image
-              src="/images/horizontal_gray_orange.svg"
-              alt="Nexum Logo"
-              width={90}
-              height={45}
-            />
           </Link>
-
-          {tempRole === 'professor' ? <ProfessorTabs /> : <AlunoTabs />}
-        </div>
-
-        <div className="flex items-center shrink-0">
-          {user ? (
-            <ProfileButton user={user} />
-          ) : (
-            <Button size="xl" asChild>
-              <Link href="/auth/login">
-                Login
-              </Link>
-            </Button>
-          )}
-        </div>
+        )}
       </div>
     </header>
   )

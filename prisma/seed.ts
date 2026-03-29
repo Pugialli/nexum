@@ -1,7 +1,13 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@/generated'
+import { PrismaPg } from '@prisma/adapter-pg'
 import { hash } from 'bcryptjs'
+import 'dotenv/config'
 
-const prisma = new PrismaClient()
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL!,
+})
+
+const prisma = new PrismaClient({ adapter })
 
 async function main() {
   const passwordHash = await hash('nexum2026', 10)
@@ -34,18 +40,18 @@ async function main() {
     // Análise Combinatória e Probabilidade (AC)
     { value: 'AC-01', label: 'Análise Combinatória' },
     { value: 'AC-02', label: 'Probabilidade' },
-    
+
     // Geometria (GE)
     { value: 'GE-01', label: 'Áreas de Figuras Planas' },
     { value: 'GE-02', label: 'Cilindros' },
     { value: 'GE-03', label: 'Circunferência e Círculo' },
     { value: 'GE-04', label: 'Relações Métricas no Triângulo Retângulo' },
     { value: 'GE-05', label: 'Visão Espacial' },
-    
+
     // Álgebra (AL)
     { value: 'AL-01', label: 'Conjuntos Numéricos' },
     { value: 'AL-02', label: 'Sistemas Lineares' },
-    
+
     // Funções (FN)
     { value: 'FN-01', label: 'Função Afim' },
     { value: 'FN-02', label: 'Função Exponencial' },
@@ -53,11 +59,11 @@ async function main() {
     { value: 'FN-04', label: 'Função Quadrática' },
     { value: 'FN-05', label: 'Função Trigonométrica' },
     { value: 'FN-06', label: 'Gráficos' },
-    
+
     // Estatística (ES)
     { value: 'ES-01', label: 'Estatística' },
     { value: 'ES-02', label: 'Média Aritmética' },
-    
+
     // Matemática Aplicada (MA)
     { value: 'MA-01', label: 'Escala' },
     { value: 'MA-02', label: 'Matemática Financeira' },
@@ -74,38 +80,38 @@ async function main() {
     { value: 3, descricao: 'Resolver situação-problema envolvendo conhecimentos numéricos.' },
     { value: 4, descricao: 'Avaliar a razoabilidade de um resultado numérico na construção de argumentos sobre afirmações quantitativas.' },
     { value: 5, descricao: 'Avaliar propostas de intervenção na realidade utilizando conhecimentos numéricos.' },
-    
+
     // Competência 2
     { value: 6, descricao: 'Interpretar a localização e a movimentação de pessoas/objetos no espaço tridimensional e sua representação no espaço bidimensional.' },
     { value: 7, descricao: 'Identificar características de figuras planas ou espaciais.' },
     { value: 8, descricao: 'Resolver situação-problema que envolva conhecimentos geométricos de espaço e forma.' },
     { value: 9, descricao: 'Utilizar conhecimentos geométricos de espaço e forma na seleção de argumentos propostos como solução de problemas do cotidiano.' },
-    
+
     // Competência 3
     { value: 10, descricao: 'Identificar relações entre grandezas e unidades de medida.' },
     { value: 11, descricao: 'Utilizar a noção de escalas na leitura de representação de situação do cotidiano.' },
     { value: 12, descricao: 'Resolver situação-problema que envolva medidas de grandezas.' },
     { value: 13, descricao: 'Avaliar o resultado de uma medição na construção de um argumento consistente.' },
     { value: 14, descricao: 'Avaliar proposta de intervenção na realidade utilizando conhecimentos geométricos relacionados a grandezas e medidas.' },
-    
+
     // Competência 4
     { value: 15, descricao: 'Identificar a relação de dependência entre grandezas.' },
     { value: 16, descricao: 'Resolver situação-problema envolvendo a variação de grandezas, direta ou inversamente proporcionais.' },
     { value: 17, descricao: 'Analisar informações envolvendo a variação de grandezas como recurso para a construção de argumentação.' },
     { value: 18, descricao: 'Avaliar propostas de intervenção na realidade envolvendo variação de grandezas.' },
-    
+
     // Competência 5
     { value: 19, descricao: 'Identificar representações algébricas que expressem a relação entre grandezas.' },
     { value: 20, descricao: 'Interpretar gráfico cartesiano que represente relações entre grandezas.' },
     { value: 21, descricao: 'Resolver situação-problema cuja modelagem envolva conhecimentos algébricos.' },
     { value: 22, descricao: 'Utilizar conhecimentos algébricos/geométricos como recurso para a construção de argumentação.' },
     { value: 23, descricao: 'Avaliar propostas de intervenção na realidade utilizando conhecimentos algébricos.' },
-    
+
     // Competência 6
     { value: 24, descricao: 'Utilizar informações expressas em gráficos ou tabelas para fazer inferências.' },
     { value: 25, descricao: 'Resolver problema com dados apresentados em tabelas ou gráficos.' },
     { value: 26, descricao: 'Analisar informações expressas em gráficos ou tabelas como recurso para a construção de argumentos.' },
-    
+
     // Competência 7
     { value: 27, descricao: 'Calcular medidas de tendência central ou de dispersão de um conjunto de dados expressos em uma tabela de frequências de dados agrupados (não em classes) ou em gráficos.' },
     { value: 28, descricao: 'Resolver situação-problema que envolva conhecimentos de estatística e probabilidade.' },
@@ -113,7 +119,6 @@ async function main() {
     { value: 30, descricao: 'Avaliar propostas de intervenção na realidade utilizando conhecimentos de estatística e probabilidade.' },
   ]
 
-  // Mapeamento de assuntos (label -> value)
   const assuntoMap: Record<string, string> = {
     'Função Afim': 'FN-01',
     'Estatística': 'ES-01',
@@ -192,13 +197,8 @@ async function main() {
   for (const carreira of carreiras) {
     await prisma.domainCarreira.upsert({
       where: { value: carreira.value },
-      update: {
-        label: carreira.label,
-      },
-      create: {
-        label: carreira.label,
-        value: carreira.value,
-      },
+      update: { label: carreira.label },
+      create: { label: carreira.label, value: carreira.value },
     })
   }
 
@@ -206,13 +206,8 @@ async function main() {
   for (const assunto of assuntos) {
     await prisma.domainAssuntos.upsert({
       where: { value: assunto.value },
-      update: {
-        label: assunto.label,
-      },
-      create: {
-        label: assunto.label,
-        value: assunto.value,
-      },
+      update: { label: assunto.label },
+      create: { label: assunto.label, value: assunto.value },
     })
   }
 
@@ -220,13 +215,8 @@ async function main() {
   for (const habilidade of habilidades) {
     await prisma.habilidade.upsert({
       where: { value: habilidade.value },
-      update: {
-        descricao: habilidade.descricao,
-      },
-      create: {
-        value: habilidade.value,
-        descricao: habilidade.descricao,
-      },
+      update: { descricao: habilidade.descricao },
+      create: { value: habilidade.value, descricao: habilidade.descricao },
     })
   }
 
@@ -273,7 +263,7 @@ async function main() {
       role: 'PROFESSOR',
     },
   })
-  
+
   const alunoDev = await prisma.user.upsert({
     where: { email: 'aluno_dev@nexum.com.br' },
     update: {
@@ -299,10 +289,22 @@ async function main() {
     where: { id: 'prova-2024-1' },
     update: {
       ano: '2024.1',
+      notaMinima: 150,
+      notaMaxima: 300,
+      peso1: 1,
+      peso2: 2,
+      peso3: 3,
+      peso4: 4,
     },
     create: {
       id: 'prova-2024-1',
       ano: '2024.1',
+      notaMinima: 150,
+      notaMaxima: 300,
+      peso1: 1,
+      peso2: 2,
+      peso3: 3,
+      peso4: 4,
     },
   })
 

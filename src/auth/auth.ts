@@ -1,37 +1,49 @@
-import { cookies } from 'next/headers'
+'use server'
+
+import type { GetProfileResponse } from '@/app/api/auth/profile/[id]/get-profile'
+import { auth } from '@/auth'
+import type { Role } from '@/generated'
+import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 
-import { getProfile } from '@/http/get-profile'
+async function getSession() {
+  return auth.api.getSession({ headers: await headers() })
+}
 
 export async function isAuthenticated() {
-  return !!(await cookies()).get('nexum-token')?.value
+  const session = await getSession()
+  return !!session
 }
 
 export async function logUserOut() {
-  ; (await cookies()).delete('nexum-token')
+  await auth.api.signOut({ headers: await headers() })
 }
 
-export async function loggedUser() {
-  const token = (await cookies()).get('nexum-token')?.value
+export async function loggedUser(): Promise<GetProfileResponse | null> {
+  const session = await getSession()
+  if (!session) return null
 
-  if (!token) return null
-
-  return await getProfile(token)
+  return {
+    nome: session.user.nome,
+    slug: session.user.slug,
+    email: session.user.email,
+    avatarUrl: session.user.avatarUrl ?? null,
+    role: session.user.role as Role,
+  }
 }
 
-export async function auth() {
-  const token = (await cookies()).get('nexum-token')?.value
+export async function requireAuth(): Promise<GetProfileResponse> {
+  const session = await getSession()
 
-  if (!token) {
+  if (!session) {
     redirect('/auth/login')
   }
 
-  try {
-    const user = await getProfile(token)
-
-    return user
-  } catch (err) {
-    console.log(err)
-    redirect('/api/auth/sign-out')
+  return {
+    nome: session.user.nome,
+    slug: session.user.slug,
+    email: session.user.email,
+    avatarUrl: session.user.avatarUrl ?? null,
+    role: session.user.role as Role,
   }
 }

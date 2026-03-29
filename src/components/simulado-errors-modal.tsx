@@ -1,5 +1,6 @@
 'use client'
 
+import { Badge } from '@/components/ui/badge'
 import {
   Dialog,
   DialogContent,
@@ -15,7 +16,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Badge } from '@/components/ui/badge'
 import {
   Tooltip,
   TooltipContent,
@@ -88,7 +88,7 @@ export function SimuladoErrorsModal({
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent bg-muted/50">
-                <TableHead className="w-[100px] font-bold text-foreground">Questão</TableHead>
+                <TableHead className="w-25 font-bold text-foreground">Questão</TableHead>
                 <TableHead className="font-bold text-foreground text-center">Dificuldade</TableHead>
                 <TableHead className="font-bold text-foreground text-center">Habilidade</TableHead>
                 <TableHead className="font-bold text-foreground">Assunto</TableHead>
@@ -119,7 +119,7 @@ export function SimuladoErrorsModal({
                         </span>
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p className="max-w-[200px] text-center">
+                        <p className="max-w-50 text-center">
                           {getSkillDescription(error.skill)}
                         </p>
                       </TooltipContent>

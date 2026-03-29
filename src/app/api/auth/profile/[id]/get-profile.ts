@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server'
 
+import type { Role } from '@/generated'
 import { prisma } from '@/lib/prisma'
-import type { Role } from '@prisma/client'
 
 export interface GetProfileResponse {
   nome: string
   slug: string
   email: string
-  avatarUrl: string | null
+  avatarUrl: string | null | undefined
   role: Role
 }
 

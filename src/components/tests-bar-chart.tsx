@@ -1,7 +1,7 @@
 "use client"
 
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
 import { useState } from "react"
+import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
 
 import {
   Card,
@@ -23,9 +23,26 @@ const chartConfig = {
   },
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+interface ChartDataItem {
+  test: string
+  score: number
+  date: string
+  gcp: number
+}
+
+interface TooltipPayloadItem {
+  payload: ChartDataItem
+}
+
+interface CustomTooltipProps {
+  active?: boolean
+  payload?: TooltipPayloadItem[]
+  label?: string
+}
+
+const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
-    const data = payload[0].payload;
+    const data = payload[0].payload
     return (
       <div className="rounded-lg border bg-background p-3 text-sm shadow-sm">
         <p className="mb-2 font-medium">Simulado {label}</p>
@@ -44,23 +61,22 @@ const CustomTooltip = ({ active, payload, label }: any) => {
           </p>
         </div>
       </div>
-    );
+    )
   }
-  return null;
-};
+  return null
+}
 
-// Mock data for errors with expanded difficulty levels
 const generateMockErrors = (count: number): SimuladoError[] => {
-  const levels: SimuladoError['difficulty'][] = ['Muito fácil', 'Fácil', 'Médio', 'Difícil', 'Muito difícil'];
-  return Array.from({ length: count }, (_, i) => ({
+  const levels: SimuladoError['difficulty'][] = ['Muito fácil', 'Fácil', 'Médio', 'Difícil', 'Muito difícil']
+  return Array.from({ length: count }, () => ({
     number: Math.floor(Math.random() * 45) + 1,
     difficulty: levels[Math.floor(Math.random() * levels.length)],
     skill: `H${Math.floor(Math.random() * 30) + 1}`,
     subject: ['Matemática', 'Física', 'Química', 'Biologia'][Math.floor(Math.random() * 4)],
-  }));
+  }))
 }
 
-const mockErrors: { [key: string]: SimuladoError[] } = {
+const mockErrors: Record<string, SimuladoError[]> = {
   "1": generateMockErrors(13),
   "2": generateMockErrors(17),
   "3": generateMockErrors(4),
@@ -73,12 +89,12 @@ const mockErrors: { [key: string]: SimuladoError[] } = {
   "10": generateMockErrors(7),
 }
 
-export function TestsBarChart({ data }: { data: any[] }) {
+export function TestsBarChart({ data }: { data: ChartDataItem[] }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedTest, setSelectedTest] = useState<{ test: string; errors: SimuladoError[] } | null>(null)
 
-  const handleBarClick = (data: any) => {
-    const testNumber = data.test
+  const handleBarClick = (item: ChartDataItem) => {
+    const testNumber = item.test
     const errors = mockErrors[testNumber] || []
     setSelectedTest({ test: testNumber, errors })
     setIsModalOpen(true)

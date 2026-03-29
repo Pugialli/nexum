@@ -1,7 +1,7 @@
 import type { GetAlunoResponse } from '@/http/get-aluno'
 import { prisma } from '@/lib/prisma'
 
-export async function getAlunoSlug(slug: string): Promise<GetAlunoResponse> {
+export async function getAlunoSlug(slug: string): Promise<GetAlunoResponse | null> {
   const aluno = await prisma.user.findUnique({
     where: {
       slug,
@@ -23,7 +23,7 @@ export async function getAlunoSlug(slug: string): Promise<GetAlunoResponse> {
   })
 
   if (!aluno) {
-    return null as any
+    return null
   }
 
   return {

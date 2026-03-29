@@ -1,53 +1,40 @@
 'use server'
 
-import { HTTPError } from 'ky'
-import { cookies } from 'next/headers'
-import { z } from 'zod'
+import { auth } from '@/auth'
+import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
 
-import { signInWithPassword } from '@/http/sign-in-with-password'
-import { signInSchema } from '@/lib/validators/auth'
+export async function signOut() {
+  await auth.api.signOut({
+    headers: await headers(),
+  })
+  redirect('/auth/login')
+}
 
 export async function signInWithEmailAndPassword(data: FormData) {
-  const result = signInSchema.safeParse(Object.fromEntries(data))
+  const email = data.get('email')?.toString()
+  const password = data.get('password')?.toString()
 
-  if (!result.success) {
-    const errors = z.flattenError(result.error).fieldErrors
-    return { success: false, message: null, errors }
-  }
-
-  const { email, password } = result.data
-
-  try {
-    const { token } = await signInWithPassword({
-      email,
-      password,
-    })
-
-    ;(await cookies()).set('nexum-token', token, {
-      path: '/',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-    })
-  } catch (err) {
-    if (err instanceof HTTPError) {
-      const { statusText, status } = err.response
-      console.error('Erro HTTP:', status, statusText) // <- Debug
-      
-      try {
-        const errorBody = await err.response.json()
-        console.error('Body do erro:', errorBody) // <- Debug
-        return { success: false, message: errorBody.message || statusText, errors: null }
-      } catch {
-        return { success: false, message: statusText, errors: null }
-      }
-    }
-
-    console.error('Erro desconhecido:', err) // <- Debug
+  if (!email || !password) {
     return {
       success: false,
-      message: 'Erro inesperado, tente novamente em alguns minutos',
-      errors: null,
+      message: 'Email e senha são obrigatórios.',
+      errors: {},
     }
   }
 
-  return { success: true, message: null, errors: null }
+  try {
+    await auth.api.signInEmail({
+      body: { email, password },
+      headers: await headers(),
+    })
+  } catch {
+    return {
+      success: false,
+      message: 'Email ou senha incorretos.',
+      errors: {},
+    }
+  }
+
+  redirect('/')
 }

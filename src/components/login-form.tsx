@@ -1,17 +1,16 @@
 "use client"
 
-import { signIn } from "next-auth/react"
-import { useState } from "react"
-
+import { authClient } from "@/auth/client"
 import { Button } from "@/components/ui/button"
 import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { useState } from "react"
 
 export function LoginForm() {
   const [email, setEmail] = useState("")
@@ -19,33 +18,22 @@ export function LoginForm() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  async function handleCredentialsLogin(e: React.FormEvent) {
+  async function handleCredentialsLogin(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault()
     setLoading(true)
     setError(null)
 
-    const result = await signIn("credentials", {
+    const { error: signInError } = await authClient.signIn.email({
       email,
       password,
-      redirect: false,
+      callbackURL: "/",
     })
 
     setLoading(false)
 
-    if (result?.error) {
+    if (signInError) {
       setError("Email ou senha inválidos")
-      return
     }
-
-    // redirecionamento manual
-    window.location.href = "/"
-  }
-
-  async function handleGoogleLogin() {
-    setLoading(true)
-    await signIn("google", {
-      callbackUrl: "/",
-    })
   }
 
   return (
@@ -88,15 +76,6 @@ export function LoginForm() {
             <Field orientation="horizontal">
               <Button type="submit" disabled={loading}>
                 {loading ? "Entrando..." : "Entrar"}
-              </Button>
-
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleGoogleLogin}
-                disabled={loading}
-              >
-                Entrar com Google
               </Button>
             </Field>
           </FieldGroup>

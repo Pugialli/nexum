@@ -1,24 +1,38 @@
-
 "use client"
 
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
-import { useState, useMemo } from "react"
 import { Plus } from "lucide-react"
+import { useState } from "react"
+import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
 
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
-  CardFooter,
 } from "@/components/ui/card"
 import {
   ChartContainer,
   ChartTooltip,
 } from "@/components/ui/chart"
-import { Button } from "@/components/ui/button"
 import { HabilidadesFullModal } from "./habilidades-full-modal"
+
+interface HabilidadeData {
+  skill: string
+  errorRate: number
+  errorCount: number
+}
+
+interface TooltipPayloadItem {
+  payload: HabilidadeData
+}
+
+interface CustomTooltipProps {
+  active?: boolean
+  payload?: TooltipPayloadItem[]
+}
 
 const skillDescriptions: Record<string, string> = {
   H1: "Reconhecer no contexto social diferentes formas de registro de números.",
@@ -36,17 +50,27 @@ const chartConfig = {
   },
 }
 
-const CustomTooltip = ({ active, payload }: any) => {
+// Gerado fora do componente para evitar re-execução impura no render
+const allSkillsData: HabilidadeData[] = Array.from({ length: 30 }, (_, i) => ({
+  skill: `H${i + 1}`,
+  errorRate: Math.floor(Math.random() * 100),
+  errorCount: Math.floor(Math.random() * 50),
+})).sort((a, b) => b.errorRate - a.errorRate)
+
+const topSkillsData = allSkillsData.slice(0, 5)
+
+const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
-    const data = payload[0].payload;
-    const skill = data.skill;
-    const description = skillDescriptions[skill] || "Descrição da habilidade no contexto do ENEM.";
-    
+    const data = payload[0].payload
+    const skill = data.skill
+    const description =
+      skillDescriptions[skill] || "Descrição da habilidade no contexto do ENEM."
+
     return (
-      <div className="rounded-lg border bg-background p-3 text-sm shadow-sm max-w-[250px]">
+      <div className="rounded-lg border bg-background p-3 text-sm shadow-sm max-w-62.5">
         <p className="mb-1 font-bold text-foreground">Habilidade {skill}</p>
         <p className="mb-3 text-xs text-muted-foreground leading-relaxed italic">
-          "{description}"
+          &ldquo;{description}&rdquo;
         </p>
         <div className="space-y-1.5 pt-1 border-t border-border">
           <p className="flex justify-between items-center gap-4">
@@ -59,25 +83,13 @@ const CustomTooltip = ({ active, payload }: any) => {
           </p>
         </div>
       </div>
-    );
+    )
   }
-  return null;
-};
+  return null
+}
 
 export function HabilidadesChart() {
   const [isModalOpen, setIsModalOpen] = useState(false)
-
-  // Generate mock data for all 30 skills
-  const allSkillsData = useMemo(() => {
-    return Array.from({ length: 30 }, (_, i) => ({
-      skill: `H${i + 1}`,
-      errorRate: Math.floor(Math.random() * 100),
-      errorCount: Math.floor(Math.random() * 50),
-    })).sort((a, b) => b.errorRate - a.errorRate)
-  }, [])
-
-  // Top 5 for the main card
-  const topSkillsData = allSkillsData.slice(0, 5)
 
   return (
     <>
@@ -94,10 +106,7 @@ export function HabilidadesChart() {
               data={topSkillsData}
               layout="vertical"
               accessibilityLayer
-              margin={{
-                left: 10,
-                right: 40,
-              }}
+              margin={{ left: 10, right: 40 }}
             >
               <CartesianGrid horizontal={false} />
               <XAxis type="number" hide />
@@ -108,20 +117,22 @@ export function HabilidadesChart() {
                 axisLine={false}
                 tickMargin={8}
               />
-              <ChartTooltip
-                cursor={false}
-                content={<CustomTooltip />}
-              />
+              <ChartTooltip cursor={false} content={<CustomTooltip />} />
               <Bar dataKey="errorRate" fill="var(--color-destructive)" radius={5}>
-                <LabelList dataKey="errorRate" position="right" offset={8} formatter={(value: number) => `${value}%`} />
+                <LabelList
+                  dataKey="errorRate"
+                  position="right"
+                  offset={8}
+                  formatter={(value: number) => `${value}%`}
+                />
               </Bar>
             </BarChart>
           </ChartContainer>
         </CardContent>
         <CardFooter className="justify-end p-2 pt-0">
-          <Button 
-            variant="default" 
-            size="icon-sm" 
+          <Button
+            variant="default"
+            size="icon-sm"
             onClick={() => setIsModalOpen(true)}
             className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-full shadow-md hover:scale-110 transition-transform duration-200"
           >
@@ -130,10 +141,10 @@ export function HabilidadesChart() {
         </CardFooter>
       </Card>
 
-      <HabilidadesFullModal 
-        isOpen={isModalOpen} 
-        onOpenChange={setIsModalOpen} 
-        data={allSkillsData} 
+      <HabilidadesFullModal
+        isOpen={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        data={allSkillsData}
       />
     </>
   )

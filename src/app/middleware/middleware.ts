@@ -1,33 +1,36 @@
-import { getToken } from 'next-auth/jwt'
+import { auth } from '@/auth'
+import { headers } from 'next/headers'
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-  const token = await getToken({ req: request })
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  })
+
   const { pathname } = request.nextUrl
 
-  if (!token) {
-    return NextResponse.redirect(new URL('/login', request.url))
+  if (!session) {
+    return NextResponse.redirect(new URL('/auth/login', request.url))
   }
 
-  const userRole = token.role
+  const userRole = session.user.role
 
-  if (pathname.startsWith('/(restricted)/aluno')) {
+  if (pathname.startsWith('/aluno')) {
     if (userRole !== 'ALUNO') {
-      return NextResponse.redirect(new URL('/(restricted)/professor', request.url));
+      return NextResponse.redirect(new URL('/professor', request.url))
     }
   }
 
-  // Proteção das rotas de PROFESSOR
-  if (pathname.startsWith('/(restricted)/professor')) {
+  if (pathname.startsWith('/professor')) {
     if (userRole !== 'PROFESSOR') {
-      return NextResponse.redirect(new URL('/(restricted)/aluno', request.url));
+      return NextResponse.redirect(new URL('/aluno', request.url))
     }
   }
 
-  return NextResponse.next();
+  return NextResponse.next()
 }
 
 export const config = {
-  matcher: ['/(restricted)/:path*'],
-};
+  matcher: ['/aluno/:path*', '/professor/:path*'],
+}

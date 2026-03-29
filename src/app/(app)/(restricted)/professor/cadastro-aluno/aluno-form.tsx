@@ -11,7 +11,7 @@ import { Field, FieldLabel } from '@/components/ui/field'
 import { createAlunoAction } from './actions'
 
 export function CreateAlunoForm() {
-  const [{ success, message, errors }, handleSubmit, isPending] =
+  const [{ success, message }, handleSubmit, isPending] =
     useFormState(createAlunoAction)
 
   return (

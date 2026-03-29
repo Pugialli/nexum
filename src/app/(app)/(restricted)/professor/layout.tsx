@@ -2,7 +2,9 @@
 
 import type { ReactNode } from 'react'
 
+import { requireAuth } from '@/auth/auth'
 import { Sheet } from '@/components/ui/sheet'
+import { redirect } from 'next/navigation'
 
 interface AdminLayoutProps {
   children: ReactNode
@@ -13,11 +15,11 @@ export default async function ProfessorLayout({
   children,
   sheet,
 }: AdminLayoutProps) {
-  // const user = await auth()
+  const user = await requireAuth()
 
-  // if (user.role !== 'PROFESSOR') {
-  //   redirect('/aluno')
-  // }
+  if (user.role !== 'PROFESSOR') {
+    redirect('/aluno')
+  }
   
   return (
     <div>

@@ -12,9 +12,9 @@ interface AdminLayoutProps {
 export default async function AdminLayout({
   children,
 }: AdminLayoutProps) {
-  // if (!(await isAuthenticated())) {
-  //   redirect('/auth/login')
-  // }
+  if (!(await isAuthenticated())) {
+    redirect('/auth/login')
+  }
 
   return (
     <div className='w-full'>

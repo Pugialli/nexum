@@ -133,6 +133,5 @@ export {
   SheetOverlay,
   SheetPortal,
   SheetTitle,
-  // eslint-disable-next-line prettier/prettier
   SheetTrigger
 }

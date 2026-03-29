@@ -14,6 +14,22 @@ import {
   ChartTooltip,
 } from "@/components/ui/chart"
 
+interface ChartDataItem {
+  test: string
+  gcp: number
+  score: number
+}
+
+interface TooltipPayloadItem {
+  payload: ChartDataItem
+}
+
+interface CustomTooltipProps {
+  active?: boolean
+  payload?: TooltipPayloadItem[]
+  label?: string
+}
+
 const chartConfig = {
   gcp: {
     label: "GCP",
@@ -21,9 +37,9 @@ const chartConfig = {
   },
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
-    const data = payload[0].payload;
+    const data = payload[0].payload
     return (
       <div className="rounded-lg border bg-background p-3 text-sm shadow-sm">
         <p className="mb-2 font-medium">Simulado {label}</p>
@@ -38,12 +54,12 @@ const CustomTooltip = ({ active, payload, label }: any) => {
           </p>
         </div>
       </div>
-    );
+    )
   }
-  return null;
-};
+  return null
+}
 
-export function GcpLineChart({ data }: { data: any[] }) {
+export function GcpLineChart({ data }: { data: ChartDataItem[] }) {
   return (
     <Card className="flex h-full w-full flex-col py-2 gap-2">
       <CardHeader className="pb-0">
@@ -57,10 +73,7 @@ export function GcpLineChart({ data }: { data: any[] }) {
           <LineChart
             data={data}
             accessibilityLayer
-            margin={{
-              left: 12,
-              right: 30,
-            }}
+            margin={{ left: 12, right: 30 }}
           >
             <CartesianGrid vertical={false} />
             <XAxis
@@ -79,7 +92,11 @@ export function GcpLineChart({ data }: { data: any[] }) {
               strokeWidth={2}
               dot={true}
             >
-              <LabelList dataKey="gcp" position="top" formatter={(value: number) => `${value}%`} />
+              <LabelList
+                dataKey="gcp"
+                position="top"
+                formatter={(value: number) => `${value}%`}
+              />
             </Line>
           </LineChart>
         </ChartContainer>
