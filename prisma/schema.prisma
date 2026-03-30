@@ -8,28 +8,21 @@ datasource db {
 }
 
 model User {
-  id             String    @id @default(uuid())
-  nome           String
-  email          String    @unique
-  emailVerified  Boolean   @default(false) @map("email_verified")
-  slug           String    @unique
-  dataNascimento DateTime? @map("data_nascimento")
-  idProfessor    String?   @map("id_professor")
-  resetPassword  Boolean   @default(false) @map("reset_password")
-  avatarUrl      String?   @map("avatar_url")
-  role           Role      @default(ALUNO)
-  alunoDesde     DateTime  @default(now()) @map("aluno_desde")
-  telefone       String?
-  carreiraValue  String?   @map("carreira_value")
-  createdAt      DateTime  @default(now()) @map("created_at")
-  updatedAt      DateTime  @updatedAt @map("updated_at")
+  id            String   @id @default(uuid())
+  nome          String
+  email         String   @unique
+  emailVerified Boolean  @default(false) @map("email_verified")
+  slug          String   @unique
+  resetPassword Boolean  @default(false) @map("reset_password")
+  avatarUrl     String?  @map("avatar_url")
+  role          Role     @default(ALUNO)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
 
-  professor User?           @relation("ProfessorAluno", fields: [idProfessor], references: [id])
-  alunos    User[]          @relation("ProfessorAluno")
-  carreira  DomainCarreira? @relation(fields: [carreiraValue], references: [value])
-  accounts  Account[]
-  sessions  Session[]
-  respostas Resposta[]
+  accounts   Account[]
+  sessions   Session[]
+  alunos     Aluno[]
+  professors Professor[]
 
   @@map("users")
 }
@@ -86,6 +79,33 @@ enum Role {
   EXALUNO
 }
 
+model Aluno {
+  idUser         String    @id @map("id_user")
+  dataNascimento DateTime? @map("data_nascimento")
+  idProfessor    String    @map("id_professor")
+  alunoDesde     DateTime  @default(now()) @map("aluno_desde")
+  telefone       String?
+  carreiraValue  String?   @map("carreira_value")
+
+  user        User            @relation(fields: [idUser], references: [id])
+  professor   Professor       @relation("ProfessorAluno", fields: [idProfessor], references: [idUser])
+  carreira    DomainCarreira? @relation(fields: [carreiraValue], references: [value])
+  provaAlunos ProvaAluno[]
+
+  @@map("alunos")
+}
+
+model Professor {
+  idUser   String  @id @map("id_user")
+  formacao String?
+  telefone String?
+
+  user   User    @relation(fields: [idUser], references: [id])
+  alunos Aluno[] @relation("ProfessorAluno")
+
+  @@map("professores")
+}
+
 model Prova {
   id          String   @id @default(uuid())
   ano         String
@@ -98,7 +118,8 @@ model Prova {
   statusProva Boolean  @default(false) @map("status_prova")
   dataCriacao DateTime @default(now()) @map("data_criacao")
 
-  questoes Questao[]
+  questoes    Questao[]
+  provaAlunos ProvaAluno[]
 
   @@map("provas")
 }
@@ -112,15 +133,43 @@ model Questao {
   assuntoValue    String  @map("assunto_value")
   idProva         String? @map("id_prova")
 
-  prova      Prova?         @relation(fields: [idProva], references: [id])
-  habilidade Habilidade     @relation(fields: [habilidadeValue], references: [value])
-  assunto    DomainAssuntos @relation(fields: [assuntoValue], references: [value])
+  prova      Prova?           @relation(fields: [idProva], references: [id])
+  habilidade DomainHabilidade @relation(fields: [habilidadeValue], references: [value])
+  assunto    DomainAssuntos   @relation(fields: [assuntoValue], references: [value])
   respostas  Resposta[]
 
   @@map("questoes")
 }
 
-model Habilidade {
+model ProvaAluno {
+  id        String   @id @default(uuid()) @map("id_prova_aluno")
+  idAluno   String   @map("id_aluno")
+  idProva   String   @map("id_prova")
+  createdAt DateTime @default(now()) @map("created_at")
+  gcp       Int
+
+  prova     Prova      @relation(fields: [idProva], references: [id])
+  aluno     Aluno      @relation(fields: [idAluno], references: [idUser])
+  respostas Resposta[]
+
+  @@unique([idAluno, idProva])
+  @@map("prova_aluno")
+}
+
+model Resposta {
+  idQuestao    String  @map("id_questao")
+  idProvaAluno String  @map("id_prova_aluno")
+  resposta     String
+  resultado    Boolean
+
+  questao    Questao    @relation(fields: [idQuestao], references: [id])
+  provaAluno ProvaAluno @relation(fields: [idProvaAluno], references: [id])
+
+  @@id([idProvaAluno, idQuestao])
+  @@map("respostas")
+}
+
+model DomainHabilidade {
   value     Int    @id
   descricao String
 
@@ -129,31 +178,19 @@ model Habilidade {
   @@map("@habilidades")
 }
 
-model Resposta {
-  idAluno   String  @map("id_aluno")
-  idQuestao String  @map("id_questao")
-  resposta  String
-  resultado Boolean
-
-  aluno   User    @relation(fields: [idAluno], references: [id])
-  questao Questao @relation(fields: [idQuestao], references: [id])
-
-  @@id([idAluno, idQuestao])
-  @@map("respostas")
-}
-
 model DomainCarreira {
   value String @id
   label String @unique
 
-  alunos User[]
+  alunos Aluno[]
 
   @@map("@carreiras")
 }
 
 model DomainAssuntos {
-  value    String    @id
-  label    String
+  value String @id
+  label String
+
   questaos Questao[]
 
   @@map("@assuntos")

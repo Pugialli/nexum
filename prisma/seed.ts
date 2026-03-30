@@ -2,6 +2,7 @@ import { PrismaClient } from '@/generated'
 import { PrismaPg } from '@prisma/adapter-pg'
 import bcrypt from 'bcryptjs'
 import 'dotenv/config'
+import { seedDadosMock } from './seed-mock'
 const { hash } = bcrypt
 
 const adapter = new PrismaPg({
@@ -16,7 +17,6 @@ async function upsertUserWithAccount(data: {
   nome: string
   slug: string
   avatarUrl: string
-  dataNascimento?: Date
   role: 'PROFESSOR' | 'ALUNO' | 'EXALUNO'
 }) {
   const passwordHash = await hash(data.password, 10)
@@ -27,7 +27,6 @@ async function upsertUserWithAccount(data: {
       nome: data.nome,
       slug: data.slug,
       avatarUrl: data.avatarUrl,
-      dataNascimento: data.dataNascimento,
       role: data.role,
     },
     create: {
@@ -35,7 +34,6 @@ async function upsertUserWithAccount(data: {
       nome: data.nome,
       slug: data.slug,
       avatarUrl: data.avatarUrl,
-      dataNascimento: data.dataNascimento,
       role: data.role,
     },
   })
@@ -62,6 +60,7 @@ async function upsertUserWithAccount(data: {
 
   return user
 }
+
 
 async function main() {
   const carreiras = [
@@ -146,6 +145,7 @@ async function main() {
     { value: 30, descricao: 'Avaliar propostas de intervenção na realidade utilizando conhecimentos de estatística e probabilidade.' },
   ]
 
+  // Mapeamento correto: label → value
   const assuntoMap: Record<string, string> = {
     'Função Afim': 'FN-01',
     'Estatística': 'ES-01',
@@ -240,7 +240,7 @@ async function main() {
 
   // Seed Habilidades
   for (const habilidade of habilidades) {
-    await prisma.habilidade.upsert({
+    await prisma.domainHabilidade.upsert({
       where: { value: habilidade.value },
       update: { descricao: habilidade.descricao },
       create: { value: habilidade.value, descricao: habilidade.descricao },
@@ -248,33 +248,54 @@ async function main() {
   }
 
   // Seed Usuários
-  const user = await upsertUserWithAccount({
+  const userAssis = await upsertUserWithAccount({
     email: 'assis@nexum.com.br',
     password: 'nexum2026',
     nome: 'Felipe Assis',
     slug: 'assis-0226',
     avatarUrl: 'https://hexag.online/wp-content/uploads/2026/01/Felipe-Assis.png',
-    dataNascimento: new Date('1990-12-28'),
     role: 'PROFESSOR',
   })
 
-  const professorDev = await upsertUserWithAccount({
+  const userProfDev = await upsertUserWithAccount({
     email: 'professor_dev@nexum.com.br',
     password: 'nexum123',
     nome: 'João Paulo Pugialli',
     slug: 'professor-dev-0226',
     avatarUrl: 'https://github.com/Pugialli.png',
-    dataNascimento: new Date('1993-01-03'),
     role: 'PROFESSOR',
   })
 
-  const alunoDev = await upsertUserWithAccount({
+  const userAlunoDev = await upsertUserWithAccount({
     email: 'aluno_dev@nexum.com.br',
     password: 'nexum123',
     nome: 'Amanda Porto Padilha',
     slug: 'aluno-dev-0226',
     avatarUrl: 'https://github.com/Padilha04.png',
     role: 'ALUNO',
+  })
+
+  // Seed Professor
+  await prisma.professor.upsert({
+    where: { idUser: userAssis.id },
+    update: {},
+    create: { idUser: userAssis.id },
+  })
+
+  await prisma.professor.upsert({
+    where: { idUser: userProfDev.id },
+    update: {},
+    create: { idUser: userProfDev.id },
+  })
+
+  // Seed Aluno (vinculado ao professor dev)
+  await prisma.aluno.upsert({
+    where: { idUser: userAlunoDev.id },
+    update: {},
+    create: {
+      idUser: userAlunoDev.id,
+      idProfessor: userProfDev.id,
+    },
   })
 
   // Seed Prova 2024.1
@@ -301,7 +322,7 @@ async function main() {
     },
   })
 
-  // Seed Questões
+  // Seed Questões 2024.1 — assuntoValue corrigido para usar o value (não o label)
   for (const questao of questoesData) {
     await prisma.questao.create({
       data: {
@@ -315,14 +336,17 @@ async function main() {
     })
   }
 
-  console.log('Carreiras criadas com sucesso:', carreiras.length)
-  console.log('Assuntos criados com sucesso:', assuntos.length)
-  console.log('Habilidades criadas com sucesso:', habilidades.length)
+  console.log('Carreiras:', carreiras.length)
+  console.log('Assuntos:', assuntos.length)
+  console.log('Habilidades:', habilidades.length)
   console.log('Prova criada:', prova2024_1.ano)
-  console.log('Questões criadas com sucesso:', questoesData.length)
-  console.log('Usuário criado:', user.email)
-  console.log('Usuário criado:', professorDev.email)
-  console.log('Usuário criado:', alunoDev.email)
+  console.log('Questões 2024.1:', questoesData.length)
+  console.log('Usuário:', userAssis.email)
+  console.log('Usuário:', userProfDev.email)
+  console.log('Usuário:', userAlunoDev.email)
+
+  // ── DADOS MOCK (comente a linha abaixo para ignorar) ──
+  await seedDadosMock(prisma, userAlunoDev.id)
 }
 
 main()

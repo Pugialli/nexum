@@ -14,7 +14,7 @@ import {
   ChartContainer,
   ChartTooltip,
 } from "@/components/ui/chart"
-import { SimuladoErrorsModal, type SimuladoError } from "./simulado-errors-modal"
+import { SimuladoErrorsModal, type SimuladoError } from "../../../../../components/simulado-errors-modal"
 
 const chartConfig = {
   score: {

@@ -1,6 +1,6 @@
-import { GcpLineChart } from "@/components/gcp-line-chart";
-import { HabilidadesChart } from "@/components/habilidades-chart";
-import { TestsBarChart } from "@/components/tests-bar-chart";
+import { GcpLineChart } from "@/app/(app)/(restricted)/aluno/dashboard/gcp-line-chart";
+import { HabilidadesChart } from "@/app/(app)/(restricted)/aluno/dashboard/habilidades-chart";
+import { TestsBarChart } from "@/app/(app)/(restricted)/aluno/dashboard/tests-bar-chart";
 
 const chartData = [
   { test: "1", score: 32, gcp: 58, date: "10/01/2024" },
