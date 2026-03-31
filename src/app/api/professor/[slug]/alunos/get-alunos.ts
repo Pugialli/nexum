@@ -2,8 +2,6 @@ import type { GetAlunosProfessor } from '@/http/get-alunos'
 import { prisma } from '@/lib/prisma'
 import { dateToString } from '@/utils/string-to-date'
 
-
-
 interface GetAlunosProps {
   slug: string
 }

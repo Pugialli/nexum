@@ -14,7 +14,7 @@ export interface GetAlunosProfessor {
   }[]
 }
 
-export async function getAlunos(slugProfessor: string): Promise<GetAlunosProfessor[]> {
+export async function getAlunos(slugProfessor: string) {
   const result = await api
     .get(`professor/${slugProfessor}/alunos`, {
       next: {
