@@ -1,6 +1,4 @@
-import { GcpLineChart } from "@/app/(app)/(restricted)/aluno/dashboard/gcp-line-chart";
-import { HabilidadesChart } from "@/app/(app)/(restricted)/aluno/dashboard/habilidades-chart";
-import { TestsBarChart } from "@/app/(app)/(restricted)/aluno/dashboard/tests-bar-chart";
+import { DashboardAluno } from "@/components/dashboard/dashboard";
 
 const chartData = [
   { test: "1", score: 32, gcp: 58, date: "10/01/2024" },
@@ -18,15 +16,7 @@ const chartData = [
 export default function Page() {
   return (
     <div className="h-screen w-full p-4 sm:p-10 pt-2 sm:pt-4 flex flex-col gap-4">
-      <div className="flex-1 min-h-0 flex flex-col gap-4">
-        <div className="min-h-0 flex-1">
-          <TestsBarChart data={chartData} />
-        </div>
-        <div className="grid min-h-0 flex-1 grid-cols-2 gap-4">
-          <GcpLineChart data={chartData} />
-          <HabilidadesChart />
-        </div>
-      </div>
+      <DashboardAluno alunoData={chartData} />
     </div>
-  );
+  )
 }

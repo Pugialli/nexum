@@ -12,18 +12,29 @@ Plataforma para professores acompanharem o progresso de alunos nos estudos para 
 
 ### Professor
 - [X] Cadastrar aluno com informações básicas
-- [F] Tabela de alunos
+- [X] Tabela de alunos
 
 ### Aluno
 - [X] Puxar a lista de provas disponíveis para realizar
 - [X] Cadastrar respostas no cartão resposta
 - [X] Completar cadastro após registro inicial
-- [F] Dashboard
+- [X] Dashboard
 
 ## Pendências
 - Reset de senha via email (estrutura pronta, envio não implementado)
 
 ## Changelog
+
+### 0.4.0
+- Tabela de alunos buscando as informações do banco
+- Dashboard do aluno funcional com dados reais (provas, GCP, habilidades defasadas)
+- Rota `/aluno/[slug]/dashboard` — aluno acessa o próprio, professor acessa qualquer aluno
+- `/aluno/dashboard` redireciona automaticamente para o dashboard do usuário logado
+- API route `GET /api/dashboard/[slug]` retornando histórico de provas, erros por prova e habilidades agregadas
+- Cálculo do GCP por dificuldade: acertos ponderados pelos pesos da prova (`peso1`–`peso5`)
+- Mock data removido dos charts; `HabilidadesChart`, `GcpLineChart` e `TestsBarChart` recebem dados como props
+- `DifficultyLabel` centralizado em `get-dashboard.ts` — conversão de `Int` do banco para label legível
+- `peso5` adicionado ao schema da `Prova` para cobrir as 5 faixas de dificuldade
 
 ### 0.3.2
 - Login migrado para `authClient.signIn.email` no client-side — cookie setado diretamente pelo browser sem passar pelo Next.js

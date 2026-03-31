@@ -100,7 +100,6 @@ export async function seedDadosMock(prisma: PrismaClient, alunoId: string) {
           ? questao.gabarito
           : gabaritoOpcoes.find((g) => g !== questao.gabarito) ?? 'A'
         return {
-          idAluno: alunoId,
           idQuestao: questao.id,
           idProvaAluno: provaAluno.id,
           resposta: respostaAluno,

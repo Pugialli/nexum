@@ -15,6 +15,7 @@ export interface RegistrarProvaResponse {
   total: number
   acertos: number
   naoRespondidas: number
+  gcp: number
 }
 
 export async function registrarProva({
@@ -24,45 +25,95 @@ export async function registrarProva({
 }: RegistrarProvaProps): Promise<RegistrarProvaResponse> {
   const aluno = await getAlunoSlug(alunoSlug)
 
-  if(aluno === null) {
+  if (aluno === null) {
     throw new Error('Aluno não encontrado')
   }
   const alunoId = aluno.id
 
-  // Busca todas as questões da prova com gabaritos
+  // Busca todas as questões da prova com gabarito e dificuldade
   const questoes = await prisma.questao.findMany({
-    where: {
-      idProva: provaId,
-    },
+    where: { idProva: provaId },
     select: {
       id: true,
       numero: true,
       gabarito: true,
+      dificuldade: true,
     },
   })
 
-  // Cria um mapa das respostas enviadas (número -> resposta)
+  // Busca os pesos e limites da prova
+  const prova = await prisma.prova.findUnique({
+    where: { id: provaId },
+    select: {
+      peso1: true,
+      peso2: true,
+      peso3: true,
+      peso4: true,
+      peso5: true,
+    },
+  })
+
+  if (!prova) {
+    throw new Error('Prova não encontrada')
+  }
+
+  const pesosPorDificuldade: Record<number, number> = {
+    1: prova.peso1,
+    2: prova.peso2,
+    3: prova.peso3,
+    4: prova.peso4,
+    5: prova.peso5,
+  }
+
+  const provaAluno = await prisma.provaAluno.create({
+    data: {
+      idAluno: alunoId,
+      idProva: provaId,
+      gcp: 0, // será atualizado abaixo
+    },
+  })
+
+  // Mapa das respostas enviadas: número da questão -> resposta
   const respostasMap = new Map(
     respostas.map((r) => [r.questaoNumero, r.resposta])
   )
 
-  // Prepara dados para inserção (TODAS as questões da prova)
+  // Prepara respostas para inserção (todas as questões da prova)
   const respostasParaInserir = questoes.map((questao) => {
     const respostaAluno = respostasMap.get(questao.numero)
-    const respostaFinal = respostaAluno || 'N/A'
-    
+    const respostaFinal = respostaAluno ?? 'N/A'
+    const acertou = respostaAluno ? questao.gabarito === respostaAluno : false
+
     return {
-      idAluno: alunoId,
-      idQuestao: questao.id,  // Usa o UUID da questão
+      idQuestao: questao.id,
+      idProvaAluno: provaAluno.id,
       resposta: respostaFinal,
-      resultado: respostaAluno ? questao.gabarito === respostaAluno : false,
+      resultado: acertou,
+      dificuldade: questao.dificuldade,
     }
   })
 
-  // Insere todas as respostas
-  await prisma.resposta.createMany({
-    data: respostasParaInserir,
-  })
+  // Calcula o GCP: soma dos pesos das questões acertadas por dificuldade
+  const gcp = respostasParaInserir.reduce((total, r) => {
+    if (!r.resultado) return total
+    return total + (pesosPorDificuldade[r.dificuldade] ?? 0)
+  }, 0)
+
+  // Insere as respostas e atualiza o GCP em paralelo
+  await Promise.all([
+    prisma.resposta.createMany({
+      data: respostasParaInserir.map((r) => ({
+        idQuestao: r.idQuestao,
+        idProvaAluno: r.idProvaAluno,
+        resposta: r.resposta,
+        resultado: r.resultado,
+      })),
+    }),
+    prisma.provaAluno.update({
+      where: { id: provaAluno.id },
+      data: { gcp },
+    }),
+  ])
 
   const acertos = respostasParaInserir.filter((r) => r.resultado).length
   const naoRespondidas = respostasParaInserir.filter((r) => r.resposta === 'N/A').length
@@ -72,5 +123,6 @@ export async function registrarProva({
     total: respostasParaInserir.length,
     acertos,
     naoRespondidas,
+    gcp,
   }
 }

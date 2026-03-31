@@ -15,7 +15,7 @@ export interface GetAlunoResponse {
   idProfessor: string | null
 }
 
-export async function getAluno(slug: string) {
+export async function getAluno(slug: string): Promise<GetAlunoResponse> {
   const result = await api
     .get(`aluno/${slug}`)
     .json<GetAlunoResponse>()

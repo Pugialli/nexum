@@ -4,9 +4,9 @@ import { getAluno } from "@/http/get-aluno";
 import { AlunoProfileForm } from "../completar-perfil/aluno-profile-form";
 
 export default async function EditProfilePage() {
-  const user = await loggedUser();
+  const user = await loggedUser()
 
-  const alunoData = await getAluno(user!.slug);
+  const alunoData = await getAluno(user!.slug)
 
   return (
     <div className="flex min-h-screen items-center justify-center">

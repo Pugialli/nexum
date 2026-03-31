@@ -83,11 +83,10 @@ model Aluno {
   idUser         String    @id @map("id_user")
   dataNascimento DateTime? @map("data_nascimento")
   idProfessor    String    @map("id_professor")
-  alunoDesde     DateTime  @default(now()) @map("aluno_desde")
   telefone       String?
   carreiraValue  String?   @map("carreira_value")
 
-  user        User            @relation(fields: [idUser], references: [id])
+  user        User            @relation(fields: [idUser], references: [id], onDelete: Cascade)
   professor   Professor       @relation("ProfessorAluno", fields: [idProfessor], references: [idUser])
   carreira    DomainCarreira? @relation(fields: [carreiraValue], references: [value])
   provaAlunos ProvaAluno[]
@@ -100,7 +99,7 @@ model Professor {
   formacao String?
   telefone String?
 
-  user   User    @relation(fields: [idUser], references: [id])
+  user   User    @relation(fields: [idUser], references: [id], onDelete: Cascade)
   alunos Aluno[] @relation("ProfessorAluno")
 
   @@map("professores")
@@ -111,10 +110,11 @@ model Prova {
   ano         String
   notaMinima  Int      @map("nota_minima")
   notaMaxima  Int      @map("nota_maxima")
-  peso1       Int      @map("peso_1")
-  peso2       Int      @map("peso_2")
-  peso3       Int      @map("peso_3")
-  peso4       Int      @map("peso_4")
+  peso1       Int      @default(1) @map("peso_1")
+  peso2       Int      @default(1) @map("peso_2")
+  peso3       Int      @default(1) @map("peso_3")
+  peso4       Int      @default(1) @map("peso_4")
+  peso5       Int      @default(1) @map("peso_5")
   statusProva Boolean  @default(false) @map("status_prova")
   dataCriacao DateTime @default(now()) @map("data_criacao")
 

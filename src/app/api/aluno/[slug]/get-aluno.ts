@@ -2,7 +2,7 @@ import type { GetAlunoResponse } from '@/http/get-aluno'
 import { prisma } from '@/lib/prisma'
 
 export async function getAlunoSlug(slug: string): Promise<GetAlunoResponse | null> {
-  const aluno = await prisma.user.findUnique({
+  const user = await prisma.user.findUnique({
     where: {
       slug,
     },
@@ -11,13 +11,25 @@ export async function getAlunoSlug(slug: string): Promise<GetAlunoResponse | nul
       nome: true,
       email: true,
       slug: true,
-      dataNascimento: true,
-      telefone: true,
-      carreiraValue: true,
       resetPassword: true,
       avatarUrl: true,
       role: true,
-      alunoDesde: true,
+      createdAt: true,
+    },
+  })
+
+  if (!user) {
+    return null
+  }
+
+  const aluno = await prisma.aluno.findUnique({
+    where: {
+      idUser: user.id,
+    },
+    select: {
+      dataNascimento: true,
+      telefone: true,
+      carreiraValue: true,
       idProfessor: true,
     },
   })
@@ -26,10 +38,12 @@ export async function getAlunoSlug(slug: string): Promise<GetAlunoResponse | nul
     return null
   }
 
+
   return {
     ...aluno,
+    ...user,
     dataNascimento: aluno.dataNascimento?.toISOString().split('T')[0] || null,
-    alunoDesde: aluno.alunoDesde.toISOString(),
+    alunoDesde: user.createdAt.toISOString(),
   }
 
 

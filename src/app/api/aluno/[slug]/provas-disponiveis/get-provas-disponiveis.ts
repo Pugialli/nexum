@@ -10,13 +10,9 @@ export async function getProvasDisponiveis(alunoSlug: string) {
 
   const provasDisponiveis = await prisma.prova.findMany({
     where: {
-      questoes: {
+      provaAlunos: {
         none: {
-          respostas: {
-            some: {
-              idAluno: aluno.id,
-            },
-          },
+          idAluno: aluno.id,
         },
       },
     },
