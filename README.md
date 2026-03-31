@@ -25,6 +25,10 @@ Plataforma para professores acompanharem o progresso de alunos nos estudos para 
 
 ## Changelog
 
+### 0.4.2
+- Correção na ui do botão de login
+- Fix na tabela de alunos
+
 ### 0.4.1
 - Correção de 401 na Vercel: `api-client` agora injeta o cookie de sessão via hook `beforeRequest` do ky
 - Cookie forwarding automático em Server Components — funciona no servidor e é ignorado no cliente

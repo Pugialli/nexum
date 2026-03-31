@@ -47,20 +47,21 @@ import { TabelaAlunos } from './tabela-alunos'
 
 export default async function Home() {
   const user = await loggedUser()
-  const alunosProfessor = await getAlunos(user!.slug)
+
+  const alunosProfessor = user && await getAlunos(user.slug)
 
   return (
-      <div className="space-y-8 p-8">
-        <h1 className="text-2xl font-bold">Alunos</h1>
+    <div className="space-y-8 p-8">
+      <h1 className="text-2xl font-bold">Alunos</h1>
 
-        <Button size="lg" asChild>
-          <Link href={`/professor/cadastro-aluno`}>
-            <PlusSquare className="size-6" />
-            Novo aluno
-          </Link>
-        </Button>
+      <Button size="lg" asChild>
+        <Link href={`/professor/cadastro-aluno`}>
+          <PlusSquare className="size-6" />
+          Novo aluno
+        </Link>
+      </Button>
 
-        <TabelaAlunos alunos={alunosProfessor} />
-      </div>
+      {alunosProfessor && <TabelaAlunos alunos={alunosProfessor} />}
+    </div>
   )
 }

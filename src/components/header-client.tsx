@@ -99,12 +99,11 @@ export function HeaderClient({ user }: HeaderClientProps) {
             )}
           </div>
         ) : (
-          <Link
-            href="/auth/login"
-            className="bg-orange-400 text-white px-6 py-2 rounded-lg text-sm font-semibold hover:bg-orange-500 transition-colors"
-          >
-            Login
-          </Link>
+          <Button size="xl" asChild>
+            <Link href={`/auth/login`}>
+              Login
+            </Link>
+          </Button>
         )}
       </div>
     </header>
