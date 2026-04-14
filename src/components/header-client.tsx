@@ -39,9 +39,10 @@ export function HeaderClient({ user }: HeaderClientProps) {
           <Image
             src="/images/horizontal_gray_orange.svg"
             alt="Nexum Logo"
-            width={90}
-            height={45}
-            style={{ height: 'auto' }}
+            width={0}
+            height={0}
+            loading="eager"
+            className="w-[90px] h-auto"
           />
         </Link>
 

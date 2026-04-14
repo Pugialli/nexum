@@ -13,6 +13,9 @@ Plataforma para professores acompanharem o progresso de alunos nos estudos para 
 ### Professor
 - [X] Cadastrar aluno com informações básicas
 - [X] Tabela de alunos
+- [X] Tabela de provas com controle de status
+- [X] Cadastrar prova com 45 questões
+- [X] Editar prova
 
 ### Aluno
 - [X] Puxar a lista de provas disponíveis para realizar
@@ -24,6 +27,22 @@ Plataforma para professores acompanharem o progresso de alunos nos estudos para 
 - Reset de senha via email (estrutura pronta, envio não implementado)
 
 ## Changelog
+
+### 0.6.0
+- [ATUALIZAR]
+
+### 0.5.0
+- Tabela de provas com controle de status (abrir/fechar prova via switch/checkbox)
+- PATCH `/api/prova/[id]/status` — inverte o `statusProva` no banco sem receber body
+- Formulário de criação e edição de provas compartilhado (`ProvaForm`)
+- Criação de prova com 45 questões fixas a partir da questão 136 (gabarito, dificuldade, habilidade, assunto)
+- Edição de prova carrega questões existentes ordenadas por número
+- Nota máxima calculada no backend: `notaMinima + Σ(qtd_dificuldade_n * peso_n)`
+- Campo de nota máxima exibido como somente leitura com botão de recalcular manual
+- Inputs de pesos e dificuldades migrados para refs (sem re-render reativo)
+- Redirecionamento para tabela de provas após create/update com mensagem de sucesso via `searchParams`
+- Rotas `POST /api/prova` e `PUT /api/prova/[id]` com validação via Zod
+- Validators `provaSchema` e `questaoSchema` em `lib/validators/prova.ts`
 
 ### 0.4.2
 - Correção na ui do botão de login

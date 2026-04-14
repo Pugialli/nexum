@@ -4,7 +4,7 @@ import { TabNav } from './tab-nav'
 export function ProfessorTabs() {
   const tabs = [
     { href: '/professor', label: 'Alunos' },
-    { href: '/professor/cadastro-aluno', label: 'Cadastrar Aluno' },
+    { href: '/professor/provas', label: 'Provas' },
   ]
 
   return <TabNav tabs={tabs} />

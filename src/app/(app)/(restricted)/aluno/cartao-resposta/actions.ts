@@ -3,7 +3,7 @@
 
 import { loggedUser } from '@/auth/auth'
 import { registrarProva } from '@/http/registrar-prova'
-import { submitProvaSchema } from '@/lib/validators/prova'
+import { submitProvaSchema } from '@/lib/validators/resposta-prova'
 import { HTTPError } from 'ky'
 
 export async function submitProvaAction(data: FormData) {
