@@ -14,7 +14,9 @@ import {
   ChartContainer,
   ChartTooltip,
 } from "@/components/ui/chart"
-import { SimuladoErrorsModal, type SimuladoError } from "../simulado-errors-modal"
+import type { ProvaResult } from "@/http/get-dashboard"
+import type { Habilidade } from "@/http/get-habilidades"
+import { SimuladoErrorsModal, type SimuladoError } from "./simulado-errors-modal"
 
 const chartConfig = {
   score: {
@@ -23,15 +25,8 @@ const chartConfig = {
   },
 }
 
-interface ChartDataItem {
-  test: string
-  score: number
-  date: string
-  gcp: number
-}
-
 interface TooltipPayloadItem {
-  payload: ChartDataItem
+  payload: ProvaResult
 }
 
 interface CustomTooltipProps {
@@ -66,37 +61,23 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   return null
 }
 
-const generateMockErrors = (count: number): SimuladoError[] => {
-  const levels: SimuladoError['difficulty'][] = ['Muito fácil', 'Fácil', 'Médio', 'Difícil', 'Muito difícil']
-  return Array.from({ length: count }, () => ({
-    number: Math.floor(Math.random() * 45) + 1,
-    difficulty: levels[Math.floor(Math.random() * levels.length)],
-    skill: `H${Math.floor(Math.random() * 30) + 1}`,
-    subject: ['Matemática', 'Física', 'Química', 'Biologia'][Math.floor(Math.random() * 4)],
-  }))
+interface TestsBarChartProps {
+  data: ProvaResult[]
+  errosPorProva: Record<string, SimuladoError[]>
+  habilidadesInfo: Habilidade[]
 }
 
-const mockErrors: Record<string, SimuladoError[]> = {
-  "1": generateMockErrors(13),
-  "2": generateMockErrors(17),
-  "3": generateMockErrors(4),
-  "4": generateMockErrors(10),
-  "5": generateMockErrors(3),
-  "6": generateMockErrors(15),
-  "7": generateMockErrors(8),
-  "8": generateMockErrors(16),
-  "9": generateMockErrors(12),
-  "10": generateMockErrors(7),
-}
-
-export function TestsBarChart({ data }: { data: ChartDataItem[] }) {
+export function TestsBarChart({ data, errosPorProva, habilidadesInfo }: TestsBarChartProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedTest, setSelectedTest] = useState<{ test: string; errors: SimuladoError[] } | null>(null)
 
-  const handleBarClick = (item: ChartDataItem) => {
-    const testNumber = item.test
-    const errors = mockErrors[testNumber] || []
-    setSelectedTest({ test: testNumber, errors })
+  const skillDescriptions = Object.fromEntries(
+    habilidadesInfo.map((h) => [`H${h.value}`, h.descricao])
+  )
+
+  const handleBarClick = (item: ProvaResult) => {
+    const errors = errosPorProva[item.test] ?? []
+    setSelectedTest({ test: item.ano, errors })
     setIsModalOpen(true)
   }
 
@@ -114,11 +95,10 @@ export function TestsBarChart({ data }: { data: ChartDataItem[] }) {
             <BarChart data={data} accessibilityLayer>
               <CartesianGrid vertical={false} />
               <XAxis
-                dataKey="test"
+                dataKey="ano"
                 tickLine={false}
                 tickMargin={10}
                 axisLine={false}
-                tickFormatter={(value) => `Sim. ${value}`}
               />
               <YAxis hide />
               <ChartTooltip cursor={false} content={<CustomTooltip />} />
@@ -135,6 +115,7 @@ export function TestsBarChart({ data }: { data: ChartDataItem[] }) {
           onOpenChange={setIsModalOpen}
           testNumber={selectedTest.test}
           errors={selectedTest.errors}
+          skillDescriptions={skillDescriptions}
         />
       )}
     </>

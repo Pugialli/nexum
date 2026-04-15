@@ -11,36 +11,24 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { HabilidadeResult } from '@/http/get-dashboard'
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from 'recharts'
-
-interface HabilidadeData {
-  skill: string
-  errorRate: number
-  errorCount: number
-}
 
 interface HabilidadesFullModalProps {
   isOpen: boolean
   onOpenChange: (isOpen: boolean) => void
-  data: HabilidadeData[]
+  data: HabilidadeResult[]
+  skillDescriptions: Record<string, string>
 }
 
 interface TooltipPayloadItem {
-  payload: HabilidadeData
+  payload: HabilidadeResult
 }
 
 interface CustomTooltipProps {
   active?: boolean
   payload?: TooltipPayloadItem[]
-}
-
-const skillDescriptions: Record<string, string> = {
-  H1: 'Reconhecer no contexto social diferentes formas de registro de números.',
-  H5: 'Avaliar propostas de intervenção na realidade utilizando conhecimentos numéricos.',
-  H12: 'Uma habilidade normalmente relativa a identificação de números inteiros.',
-  H18: 'Resolver situação-problema envolvendo a variação de grandezas, direta ou inversamente proporcionais.',
-  H25: 'Resolver problema que envolva noções de probabilidade de ocorrência de um evento.',
-  H30: 'Avaliar propostas de intervenção na realidade utilizando conhecimentos de estatística e probabilidade.',
+  skillDescriptions: Record<string, string>
 }
 
 const chartConfig = {
@@ -50,16 +38,14 @@ const chartConfig = {
   },
 }
 
-const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
+const CustomTooltip = ({ active, payload, skillDescriptions }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload
-    const skill = data.skill
-    const description =
-      skillDescriptions[skill] || 'Descrição da habilidade no contexto do ENEM.'
+    const description = skillDescriptions[data.skill] ?? 'Descrição da habilidade no contexto do ENEM.'
 
     return (
       <div className="rounded-lg border bg-background p-3 text-sm shadow-sm max-w-62.5">
-        <p className="mb-1 font-bold text-foreground">Habilidade {skill}</p>
+        <p className="mb-1 font-bold text-foreground">Habilidade {data.skill}</p>
         <p className="mb-3 text-xs text-muted-foreground leading-relaxed italic">
           &ldquo;{description}&rdquo;
         </p>
@@ -83,6 +69,7 @@ export function HabilidadesFullModal({
   isOpen,
   onOpenChange,
   data,
+  skillDescriptions,
 }: HabilidadesFullModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -92,8 +79,7 @@ export function HabilidadesFullModal({
             Ranking Geral de Habilidades
           </DialogTitle>
           <DialogDescription className="font-sans">
-            Desempenho detalhado em todas as 30 habilidades do ENEM, ordenado
-            pelo percentual de erro.
+            Desempenho detalhado em todas as habilidades do ENEM, ordenado pelo percentual de erro.
           </DialogDescription>
         </DialogHeader>
         <div className="flex-1 overflow-y-auto mt-4 pr-4">
@@ -115,7 +101,10 @@ export function HabilidadesFullModal({
                   tickMargin={8}
                   width={40}
                 />
-                <ChartTooltip cursor={false} content={<CustomTooltip />} />
+                <ChartTooltip
+                  cursor={false}
+                  content={<CustomTooltip skillDescriptions={skillDescriptions} />}
+                />
                 <Bar dataKey="errorRate" fill="var(--color-destructive)" radius={5}>
                   <LabelList
                     dataKey="errorRate"

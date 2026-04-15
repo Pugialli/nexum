@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/prisma"
 
 export interface ProvaResult {
-  test: string       // número sequencial para o eixo X (ex: "1", "2"...)
   provaId: string
   ano: string
   score: number      // total de acertos
@@ -80,7 +79,6 @@ export async function getDashboardBySlug(slug: string): Promise<DashboardData | 
   const provas: ProvaResult[] = provaAlunos.map((pa, index) => {
     const acertos = pa.respostas.filter((r) => r.resultado).length
     return {
-      test: String(index + 1),
       provaId: pa.idProva,
       ano: pa.prova.ano,
       score: acertos,

@@ -17,31 +17,9 @@ import {
   ChartContainer,
   ChartTooltip,
 } from "@/components/ui/chart"
+import { HabilidadeResult } from "@/http/get-dashboard"
+import { Habilidade } from "@/http/get-habilidades"
 import { HabilidadesFullModal } from "./habilidades-full-modal"
-
-interface HabilidadeData {
-  skill: string
-  errorRate: number
-  errorCount: number
-}
-
-interface TooltipPayloadItem {
-  payload: HabilidadeData
-}
-
-interface CustomTooltipProps {
-  active?: boolean
-  payload?: TooltipPayloadItem[]
-}
-
-const skillDescriptions: Record<string, string> = {
-  H1: "Reconhecer no contexto social diferentes formas de registro de números.",
-  H5: "Avaliar propostas de intervenção na realidade utilizando conhecimentos numéricos.",
-  H12: "Uma habilidade normalmente relativa a identificação de números inteiros.",
-  H18: "Resolver situação-problema envolvendo a variação de grandezas, direta ou inversamente proporcionais.",
-  H25: "Resolver problema que envolva noções de probabilidade de ocorrência de um evento.",
-  H30: "Avaliar propostas de intervenção na realidade utilizando conhecimentos de estatística e probabilidade.",
-}
 
 const chartConfig = {
   errorRate: {
@@ -50,25 +28,29 @@ const chartConfig = {
   },
 }
 
-// Gerado fora do componente para evitar re-execução impura no render
-const allSkillsData: HabilidadeData[] = Array.from({ length: 30 }, (_, i) => ({
-  skill: `H${i + 1}`,
-  errorRate: Math.floor(Math.random() * 100),
-  errorCount: Math.floor(Math.random() * 50),
-})).sort((a, b) => b.errorRate - a.errorRate)
+interface HabilidadesChartProps {
+  habilidades: HabilidadeResult[]
+  habilidadesInfo: Habilidade[]
+}
 
-const topSkillsData = allSkillsData.slice(0, 5)
+interface TooltipPayloadItem {
+  payload: HabilidadeResult
+}
 
-const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
+interface CustomTooltipProps {
+  active?: boolean
+  payload?: TooltipPayloadItem[]
+  skillDescriptions: Record<string, string>
+}
+
+const CustomTooltip = ({ active, payload, skillDescriptions }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload
-    const skill = data.skill
-    const description =
-      skillDescriptions[skill] || "Descrição da habilidade no contexto do ENEM."
+    const description = skillDescriptions[data.skill] ?? "Descrição da habilidade no contexto do ENEM."
 
     return (
       <div className="rounded-lg border bg-background p-3 text-sm shadow-sm max-w-62.5">
-        <p className="mb-1 font-bold text-foreground">Habilidade {skill}</p>
+        <p className="mb-1 font-bold text-foreground">Habilidade {data.skill}</p>
         <p className="mb-3 text-xs text-muted-foreground leading-relaxed italic">
           &ldquo;{description}&rdquo;
         </p>
@@ -88,8 +70,14 @@ const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
   return null
 }
 
-export function HabilidadesChart() {
+export function HabilidadesChart({ habilidades, habilidadesInfo }: HabilidadesChartProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const skillDescriptions = Object.fromEntries(
+    habilidadesInfo.map((h) => [`H${h.value}`, h.descricao])
+  )
+
+  const topSkillsData = habilidades.slice(0, 5)
 
   return (
     <>
@@ -117,7 +105,10 @@ export function HabilidadesChart() {
                 axisLine={false}
                 tickMargin={8}
               />
-              <ChartTooltip cursor={false} content={<CustomTooltip />} />
+              <ChartTooltip
+                cursor={false}
+                content={<CustomTooltip skillDescriptions={skillDescriptions} />}
+              />
               <Bar dataKey="errorRate" fill="var(--color-destructive)" radius={5}>
                 <LabelList
                   dataKey="errorRate"
@@ -144,7 +135,8 @@ export function HabilidadesChart() {
       <HabilidadesFullModal
         isOpen={isModalOpen}
         onOpenChange={setIsModalOpen}
-        data={allSkillsData}
+        data={habilidades}
+        skillDescriptions={skillDescriptions}
       />
     </>
   )

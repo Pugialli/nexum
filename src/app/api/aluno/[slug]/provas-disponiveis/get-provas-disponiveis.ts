@@ -1,7 +1,12 @@
 import { prisma } from '@/lib/prisma'
 import { getAlunoSlug } from '../get-aluno'
 
-export async function getProvasDisponiveis(alunoSlug: string) {
+export interface AvailableProva {
+  id: string
+  ano: string
+}
+
+export async function getProvasDisponiveis(alunoSlug: string): Promise<AvailableProva[]> {
   const aluno = await getAlunoSlug(alunoSlug)
 
   if (!aluno) {
@@ -19,11 +24,14 @@ export async function getProvasDisponiveis(alunoSlug: string) {
     select: {
       id: true,
       ano: true,
+      statusProva: true,
     },
     orderBy: {
       ano: 'desc',
     },
   })
 
-  return provasDisponiveis
+  const availableProvas: AvailableProva[] = provasDisponiveis.filter(prova => prova.statusProva)
+
+  return availableProvas
 }

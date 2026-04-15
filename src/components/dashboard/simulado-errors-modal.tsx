@@ -35,18 +35,10 @@ interface SimuladoErrorsModalProps {
   onOpenChange: (isOpen: boolean) => void
   testNumber: string | null
   errors: SimuladoError[]
+  skillDescriptions: Record<string, string>
 }
 
-const skillDescriptions: Record<string, string> = {
-  H1: "Reconhecer no contexto social diferentes formas de registro de números.",
-  H5: "Avaliar propostas de intervenção na realidade utilizando conhecimentos numéricos.",
-  H12: "Uma habilidade normalmente relativa a identificação de números inteiros.",
-  H18: "Resolver situação-problema envolvendo a variação de grandezas, direta ou inversamente proporcionais.",
-  H25: "Resolver problema que envolva noções de probabilidade de ocorrência de um evento.",
-  H30: "Avaliar propostas de intervenção na realidade utilizando conhecimentos de estatística e probabilidade.",
-}
-
-function getSkillDescription(skill: string) {
+function getSkillDescription(skill: string, skillDescriptions: Record<string, string>) {
   return skillDescriptions[skill] || `${skill}: Descrição detalhada desta habilidade no contexto do ENEM.`
 }
 
@@ -55,6 +47,7 @@ export function SimuladoErrorsModal({
   onOpenChange,
   testNumber,
   errors,
+  skillDescriptions,
 }: SimuladoErrorsModalProps) {
   const sortedErrors = [...errors].sort((a, b) => a.number - b.number)
 
@@ -101,10 +94,10 @@ export function SimuladoErrorsModal({
                     {error.number}
                   </TableCell>
                   <TableCell className="text-center">
-                    <Badge 
+                    <Badge
                       variant="outline"
                       className={cn(
-                        "px-2 py-0.5 text-[9px] uppercase font-black tracking-widest rounded-full transition-all border shadow-none", 
+                        "px-2 py-0.5 text-[9px] uppercase font-black tracking-widest rounded-full transition-all border shadow-none",
                         getDifficultyStyles(error.difficulty)
                       )}
                     >
@@ -120,7 +113,7 @@ export function SimuladoErrorsModal({
                       </TooltipTrigger>
                       <TooltipContent>
                         <p className="max-w-50 text-center">
-                          {getSkillDescription(error.skill)}
+                          {getSkillDescription(error.skill, skillDescriptions)}
                         </p>
                       </TooltipContent>
                     </Tooltip>

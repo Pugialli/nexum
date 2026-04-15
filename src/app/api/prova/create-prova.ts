@@ -1,9 +1,12 @@
 import { prisma } from '@/lib/prisma'
 import type { ProvaSchema } from '@/lib/validators/prova'
+import { createAnoSlug } from '@/utils/create-slug'
 
 export async function createProva(data: ProvaSchema) {
+  const provaId = createAnoSlug(data.ano)
   return await prisma.prova.create({
     data: {
+      id: provaId,
       ano: data.ano,
       notaMinima: data.notaMinima,
       notaMaxima: calcularNotaMaxima(data),

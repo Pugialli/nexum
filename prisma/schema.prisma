@@ -163,7 +163,7 @@ model Resposta {
   resultado    Boolean
 
   questao    Questao    @relation(fields: [idQuestao], references: [id])
-  provaAluno ProvaAluno @relation(fields: [idProvaAluno], references: [id])
+  provaAluno ProvaAluno @relation(fields: [idProvaAluno], references: [id], onDelete: Cascade)
 
   @@id([idProvaAluno, idQuestao])
   @@map("respostas")

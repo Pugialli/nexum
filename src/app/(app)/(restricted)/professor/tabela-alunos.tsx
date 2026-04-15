@@ -22,13 +22,15 @@ import { getProvas } from "@/http/get-provas"
 import { BarChart3, FileText, Loader2, RotateCcw, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { useCallback, useState } from "react"
+import { toast } from 'sonner'
 
 export interface TabelaAlunosProps {
   alunos: GetAlunosProfessor[]
 }
 
 interface ProvaComStatus extends ProvaSumary {
-  vinculada: boolean   // se já existe ProvaAluno para este aluno
+  gcp: number | null
+  realizada: boolean
 }
 
 export function TabelaAlunos({ alunos }: TabelaAlunosProps) {
@@ -44,7 +46,6 @@ export function TabelaAlunos({ alunos }: TabelaAlunosProps) {
   } | null>(null)
 
   // Abre o modal buscando TODAS as provas do banco e marcando
-  // quais já estão vinculadas ao aluno via provaAlunos
   const abrirModalProvas = useCallback(async (aluno: GetAlunosProfessor) => {
     setAlunoSelecionado(aluno)
     setModalAberto(true)
@@ -54,16 +55,17 @@ export function TabelaAlunos({ alunos }: TabelaAlunosProps) {
       const { provas: todasProvas } = await getProvas()
 
       // IDs das provas que o aluno já possui
-      const idsVinculadas = new Set(aluno.provas.map((p) => p.id))
+      const idsRealizadas = new Set(aluno.provas.map((p) => p.id))
 
       const provasComStatus: ProvaComStatus[] = todasProvas.map((prova) => ({
         ...prova,
-        vinculada: idsVinculadas.has(prova.id),
+        gcp: aluno.provas.find((p) => p.id === prova.id)?.gcp || null,
+        realizada: idsRealizadas.has(prova.id),
       }))
 
       setProvasModal(provasComStatus)
     } catch {
-      // toast.error('Erro ao carregar provas.')
+      toast.error('Erro ao carregar provas.')
     } finally {
       setCarregandoProvas(false)
     }
@@ -81,16 +83,15 @@ export function TabelaAlunos({ alunos }: TabelaAlunosProps) {
     try {
       await deleteProvaAluno(alunoSelecionado.slug, provaParaDeletar.provaId)
 
-      // Atualiza o estado local do modal imediatamente
       setProvasModal((prev) =>
         prev.map((p) =>
-          p.id === provaParaDeletar.provaId ? { ...p, vinculada: false } : p
+          p.id === provaParaDeletar.provaId ? { ...p, realizada: false, gcp: null } : p
         )
       )
 
-      // toast.success('Prova removida com sucesso.')
+      toast.success('Prova removida com sucesso.')
     } catch {
-      // toast.error('Erro ao remover a prova.')
+      toast.error('Erro ao remover a prova.')
     } finally {
       setDeletando(false)
       setAlertAberto(false)
@@ -153,8 +154,7 @@ export function TabelaAlunos({ alunos }: TabelaAlunosProps) {
           <DialogHeader>
             <DialogTitle>Provas — {alunoSelecionado?.nome}</DialogTitle>
             <DialogDescription>
-              Todas as provas cadastradas. Remova o vínculo de uma prova para
-              que o aluno possa refazê-la.
+              Remova uma prova caso deseje que o aluno possa refazê-la.
             </DialogDescription>
           </DialogHeader>
 
@@ -177,16 +177,20 @@ export function TabelaAlunos({ alunos }: TabelaAlunosProps) {
                   <div className="flex items-center gap-3">
                     <FileText className="size-5 text-muted-foreground" />
                     <div>
-                      <p className="font-medium">{prova.ano}</p>
+                      {prova.gcp ? (
+                        <p className="font-medium">{`${prova.ano} - GCP:${prova.gcp}`}</p>
+                      ) : (
+                        <p className="font-medium">{prova.ano}</p>
+                      )}
                       <div className="mt-1">
-                        <Badge variant={prova.vinculada ? 'secondary' : 'default'}>
-                          {prova.vinculada ? 'Realizada' : 'Não realizada'}
+                        <Badge variant={prova.realizada ? 'secondary' : 'default'}>
+                          {prova.realizada ? 'Realizada' : 'Não realizada'}
                         </Badge>
                       </div>
                     </div>
                   </div>
 
-                  {prova.vinculada && (
+                  {prova.realizada && (
                     <Button
                       variant="destructive"
                       size="sm"

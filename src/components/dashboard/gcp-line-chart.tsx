@@ -73,15 +73,14 @@ export function GcpLineChart({ data }: { data: ChartDataItem[] }) {
           <LineChart
             data={data}
             accessibilityLayer
-            margin={{ left: 12, right: 30 }}
+            margin={{ left: 30, right: 30 }}
           >
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="test"
+              dataKey="ano"
               tickLine={false}
-              axisLine={false}
               tickMargin={8}
-              tickFormatter={(value) => `Sim. ${value}`}
+              axisLine={false}
             />
             <YAxis hide />
             <ChartTooltip cursor={false} content={<CustomTooltip />} />

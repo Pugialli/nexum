@@ -8,3 +8,9 @@ export function createSlug(email: string, date = new Date()) {
 
   return `${username}-${month}${year}`
 }
+
+export function createAnoSlug(ano: string) {
+  const normalizedAno = ano.split(".")
+
+  return `prova-${normalizedAno[0]}-${normalizedAno[1]}`
+}

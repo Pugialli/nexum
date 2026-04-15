@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { loggedUser } from '@/auth/auth'
 import { Button } from '@/components/ui/button'
 import { getAlunos } from '@/http/get-alunos'
-import { TabelaAlunos } from './(alunos)/tabela-alunos'
+import { TabelaAlunos } from './tabela-alunos'
 
 export default async function Home() {
   const user = await loggedUser()

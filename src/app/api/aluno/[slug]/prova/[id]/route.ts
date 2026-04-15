@@ -38,7 +38,7 @@ export async function DELETE(
 
     const response = await deleteProvaAluno(slug, id)
 
-    return NextResponse.json(response, { status: 201 })
+    return NextResponse.json(response, { status: 200 })
   } catch (error) {
     console.error('Erro ao remover prova:', error)
     return NextResponse.json(
