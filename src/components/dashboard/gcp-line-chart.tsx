@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/chart"
 
 interface ChartDataItem {
-  test: string
+  ano: string
   gcp: number
   score: number
 }

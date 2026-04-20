@@ -1,5 +1,6 @@
 "use client"
 
+import type { AvailableProva } from "@/app/api/aluno/[slug]/provas-disponiveis/get-provas-disponiveis"
 import { useAuth } from "@/components/auth-provider"
 import { FormRadio } from "@/components/form-radio"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -31,7 +32,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useFormState } from "@/hooks/use-form-state"
-import { getAvailableProvas, type AvailableProva } from "@/http/get-provas-disponiveis"
+import { getAvailableProvas } from "@/http/get-provas-disponiveis"
 import { cn } from "@/lib/utils"
 import { AlertTriangle, Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"

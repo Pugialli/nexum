@@ -162,11 +162,25 @@ model Resposta {
   resposta     String
   resultado    Boolean
 
-  questao    Questao    @relation(fields: [idQuestao], references: [id])
-  provaAluno ProvaAluno @relation(fields: [idProvaAluno], references: [id], onDelete: Cascade)
+  questao     Questao      @relation(fields: [idQuestao], references: [id])
+  provaAluno  ProvaAluno   @relation(fields: [idProvaAluno], references: [id], onDelete: Cascade)
+  cadernoErro CadernoErro?
 
   @@id([idProvaAluno, idQuestao])
   @@map("respostas")
+}
+
+model CadernoErro {
+  idProvaAluno String  @map("id_prova_aluno")
+  idQuestao    String  @map("id_questao")
+  revisao1     Boolean @default(false) @map("revisao_1")
+  revisao2     Boolean @default(false) @map("revisao_2")
+  revisao3     Boolean @default(false) @map("revisao_3")
+
+  resposta Resposta @relation(fields: [idProvaAluno, idQuestao], references: [idProvaAluno, idQuestao], onDelete: Cascade)
+
+  @@id([idProvaAluno, idQuestao])
+  @@map("caderno_erros")
 }
 
 model DomainHabilidade {

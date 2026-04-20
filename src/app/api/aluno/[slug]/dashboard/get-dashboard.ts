@@ -3,9 +3,9 @@ import { prisma } from "@/lib/prisma"
 export interface ProvaResult {
   provaId: string
   ano: string
-  score: number      // total de acertos
-  gcp: number        // valor do GCP da ProvaAluno
-  date: string       // data de realização formatada
+  score: number
+  gcp: number
+  date: string
 }
 
 export type DifficultyLabel = 'Muito fácil' | 'Fácil' | 'Médio' | 'Difícil' | 'Muito difícil'
@@ -76,7 +76,7 @@ export async function getDashboardBySlug(slug: string): Promise<DashboardData | 
   }
 
   // 3. Monta histórico de provas
-  const provas: ProvaResult[] = provaAlunos.map((pa, index) => {
+  const provas: ProvaResult[] = provaAlunos.map((pa, _) => {
     const acertos = pa.respostas.filter((r) => r.resultado).length
     return {
       provaId: pa.idProva,

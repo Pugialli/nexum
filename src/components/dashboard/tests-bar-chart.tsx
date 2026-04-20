@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
 
+import type { ProvaResult } from "@/app/api/aluno/[slug]/dashboard/get-dashboard"
 import {
   Card,
   CardContent,
@@ -14,7 +15,6 @@ import {
   ChartContainer,
   ChartTooltip,
 } from "@/components/ui/chart"
-import type { ProvaResult } from "@/http/get-dashboard"
 import type { Habilidade } from "@/http/get-habilidades"
 import { SimuladoErrorsModal, type SimuladoError } from "./simulado-errors-modal"
 
@@ -76,7 +76,7 @@ export function TestsBarChart({ data, errosPorProva, habilidadesInfo }: TestsBar
   )
 
   const handleBarClick = (item: ProvaResult) => {
-    const errors = errosPorProva[item.test] ?? []
+    const errors = errosPorProva[item.ano] ?? []
     setSelectedTest({ test: item.ano, errors })
     setIsModalOpen(true)
   }

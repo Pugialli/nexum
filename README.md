@@ -36,6 +36,10 @@ Plataforma para professores acompanharem o progresso de alunos nos estudos para 
 - **HTTP Client:** ky
 
 ## Changelog
+### 0.7.1
+- Correção em páginas do dashboard
+
+
 ### 0.7.0
 - Página de assuntos com tabela de listagem, edição inline e remoção com confirmação
 - Criação de assunto via sheet interceptado com optimistic update

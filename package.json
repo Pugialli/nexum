@@ -1,6 +1,6 @@
 {
   "name": "nexum",
-  "version": "0.6.2",
+  "version": "0.7.1",
   "private": true,
   "type": "module",
   "prisma": {
