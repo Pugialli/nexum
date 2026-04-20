@@ -1,24 +1,26 @@
+import { isRedirectError } from 'next/dist/client/components/redirect-error'
 import { type FormEvent, useState, useTransition } from 'react'
 
-export interface FormState {
+export interface FormState<T = unknown> {
   success: boolean
   message: string | null
-  errors: Record<string, string[]> | null | Record<string, string[]>
+  errors: Record<string, string[]> | null
+  data?: T
 }
 
-export function useFormState(
-  action: (data: FormData) => Promise<FormState>,
-  onSuccess?: () => Promise<void> | void,
-  initialState?: FormState,
+export function useFormState<T extends FormState>(
+  action: (data: FormData) => Promise<T>,
+  onSuccess?: (state: T) => Promise<void> | void,
+  initialState?: T,
 ) {
   const [isPending, startTransition] = useTransition()
 
-  const [formState, setFormState] = useState(
+  const [formState, setFormState] = useState<T>(
     initialState ?? {
       success: false,
       message: null,
       errors: null,
-    },
+    } as T,
   )
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -26,17 +28,21 @@ export function useFormState(
 
     const form = event.currentTarget
     const data = new FormData(form)
+
     startTransition(async () => {
-      const state = await action(data)
+      try {
+        const state = await action(data)
 
-      if (state.success === true && onSuccess) {
-        await onSuccess()
+        if (state.success === true && onSuccess) {
+          await onSuccess(state)
+        }
+
+        setFormState(state)
+      } catch (err) {
+        if (isRedirectError(err)) throw err
+        throw err
       }
-
-      setFormState(state)
     })
-
-    // requestFormReset(form)
   }
 
   return [formState, handleSubmit, isPending] as const

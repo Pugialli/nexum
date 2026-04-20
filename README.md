@@ -36,6 +36,13 @@ Plataforma para professores acompanharem o progresso de alunos nos estudos para 
 - **HTTP Client:** ky
 
 ## Changelog
+### 0.7.0
+- Página de assuntos com tabela de listagem, edição inline e remoção com confirmação
+- Criação de assunto via sheet interceptado com optimistic update
+- Rollback automático na tabela em caso de erro no delete ou edição
+- `useFormState` atualizado para passar o estado no callback `onSuccess`
+- Comunicação entre rota interceptada e página pai via `CustomEvent`
+
 ### 0.6.2
 - Toast de sucesso e erro no fluxo de remoção de vínculo de prova (`ProvaAluno`)
 - Corrigido status HTTP 204 → 200 no `DELETE /api/aluno/[slug]/prova/[id]`

@@ -5,6 +5,7 @@ import { api } from './api-client'
 export interface Assunto {
   value: string
   label: string
+  numQuestoes: number
 }
 
 export async function getAssuntos(): Promise<Assunto[]> {
