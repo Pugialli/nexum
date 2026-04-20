@@ -76,7 +76,7 @@ export async function getDashboardBySlug(slug: string): Promise<DashboardData | 
   }
 
   // 3. Monta histórico de provas
-  const provas: ProvaResult[] = provaAlunos.map((pa, _) => {
+  const provas: ProvaResult[] = provaAlunos.map((pa) => {
     const acertos = pa.respostas.filter((r) => r.resultado).length
     return {
       provaId: pa.idProva,

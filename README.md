@@ -22,6 +22,7 @@ Plataforma para professores acompanharem o progresso de alunos nos estudos para 
 - Cadastro de respostas no cartão resposta
 - Completar cadastro após registro inicial
 - Dashboard de desempenho
+- Caderno de erros com revisões em 3 etapas
 
 ## Pendências
 
@@ -36,9 +37,22 @@ Plataforma para professores acompanharem o progresso de alunos nos estudos para 
 - **HTTP Client:** ky
 
 ## Changelog
-### 0.7.1
-- Correção em páginas do dashboard
 
+### 0.8.0
+- Caderno de erros para alunos
+- Questões erradas agrupadas por assunto com grupos colapsáveis
+- Revisão em 3 etapas sequenciais por questão (checkbox 2 libera após 1, checkbox 3 libera após 1 e 2)
+- Card concluído (3 revisões) fica riscado e com opacidade reduzida
+- Botão para ocultar/mostrar cards totalmente concluídos
+- Badge por grupo exibindo progresso `X/Y concluídos` atualizado em tempo real
+- Layout em 2 colunas por grupo no desktop
+- Estado de revisão elevado ao componente raiz para consistência entre badge, filtro e cards
+- `GET /api/caderno-erros/[slug]` — retorna erros do aluno identificado pelo slug
+- `PATCH /api/caderno-erros/[slug]` — atualiza estado das 3 revisões de um erro
+- Modelo `CadernoErro` vinculado a `Resposta` com `onDelete: Cascade`
+
+### 0.7.1
+- Correções pequenas nas páginas do dashboard
 
 ### 0.7.0
 - Página de assuntos com tabela de listagem, edição inline e remoção com confirmação
