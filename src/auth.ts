@@ -34,18 +34,14 @@ export const auth = betterAuth({
   },
 
   user: {
+    fields: {
+      name: 'nome',
+      image: 'avatarUrl',
+    },
     additionalFields: {
-      nome: { type: 'string', required: true },
       slug: { type: 'string', required: true },
       role: { type: 'string', defaultValue: 'ALUNO' },
-      passwordHash: { type: 'string', required: false },
       resetPassword: { type: 'boolean', defaultValue: false },
-      avatarUrl: { type: 'string', required: false },
-      dataNascimento: { type: 'date', required: false },
-      telefone: { type: 'string', required: false },
-      carreiraValue: { type: 'string', required: false },
-      idProfessor: { type: 'string', required: false },
-      alunoDesde: { type: 'date', required: false },
     },
   },
 

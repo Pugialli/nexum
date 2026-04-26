@@ -38,6 +38,16 @@ Plataforma para professores acompanharem o progresso de alunos nos estudos para 
 
 ## Changelog
 
+### 0.8.2
+- Empty state no dashboard do aluno para quem ainda não realizou nenhuma prova
+- `DashboardEmptyState` com ícone, mensagem e passos orientativos
+- `getDashboard` com tratamento de erro retornando `null` em vez de lançar exceção
+- Campos `additionalFields` do Better Auth limpos — removidos campos que pertencem a `Aluno` e `Professor`
+- `name` e `image` do Better Auth mapeados para `nome` e `avatarUrl` via `user.fields`
+- `createAluno` cria o registro `Aluno` via Prisma após o `signUpEmail` (idProfessor desvinculado do Better Auth)
+- `createUser` cria o registro `Professor` via Prisma após o `signUpEmail`
+- `resetPassword: true` definido automaticamente na criação do aluno
+
 ### 0.8.1
 - Edição de perfil do professor funcional
 - Corrigido erro 500 silencioso nas rotas de update (falta de try/catch retornava body vazio)

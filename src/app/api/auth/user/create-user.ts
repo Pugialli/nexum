@@ -1,17 +1,16 @@
 import { auth } from '@/auth'
+import { prisma } from '@/lib/prisma'
 import { createSlug } from '@/utils/create-slug'
 
 export interface CreateUserProps {
   nome: string
   email: string
-  dataNascimento: string
   password: string
 }
 
 export async function createUser({
   nome,
   email,
-  dataNascimento,
   password,
 }: CreateUserProps) {
   const slug = createSlug(email)
@@ -21,15 +20,20 @@ export async function createUser({
       email,
       password,
       name: nome,
-      nome,
       slug,
-      dataNascimento: new Date(dataNascimento),
+      role: 'PROFESSOR',
     },
   })
 
   if (!result.user) {
     throw new Error('Erro ao criar usuário')
   }
+
+  await prisma.professor.create({
+    data: {
+      idUser: result.user.id,
+    },
+  })
 
   return result.user
 }

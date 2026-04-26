@@ -25,9 +25,11 @@ export interface DashboardData {
 }
 
 export async function getDashboard(slug: string): Promise<DashboardData | null> {
-  const result = await api
-    .get(`aluno/${slug}/dashboard`, { next: { tags: ['dashboard', slug] } })
-    .json<DashboardData>()
-
-  return result
+  try {
+    return await api
+      .get(`aluno/${slug}/dashboard`, { next: { tags: ['dashboard', slug] } })
+      .json<DashboardData>()
+  } catch {
+    return null
+  }
 }

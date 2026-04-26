@@ -13,9 +13,15 @@ export async function GET(
 }
 
 export async function POST(request: NextRequest) {
-  const formData: CreateAlunoProps = await request.json()
-
-  const aluno = await createAluno(formData)
-
-  return NextResponse.json(aluno, { status: 201 })
+  try {
+    const formData: CreateAlunoProps = await request.json()
+    const aluno = await createAluno(formData)
+    return NextResponse.json(aluno, { status: 201 })
+  } catch (err) {
+    console.error('POST /aluno error:', err)
+    return NextResponse.json(
+      { message: 'Erro ao criar aluno' },
+      { status: 500 }
+    )
+  }
 }

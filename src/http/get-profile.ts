@@ -9,10 +9,10 @@ export async function getProfile(): Promise<GetProfileResponse | null> {
   if (!session) return null
 
   return {
-    nome: session.user.nome,
+    nome: session.user.name,
     slug: session.user.slug,
     email: session.user.email,
-    avatarUrl: session.user.avatarUrl ?? null,
+    avatarUrl: session.user.image ?? null,
     role: session.user.role as Role,
   }
 }
