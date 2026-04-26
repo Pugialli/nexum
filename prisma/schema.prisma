@@ -19,10 +19,10 @@ model User {
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
-  accounts   Account[]
-  sessions   Session[]
-  alunos     Aluno[]
-  professors Professor[]
+  accounts  Account[]
+  sessions  Session[]
+  aluno     Aluno?
+  professor Professor?
 
   @@map("users")
 }

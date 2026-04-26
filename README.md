@@ -38,6 +38,16 @@ Plataforma para professores acompanharem o progresso de alunos nos estudos para 
 
 ## Changelog
 
+### 0.8.1
+- Edição de perfil do professor funcional
+- Corrigido erro 500 silencioso nas rotas de update (falta de try/catch retornava body vazio)
+- Atualização de senha migrada para tabela `accounts` do Better Auth (`providerId: credential`)
+- `telefone` e `carreiraValue` movidos do update de `User` para `Aluno` (campos corretos no schema)
+- Relação `User` → `Professor` corrigida de 1-para-N para 1-para-1 no schema Prisma
+- `GET /api/professor/[slug]` retorna `slug`, `resetPassword` e dados do professor relacionado
+- `PUT /api/professor/[slug]` com tratamento de erros e resposta JSON em todos os casos
+- Form de perfil do professor sem campos de aluno (`dataNascimento`, `carreira` → `formacao`)
+
 ### 0.8.0
 - Caderno de erros para alunos
 - Questões erradas agrupadas por assunto com grupos colapsáveis

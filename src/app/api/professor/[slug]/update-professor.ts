@@ -1,51 +1,47 @@
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 
-export interface UpdateAlunoProps {
+export interface UpdateProfessorProps {
+  slug: string
   nome: string
   email: string
-  dataNascimento: string
   telefone?: string
   password?: string
-  carreira: string
+  formacao?: string
   resetPassword?: boolean
 }
 
-export async function updateAluno({
+export async function updateProfessor({
   nome,
+  slug,
   email,
-  dataNascimento,
   telefone,
   password,
-  carreira,
+  formacao,
   resetPassword,
-}: UpdateAlunoProps) {
+}: UpdateProfessorProps) {
   const user = await prisma.user.update({
-    where: { email },
+    where: { slug },
     data: {
       nome,
+      email,
       ...(resetPassword !== undefined && { resetPassword }),
     },
   })
 
   if (password) {
     const passwordHash = await bcrypt.hash(password, 10)
-
     await prisma.account.updateMany({
-      where: {
-        userId: user.id,
-        providerId: 'credential',
-      },
+      where: { userId: user.id, providerId: 'credential' },
       data: { password: passwordHash },
     })
   }
 
-  return await prisma.aluno.update({
+  return await prisma.professor.update({
     where: { idUser: user.id },
     data: {
-      dataNascimento: new Date(dataNascimento),
       telefone,
-      carreiraValue: carreira,
+      formacao,
     },
   })
 }
