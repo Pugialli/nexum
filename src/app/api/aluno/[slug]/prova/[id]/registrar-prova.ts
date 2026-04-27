@@ -115,6 +115,17 @@ export async function registrarProva({
     }),
   ])
 
+  const erros = respostasParaInserir.filter((r) => !r.resultado)
+
+  if (erros.length > 0) {
+    await prisma.cadernoErro.createMany({
+      data: erros.map((r) => ({
+        idProvaAluno: r.idProvaAluno,
+        idQuestao: r.idQuestao,
+      })),
+    })
+  }
+
   const acertos = respostasParaInserir.filter((r) => r.resultado).length
   const naoRespondidas = respostasParaInserir.filter((r) => r.resposta === 'N/A').length
 

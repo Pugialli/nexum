@@ -148,8 +148,8 @@ model ProvaAluno {
   createdAt DateTime @default(now()) @map("created_at")
   gcp       Int
 
-  prova     Prova      @relation(fields: [idProva], references: [id])
-  aluno     Aluno      @relation(fields: [idAluno], references: [idUser])
+  prova     Prova      @relation(fields: [idProva], references: [id], onDelete: Cascade)
+  aluno     Aluno      @relation(fields: [idAluno], references: [idUser], onDelete: Cascade)
   respostas Resposta[]
 
   @@unique([idAluno, idProva])

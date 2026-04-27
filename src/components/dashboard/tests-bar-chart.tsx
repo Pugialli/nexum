@@ -76,10 +76,11 @@ export function TestsBarChart({ data, errosPorProva, habilidadesInfo }: TestsBar
   )
 
   const handleBarClick = (item: ProvaResult) => {
-    const errors = errosPorProva[item.ano] ?? []
+    const errors = errosPorProva[item.provaId] ?? []
     setSelectedTest({ test: item.ano, errors })
     setIsModalOpen(true)
   }
+
 
   return (
     <>

@@ -4,6 +4,7 @@ import { Plus } from "lucide-react"
 import { useState } from "react"
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
 
+import type { HabilidadeResult } from "@/app/api/aluno/[slug]/dashboard/get-dashboard"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -17,7 +18,6 @@ import {
   ChartContainer,
   ChartTooltip,
 } from "@/components/ui/chart"
-import { HabilidadeResult } from "@/http/get-dashboard"
 import { Habilidade } from "@/http/get-habilidades"
 import { HabilidadesFullModal } from "./habilidades-full-modal"
 

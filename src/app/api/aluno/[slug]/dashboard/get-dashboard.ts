@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma"
+import { toDifficultyLabel, type DifficultyLabel } from "@/utils/dificuldade"
 
 export interface ProvaResult {
   provaId: string
@@ -6,20 +7,6 @@ export interface ProvaResult {
   score: number
   gcp: number
   date: string
-}
-
-export type DifficultyLabel = 'Muito fácil' | 'Fácil' | 'Médio' | 'Difícil' | 'Muito difícil'
-
-const DIFFICULTY_MAP: Record<number, DifficultyLabel> = {
-  1: 'Muito fácil',
-  2: 'Fácil',
-  3: 'Médio',
-  4: 'Difícil',
-  5: 'Muito difícil',
-}
-
-export function toDifficultyLabel(value: number): DifficultyLabel {
-  return DIFFICULTY_MAP[value] ?? 'Médio'
 }
 
 export interface SimuladoError {
@@ -30,9 +17,9 @@ export interface SimuladoError {
 }
 
 export interface HabilidadeResult {
-  skill: string         // ex: "H12"
-  errorRate: number     // percentual de erro (0–100)
-  errorCount: number    // total de erros
+  skill: string
+  errorRate: number
+  errorCount: number
 }
 
 export interface DashboardData {
@@ -89,9 +76,8 @@ export async function getDashboardBySlug(slug: string): Promise<DashboardData | 
 
   // 4. Monta erros por prova (indexed pelo número sequencial "test")
   const errosPorProva: Record<string, SimuladoError[]> = {}
-  provaAlunos.forEach((pa, index) => {
-    const key = String(index + 1)
-    errosPorProva[key] = pa.respostas
+  provaAlunos.forEach((pa) => {
+    errosPorProva[pa.idProva] = pa.respostas
       .filter((r) => !r.resultado)
       .map((r) => ({
         number: r.questao.numero,

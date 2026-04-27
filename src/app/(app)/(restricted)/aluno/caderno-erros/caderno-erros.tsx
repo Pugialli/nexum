@@ -2,9 +2,26 @@
 
 import type { GetCadernoErrosResponse } from "@/app/api/caderno-erros/[slug]/get-erros"
 import { Button } from "@/components/ui/button"
-import { Eye, EyeOff } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { toDifficultyLabel, type DifficultyLabel } from "@/utils/dificuldade"
+import { Eye, EyeOff, Filter } from "lucide-react"
 import { useState } from "react"
 import { CadernoAssuntoGroup } from "./caderno-assunto-group"
+
+const DIFICULDADES: DifficultyLabel[] = [
+  'Muito fácil',
+  'Fácil',
+  'Médio',
+  'Difícil',
+  'Muito difícil',
+]
 
 interface CadernoErrosProps {
   erros: GetCadernoErrosResponse[]
@@ -13,6 +30,7 @@ interface CadernoErrosProps {
 export function CadernoErros({ erros: initialErros }: CadernoErrosProps) {
   const [erros, setErros] = useState(initialErros)
   const [showDone, setShowDone] = useState(true)
+  const [dificuldadeFiltro, setDificuldadeFiltro] = useState<DifficultyLabel | null>(null)
 
   function handleRevisaoChange(
     idProvaAluno: string,
@@ -38,9 +56,13 @@ export function CadernoErros({ erros: initialErros }: CadernoErrosProps) {
 
   const filteredGroups = Object.entries(groups).reduce<Record<string, GetCadernoErrosResponse[]>>(
     (acc, [assunto, items]) => {
-      const filtered = showDone
+      let filtered = showDone
         ? items
         : items.filter((e) => !(e.revisao1 && e.revisao2 && e.revisao3))
+
+      if (dificuldadeFiltro) {
+        filtered = filtered.filter((e) => toDifficultyLabel(e.dificuldade) === dificuldadeFiltro)
+      }
 
       if (filtered.length > 0) acc[assunto] = filtered
       return acc
@@ -52,29 +74,65 @@ export function CadernoErros({ erros: initialErros }: CadernoErrosProps) {
   const isEmpty = Object.keys(filteredGroups).length === 0
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
+    <div className="flex flex-col gap-4 pb-8">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm text-muted-foreground">
           {totalDone}/{erros.length} questões revisadas
         </p>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setShowDone((v) => !v)}
-          className="gap-2"
-        >
-          {showDone ? (
-            <>
-              <EyeOff className="h-4 w-4" />
-              Ocultar concluídos
-            </>
-          ) : (
-            <>
-              <Eye className="h-4 w-4" />
-              Mostrar concluídos
-            </>
-          )}
-        </Button>
+
+        <div className="flex items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-2">
+                <Filter className="h-4 w-4" />
+                {dificuldadeFiltro ?? 'Dificuldade'}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Filtrar por dificuldade</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {DIFICULDADES.map((d) => (
+                <DropdownMenuItem
+                  key={d}
+                  onClick={() => setDificuldadeFiltro((prev) => prev === d ? null : d)}
+                  className={dificuldadeFiltro === d ? 'bg-muted font-medium' : ''}
+                >
+                  {d}
+                  {dificuldadeFiltro === d && (
+                    <span className="ml-auto text-xs text-muted-foreground">✕ limpar</span>
+                  )}
+                </DropdownMenuItem>
+              ))}
+              {dificuldadeFiltro && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => setDificuldadeFiltro(null)}>
+                    Limpar filtro
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowDone((v) => !v)}
+            className="gap-2"
+          >
+            {showDone ? (
+              <>
+                <EyeOff className="h-4 w-4" />
+                Ocultar concluídos
+              </>
+            ) : (
+              <>
+                <Eye className="h-4 w-4" />
+                Mostrar concluídos
+              </>
+            )}
+          </Button>
+        </div>
       </div>
 
       {isEmpty ? (
@@ -82,6 +140,8 @@ export function CadernoErros({ erros: initialErros }: CadernoErrosProps) {
           <p className="text-sm text-muted-foreground">
             {erros.length === 0
               ? "Nenhum erro registrado ainda."
+              : dificuldadeFiltro
+              ? `Nenhum erro encontrado para dificuldade "${dificuldadeFiltro}".`
               : "Todos os erros foram revisados! 🎉"}
           </p>
         </div>

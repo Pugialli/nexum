@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma"
 export interface GetCadernoErrosResponse {
   idProvaAluno: string
   idQuestao: string
+  dificuldade: number
+  habilidade: string
   questaoNumero: number
   questaoGabarito: string
   provaAno: string
@@ -11,7 +13,6 @@ export interface GetCadernoErrosResponse {
   revisao2: boolean
   revisao3: boolean
 }
-
 
 export interface GetCadernoErrosProps {
   slug: string
@@ -22,7 +23,7 @@ export async function getErros({ slug }: GetCadernoErrosProps): Promise<GetCader
     where: {
       resposta: {
         provaAluno: {
-          aluno: { user: { slug, } },
+          aluno: { user: { slug } },
         },
       },
     },
@@ -30,7 +31,11 @@ export async function getErros({ slug }: GetCadernoErrosProps): Promise<GetCader
       resposta: {
         include: {
           questao: {
-            include: { assunto: true, prova: true },
+            include: {
+              assunto: true,
+              prova: true,
+              habilidade: true,
+            },
           },
         },
       },
@@ -40,6 +45,8 @@ export async function getErros({ slug }: GetCadernoErrosProps): Promise<GetCader
   return erros.map((erro) => ({
     idProvaAluno: erro.idProvaAluno,
     idQuestao: erro.idQuestao,
+    dificuldade: erro.resposta.questao.dificuldade,
+    habilidade: `H${erro.resposta.questao.habilidade.value}`,
     questaoNumero: erro.resposta.questao.numero,
     questaoGabarito: erro.resposta.questao.gabarito,
     provaAno: erro.resposta.questao.prova?.ano ?? '—',

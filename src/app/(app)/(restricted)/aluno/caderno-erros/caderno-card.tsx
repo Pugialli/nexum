@@ -1,12 +1,14 @@
 "use client"
 
 import { cn } from "@/lib/utils"
+import { toDifficultyLabel } from "@/utils/dificuldade"
 import { useTransition } from "react"
 import { updateRevisaoAction } from "./actions"
 
 interface CadernoErroCardProps {
   idProvaAluno: string
   idQuestao: string
+  dificuldade: number
   questaoNumero: number
   provaAno: string
   revisao1: boolean
@@ -24,6 +26,7 @@ interface CadernoErroCardProps {
 export function CadernoErroCard({
   idProvaAluno,
   idQuestao,
+  dificuldade,
   questaoNumero,
   provaAno,
   revisao1,
@@ -78,6 +81,16 @@ export function CadernoErroCard({
         </p>
         <p className={cn("truncate text-sm text-foreground", isDone && "line-through text-muted-foreground")}>
           {questaoNumero}
+        </p>
+      </div>
+
+      {/* Dificuldade */}
+      <div className="min-w-0">
+        <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+          Dificuldade
+        </p>
+        <p className={cn("truncate text-sm text-foreground", isDone && "line-through text-muted-foreground")}>
+          {toDifficultyLabel(dificuldade)}
         </p>
       </div>
 

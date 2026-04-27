@@ -38,6 +38,16 @@ Plataforma para professores acompanharem o progresso de alunos nos estudos para 
 
 ## Changelog
 
+### 0.8.3
+- Caderno de erros retorna `dificuldade` e `habilidade` por questão (`getErros` atualizado)
+- Cards do caderno ordenados por dificuldade dentro de cada grupo de assunto
+- Filtro de dificuldade no caderno de erros via dropdown (combinável com ocultar concluídos)
+- Limpar filtro disponível tanto pelo item selecionado quanto por opção dedicada no dropdown
+- `CadernoErro` criado automaticamente ao registrar prova — questões erradas e não respondidas já entram no caderno
+- `onDelete: Cascade` adicionado em `ProvaAluno` → `Prova` e `ProvaAluno` → `Aluno` para garantir remoção em cascata até `CadernoErro`
+- `errosPorProva` indexado por `provaId` em vez de índice sequencial — `handleBarClick` corrigido para usar `item.provaId`
+- `GcpLineChart` corrigido: domínio do eixo Y fixado em `[0, 100]` para evitar ponto colado no topo
+
 ### 0.8.2
 - Empty state no dashboard do aluno para quem ainda não realizou nenhuma prova
 - `DashboardEmptyState` com ícone, mensagem e passos orientativos

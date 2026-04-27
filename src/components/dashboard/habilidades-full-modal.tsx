@@ -1,5 +1,6 @@
 'use client'
 
+import type { HabilidadeResult } from '@/app/api/aluno/[slug]/dashboard/get-dashboard'
 import {
   ChartContainer,
   ChartTooltip,
@@ -11,7 +12,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { HabilidadeResult } from '@/http/get-dashboard'
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from 'recharts'
 
 interface HabilidadesFullModalProps {

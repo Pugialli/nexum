@@ -82,7 +82,7 @@ export function GcpLineChart({ data }: { data: ChartDataItem[] }) {
               tickMargin={8}
               axisLine={false}
             />
-            <YAxis hide />
+            <YAxis hide domain={[0, 100]} />
             <ChartTooltip cursor={false} content={<CustomTooltip />} />
             <Line
               dataKey="gcp"
