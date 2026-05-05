@@ -102,8 +102,7 @@ export function TabelaAlunos({ alunos }: TabelaAlunosProps) {
   return (
     <>
       {/* ── Tabela principal ── */}
-      <div className="rounded-md border">
-        <Table>
+      <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Nome</TableHead>
@@ -146,7 +145,6 @@ export function TabelaAlunos({ alunos }: TabelaAlunosProps) {
             ))}
           </TableBody>
         </Table>
-      </div>
 
       {/* ── Modal de provas ── */}
       <Dialog open={modalAberto} onOpenChange={setModalAberto}>

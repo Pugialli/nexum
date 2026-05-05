@@ -33,13 +33,13 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         aria-invalid={props['aria-invalid']}
         aria-disabled={props.readOnly || props.disabled}
         className={cn(
-          'flex h-14 w-full items-center gap-2 rounded-lg border border-input bg-primary-foreground px-3 py-2 placeholder-muted-foreground shadow-sm',
-          'aria-invalid:border-red-400',
+          'flex h-9 w-full items-center gap-2 rounded-md border border-input bg-background px-3 py-2 placeholder-muted-foreground',
+          'aria-invalid:border-destructive aria-invalid:ring-[3px] aria-invalid:ring-destructive/15',
           'aria-disabled:cursor-not-allowed aria-disabled:opacity-50',
-          'focus-within:border-primary/50 focus-within:outline-none focus-within:ring-2 focus-within:ring-primary',
+          'focus-within:border-primary focus-within:outline-none focus-within:ring-[3px] focus-within:ring-primary/20',
         )}
       >
-        {Icon && <Icon className="size-6 text-card-foreground" />}
+        {Icon && <Icon className="size-4 text-muted-foreground" />}
         {prefix && <span className="text-input">{prefix}</span>}
         <input
           type={isHidden ? 'password' : type}

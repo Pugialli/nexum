@@ -98,7 +98,14 @@ export default function CartaoRespostaPage() {
   }
 
   return (
-    <div className="flex min-h-screen w-full flex-col items-center bg-muted/40 p-4 sm:p-10">
+    <>
+      {/* Page header */}
+      <header className="flex h-[52px] shrink-0 items-center border-b border-border bg-white px-7">
+        <h3 className="font-heading text-[17px] font-bold text-foreground">Cartão de Resposta</h3>
+      </header>
+
+      {/* Content */}
+      <div className="flex w-full justify-center p-7">
       <Card className="w-full max-w-2xl">
         <CardHeader>
           <CardTitle>Cartão de Resposta</CardTitle>
@@ -227,6 +234,7 @@ export default function CartaoRespostaPage() {
           </form>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+      </div>
+    </>
   )
 }

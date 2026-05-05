@@ -1,6 +1,6 @@
 'use client'
 
-import { PlusSquare } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
@@ -31,27 +31,32 @@ export function AssuntosClient({ assuntosIniciais }: { assuntosIniciais: Assunto
 
   const atualizarAssunto = (value: string, label: string) => {
     setAssuntos((prev) =>
-      prev.map((a) => a.value === value ? { ...a, label } : a)
+      prev.map((a) => (a.value === value ? { ...a, label } : a))
     )
   }
 
   return (
-    <div className="space-y-8 p-8">
-      <h1 className="text-2xl font-bold">Assuntos</h1>
+    <>
+      {/* Page header */}
+      <header className="flex h-[52px] shrink-0 items-center justify-between border-b border-border bg-white px-7">
+        <h3 className="font-heading text-[17px] font-bold text-foreground">Assuntos</h3>
+        <Button size="sm" asChild>
+          <Link href="/professor/cadastro-assunto">
+            <Plus className="size-3.5" />
+            Novo assunto
+          </Link>
+        </Button>
+      </header>
 
-      <Button size="lg" asChild>
-        <Link href="/professor/cadastro-assunto">
-          <PlusSquare className="size-6" />
-          Novo assunto
-        </Link>
-      </Button>
-
-      <TabelaAssuntos
-        assuntos={assuntos}
-        onRemoverAssunto={removerAssunto}
-        onRestaurarAssunto={restaurarAssunto}
-        onAtualizarAssunto={atualizarAssunto}
-      />
-    </div>
+      {/* Content */}
+      <div className="mx-auto flex w-full max-w-[1060px] flex-col gap-5 p-7">
+        <TabelaAssuntos
+          assuntos={assuntos}
+          onRemoverAssunto={removerAssunto}
+          onRestaurarAssunto={restaurarAssunto}
+          onAtualizarAssunto={atualizarAssunto}
+        />
+      </div>
+    </>
   )
 }

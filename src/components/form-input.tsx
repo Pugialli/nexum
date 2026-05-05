@@ -12,7 +12,7 @@ export function FormInput({ label, errors, name, id, ...props }: FormInputProps)
 
   return (
     <div className="space-y-2">
-      <Label htmlFor={id} className="text-lg font-normal text-foreground">
+      <Label htmlFor={id} className="text-sm font-medium text-foreground">
         {label}
       </Label>
       <Input id={id} name={name} {...props} />

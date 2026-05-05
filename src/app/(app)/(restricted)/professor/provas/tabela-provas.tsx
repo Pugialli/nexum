@@ -34,8 +34,7 @@ export function TabelaProvas({ provas }: TabelaProvasProps) {
   }
 
   return (
-    <div className="rounded-md border">
-      <Table>
+    <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Ano</TableHead>
@@ -70,6 +69,5 @@ export function TabelaProvas({ provas }: TabelaProvasProps) {
           ))}
         </TableBody>
       </Table>
-    </div>
   )
 }

@@ -1,4 +1,4 @@
-import { BadgeCheck, PlusSquare } from 'lucide-react'
+import { BadgeCheck, Plus } from 'lucide-react'
 import Link from 'next/link'
 
 import { loggedUser } from '@/auth/auth'
@@ -6,6 +6,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { getProvas } from '@/http/get-provas'
 import { TabelaProvas } from './tabela-provas'
+
 const messages = {
   created: 'Prova criada com sucesso',
   updated: 'Prova atualizada com sucesso',
@@ -22,25 +23,30 @@ export default async function Provas({ searchParams }: ProvasPageProps) {
   const successMessage = success ? messages[success] : null
 
   return (
-    <div className="space-y-8 p-8">
-      <h1 className="text-2xl font-bold">Provas</h1>
+    <>
+      {/* Page header */}
+      <header className="flex h-[52px] shrink-0 items-center justify-between border-b border-border bg-white px-7">
+        <h3 className="font-heading text-[17px] font-bold text-foreground">Provas</h3>
+        <Button size="sm" asChild>
+          <Link href="/professor/provas/cadastro-prova">
+            <Plus className="size-3.5" />
+            Nova prova
+          </Link>
+        </Button>
+      </header>
 
-      {successMessage && (
-        <Alert variant="success">
-          <BadgeCheck className="size-4" />
-          <AlertTitle>Sucesso!</AlertTitle>
-          <AlertDescription>{successMessage}</AlertDescription>
-        </Alert>
-      )}
+      {/* Content */}
+      <div className="mx-auto flex w-full max-w-[1060px] flex-col gap-5 p-7">
+        {successMessage && (
+          <Alert variant="success">
+            <BadgeCheck className="size-4" />
+            <AlertTitle>Sucesso!</AlertTitle>
+            <AlertDescription>{successMessage}</AlertDescription>
+          </Alert>
+        )}
 
-      <Button size="lg" asChild>
-        <Link href="/professor/provas/cadastro-prova">
-          <PlusSquare className="size-6" />
-          Nova prova
-        </Link>
-      </Button>
-
-      {provasProfessor && <TabelaProvas provas={provasProfessor.provas} />}
-    </div>
+        {provasProfessor && <TabelaProvas provas={provasProfessor.provas} />}
+      </div>
+    </>
   )
 }

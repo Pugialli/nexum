@@ -11,13 +11,17 @@ interface DashboardAlunoProps extends DashboardData {
 export function DashboardAluno({ provas, errosPorProva, habilidades, habilidadesInfo }: DashboardAlunoProps) {
 
   return (
-    <div className="flex-1 min-h-0 flex flex-col gap-4">
-      <div className="min-h-0 flex-1">
+    <div className="flex flex-col gap-4">
+      <div className="h-[240px]">
         <TestsBarChart data={provas} errosPorProva={errosPorProva} habilidadesInfo={habilidadesInfo} />
       </div>
-      <div className="grid min-h-0 flex-1 grid-cols-2 gap-4">
-        <GcpLineChart data={provas} />
-        <HabilidadesChart habilidades={habilidades} habilidadesInfo={habilidadesInfo} />
+      <div className="grid grid-cols-2 gap-4">
+        <div className="h-[220px]">
+          <GcpLineChart data={provas} />
+        </div>
+        <div className="h-[220px]">
+          <HabilidadesChart habilidades={habilidades} habilidadesInfo={habilidadesInfo} />
+        </div>
       </div>
     </div>
   )

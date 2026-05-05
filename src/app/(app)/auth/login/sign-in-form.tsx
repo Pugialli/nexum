@@ -1,14 +1,14 @@
 'use client'
 
-import { AlertTriangle, Loader2, Lock, Mail } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 import { authClient } from '@/auth/client'
 import { FormInput } from '@/components/form-input'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 
 export function SignInForm() {
   const router = useRouter()
@@ -24,10 +24,7 @@ export function SignInForm() {
     const email = formData.get('email')?.toString() ?? ''
     const password = formData.get('password')?.toString() ?? ''
 
-    const { error: signInError } = await authClient.signIn.email({
-      email,
-      password,
-    })
+    const { error: signInError } = await authClient.signIn.email({ email, password })
 
     setIsPending(false)
 
@@ -42,43 +39,50 @@ export function SignInForm() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
-          <CardDescription>
-            Digite seu email e senha para acessar o Nexum Academy.
-          </CardDescription>
-          {error && (
-            <Alert variant="destructive">
-              <AlertTriangle className="size-4" />
-              <AlertTitle>Falha ao logar!</AlertTitle>
-              <AlertDescription>
-                <p>{error}</p>
-              </AlertDescription>
-            </Alert>
-          )}
+      <Card className="w-full max-w-sm mx-auto">
+        <CardHeader className="items-center gap-3 pb-2">
+          <Image
+            src="/images/horizontal_gray_orange.svg"
+            alt="Nexum Academy"
+            width={140}
+            height={32}
+            priority
+          />
+          <div className="text-center">
+            <h2 className="text-foreground">Bem-vindo de volta</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Digite seu email e senha para entrar.
+            </p>
+          </div>
         </CardHeader>
-        <CardContent className="grid gap-4">
+
+        <CardContent className="flex flex-col gap-4">
           <FormInput
             label="E-mail"
-            errors={{}}
-            icon={Mail}
+            errors={error ? { email: [' '] } : {}}
             name="email"
             id="email"
             type="email"
+            placeholder="seu@email.com"
           />
           <FormInput
             label="Senha"
-            errors={{}}
-            icon={Lock}
+            errors={error ? { password: [' '] } : {}}
             name="password"
             id="password"
             hidable
+            placeholder="••••••••"
           />
-          <Button size="lg" type="submit" disabled={isPending}>
+
+          {error && (
+            <p className="text-xs text-destructive">{error}</p>
+          )}
+
+          <Button size="lg" type="submit" disabled={isPending} className="w-full mt-1">
             {isPending ? <Loader2 className="size-4 animate-spin" /> : 'Entrar'}
           </Button>
-          <p className="mt-4 text-center text-sm text-muted-foreground">
+
+          <p className="text-center text-xs text-muted-foreground">
             Esqueceu sua senha? Fale com seu professor.
           </p>
         </CardContent>
