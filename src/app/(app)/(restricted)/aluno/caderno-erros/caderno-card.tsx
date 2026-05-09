@@ -84,6 +84,16 @@ export function CadernoErroCard({
         </p>
       </div>
 
+      {/* Prova */}
+      <div className="hidden sm:block">
+        <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+          Prova
+        </p>
+        <p className={cn("text-sm text-foreground whitespace-nowrap", isDone && "line-through text-muted-foreground")}>
+          {provaAno}
+        </p>
+      </div>
+
       {/* Dificuldade */}
       <div className="min-w-0">
         <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
@@ -94,15 +104,6 @@ export function CadernoErroCard({
         </p>
       </div>
 
-      {/* Prova */}
-      <div className="hidden sm:block">
-        <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
-          Prova
-        </p>
-        <p className={cn("text-sm text-foreground whitespace-nowrap", isDone && "line-through text-muted-foreground")}>
-          {provaAno}
-        </p>
-      </div>
 
       {/* Revisão */}
       <div>
