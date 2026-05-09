@@ -1,4 +1,4 @@
-import { getAssuntos } from '@/http/get-assuntos'
+﻿import { getAssuntos } from '@/http/get-assuntos'
 import { getHabilidades } from '@/http/get-habilidades'
 import { ProvaForm } from './prova-form'
 
@@ -9,8 +9,7 @@ export default async function CadastroProvaPage() {
   ])
 
   return (
-    <div className="space-y-8 p-8">
-      <h1 className="text-2xl font-bold">Nova Prova</h1>
+    <div className="mx-auto w-full max-w-[1100px] px-4 py-6 sm:px-7 sm:py-8">
       <ProvaForm habilidades={habilidades} assuntos={assuntos} />
     </div>
   )

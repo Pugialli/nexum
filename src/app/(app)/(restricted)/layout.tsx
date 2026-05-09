@@ -3,24 +3,23 @@
 import { redirect } from 'next/navigation'
 import type { ReactNode } from 'react'
 
-import { isAuthenticated } from '@/auth/auth'
-import { Header } from '@/components/header'
-import { getProfile } from '@/http/get-profile'
+import { loggedUser } from '@/auth/auth'
+import { AppTopbar } from '@/components/app-topbar'
 
 interface AdminLayoutProps {
   children: ReactNode
 }
 
 export default async function AdminLayout({ children }: AdminLayoutProps) {
-  if (!(await isAuthenticated())) {
+  const user = await loggedUser()
+
+  if (!user) {
     redirect('/auth/login')
   }
 
-  const user = await getProfile()
-
   return (
-    <div className="w-full">
-      <Header user={user} />
+    <div className="flex min-h-screen flex-col pb-20 sm:pb-0">
+      <AppTopbar nome={user.nome} role={user.role} />
       {children}
     </div>
   )

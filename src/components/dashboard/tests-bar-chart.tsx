@@ -1,34 +1,18 @@
 "use client"
 
 import { useState } from "react"
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
+import { Bar, BarChart, CartesianGrid, Cell, LabelList, XAxis, YAxis } from "recharts"
 
 import type { ProvaResult } from "@/app/api/aluno/[slug]/dashboard/get-dashboard"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import {
-  ChartContainer,
-  ChartTooltip,
-} from "@/components/ui/chart"
+import { ChartContainer, ChartTooltip } from "@/components/ui/chart"
 import type { Habilidade } from "@/http/get-habilidades"
 import { SimuladoErrorsModal, type SimuladoError } from "./simulado-errors-modal"
 
 const chartConfig = {
-  score: {
-    label: "Acertos",
-    color: "hsl(var(--primary))",
-  },
+  score: { label: "Acertos", color: "var(--color-primary)" },
 }
 
-interface TooltipPayloadItem {
-  payload: ProvaResult
-}
-
+interface TooltipPayloadItem { payload: ProvaResult }
 interface CustomTooltipProps {
   active?: boolean
   payload?: TooltipPayloadItem[]
@@ -36,29 +20,35 @@ interface CustomTooltipProps {
 }
 
 const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
-  if (active && payload && payload.length) {
-    const data = payload[0].payload
-    return (
-      <div className="rounded-lg border bg-background p-3 text-sm shadow-sm">
-        <p className="mb-2 font-medium">Simulado {label}</p>
-        <div className="space-y-1">
-          <p className="flex justify-between gap-4">
-            <span>Data da prova:</span>
-            <span className="font-semibold">{data.date}</span>
-          </p>
-          <p className="flex justify-between gap-4">
-            <span>Acertos:</span>
-            <span className="font-semibold">{data.score}</span>
-          </p>
-          <p className="flex justify-between gap-4">
-            <span>Nota:</span>
-            <span className="font-semibold">{data.gcp}</span>
-          </p>
-        </div>
+  if (!active || !payload?.length) return null
+  const d = payload[0].payload
+  return (
+    <div
+      className="rounded-[12px] border border-border bg-white p-3"
+      style={{ boxShadow: '0 4px 24px -4px rgba(15,23,42,0.12)' }}
+    >
+      <p className="font-heading text-[13px] font-bold" style={{ color: 'oklch(0.22 0.02 240)' }}>
+        Simulado {label}
+      </p>
+      <div className="mt-2 flex flex-col gap-1">
+        <p className="flex justify-between gap-6 font-mono text-[11px]">
+          <span style={{ color: '#94a3b8' }}>Data</span>
+          <span style={{ color: 'oklch(0.22 0.02 240)' }}>{d.date}</span>
+        </p>
+        <p className="flex justify-between gap-6 font-mono text-[11px]">
+          <span style={{ color: '#94a3b8' }}>Acertos</span>
+          <span className="font-semibold" style={{ color: 'var(--color-primary)' }}>{d.score}</span>
+        </p>
+        <p className="flex justify-between gap-6 font-mono text-[11px]">
+          <span style={{ color: '#94a3b8' }}>GCP</span>
+          <span className="font-semibold" style={{ color: 'var(--color-secondary)' }}>{d.gcp}%</span>
+        </p>
       </div>
-    )
-  }
-  return null
+      <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.12em]" style={{ color: '#94a3b8' }}>
+        clique para ver erros
+      </p>
+    </div>
+  )
 }
 
 interface TestsBarChartProps {
@@ -76,40 +66,76 @@ export function TestsBarChart({ data, errosPorProva, habilidadesInfo }: TestsBar
   )
 
   const handleBarClick = (item: ProvaResult) => {
-    const errors = errosPorProva[item.provaId] ?? []
-    setSelectedTest({ test: item.ano, errors })
+    setSelectedTest({ test: item.ano, errors: errosPorProva[item.provaId] ?? [] })
     setIsModalOpen(true)
   }
 
-
   return (
     <>
-      <Card className="flex h-full w-full flex-col py-2 gap-2">
-        <CardHeader className="pb-0">
-          <CardTitle>Desempenho nos Simulados</CardTitle>
-          <CardDescription>
-            Número de acertos nos últimos 10 simulados
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-1 pb-0">
-          <ChartContainer config={chartConfig} className="h-full w-full">
-            <BarChart data={data} accessibilityLayer>
-              <CartesianGrid vertical={false} />
+      <div
+        className="overflow-hidden rounded-[18px] border border-border bg-white"
+        style={{ boxShadow: '0 1px 0 rgba(15,23,42,0.02)' }}
+      >
+        {/* Header */}
+        <div className="flex items-start justify-between border-b border-border px-5 py-4">
+          <div>
+            <h3
+              className="font-heading text-[15px] font-bold tracking-tight"
+              style={{ color: 'oklch(0.22 0.02 240)' }}
+            >
+              Desempenho nos Simulados
+            </h3>
+            <p className="mt-0.5 text-[12px]" style={{ color: '#94a3b8' }}>
+              Acertos por simulado — clique em uma barra para ver os erros
+            </p>
+          </div>
+          <span
+            className="rounded-full border px-2 py-0.5 font-mono text-[10.5px] font-semibold"
+            style={{
+              color: 'var(--color-primary)',
+              background: 'oklch(0.97 0.02 50)',
+              borderColor: 'oklch(0.88 0.06 50)',
+            }}
+          >
+            {data.length} provas
+          </span>
+        </div>
+
+        {/* Chart */}
+        <div className="px-4 pb-4 pt-2">
+          <ChartContainer config={chartConfig} className="h-[180px] w-full sm:h-[200px]">
+            <BarChart data={data} accessibilityLayer barSize={48} margin={{ top: 20, right: 8, left: 8, bottom: 0 }}>
+              <defs>
+                <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="var(--color-primary)" stopOpacity={1} />
+                  <stop offset="100%" stopColor="oklch(0.58 0.19 35)" stopOpacity={1} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid vertical={false} stroke="oklch(0.93 0.005 240)" />
               <XAxis
                 dataKey="ano"
                 tickLine={false}
                 tickMargin={10}
                 axisLine={false}
+                tick={{ fontSize: 11, fontFamily: 'var(--font-mono)', fill: '#94a3b8' }}
               />
-              <YAxis hide />
-              <ChartTooltip cursor={false} content={<CustomTooltip />} />
-              <Bar dataKey="score" fill="var(--color-primary)" radius={8} onClick={handleBarClick} className="cursor-pointer">
-                <LabelList dataKey="score" position="top" />
+              <YAxis hide domain={[0, 45]} />
+              <ChartTooltip cursor={{ fill: 'oklch(0.97 0.005 240)', radius: 6 }} content={<CustomTooltip />} />
+              <Bar dataKey="score" fill="url(#barGrad)" radius={[6, 6, 0, 0]} className="cursor-pointer" onClick={handleBarClick}>
+                <LabelList
+                  dataKey="score"
+                  position="top"
+                  style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fill: '#94a3b8', fontWeight: 600 }}
+                />
+                {data.map((entry) => (
+                  <Cell key={entry.provaId} />
+                ))}
               </Bar>
             </BarChart>
           </ChartContainer>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
+
       {selectedTest && (
         <SimuladoErrorsModal
           isOpen={isModalOpen}

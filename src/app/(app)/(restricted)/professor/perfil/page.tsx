@@ -1,4 +1,4 @@
-import { loggedUser } from "@/auth/auth"
+﻿import { loggedUser } from "@/auth/auth"
 import { getProfessor } from "@/http/get-professor"
 import { ProfessorProfileForm } from "./professor-profile-form"
 
@@ -7,7 +7,7 @@ export default async function EditProfilePage() {
   const professorData = await getProfessor(user!.slug)
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <div className="mx-auto w-full max-w-[600px] px-4 py-6 sm:px-7 sm:py-8">
       <ProfessorProfileForm
         initialData={{
           nome: professorData.nome,

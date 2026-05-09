@@ -1,14 +1,16 @@
 import { redirect } from 'next/navigation'
 
-import { isAuthenticated } from '@/auth/auth'
+import { loggedUser } from '@/auth/auth'
 
 export default async function AuthLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  if (await isAuthenticated()) {
-    redirect('/')
+  const user = await loggedUser()
+
+  if (user) {
+    redirect(user.role === 'PROFESSOR' ? '/professor' : '/aluno')
   }
 
   return <>{children}</>

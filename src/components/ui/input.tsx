@@ -33,10 +33,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         aria-invalid={props['aria-invalid']}
         aria-disabled={props.readOnly || props.disabled}
         className={cn(
-          'flex h-9 w-full items-center gap-2 rounded-md border border-input bg-background px-3 py-2 placeholder-muted-foreground',
+          'flex h-10 w-full items-center gap-2 rounded-[10px] border border-input bg-white px-3 py-2 placeholder-muted-foreground',
           'aria-invalid:border-destructive aria-invalid:ring-[3px] aria-invalid:ring-destructive/15',
           'aria-disabled:cursor-not-allowed aria-disabled:opacity-50',
-          'focus-within:border-primary focus-within:outline-none focus-within:ring-[3px] focus-within:ring-primary/20',
+          'focus-within:border-[var(--color-secondary)] focus-within:outline-none focus-within:ring-[3px] focus-within:ring-[var(--color-secondary)]/15',
         )}
       >
         {Icon && <Icon className="size-4 text-muted-foreground" />}

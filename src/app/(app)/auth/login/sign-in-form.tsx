@@ -155,16 +155,17 @@ export function SignInForm() {
     const email = formData.get('email')?.toString() ?? ''
     const password = formData.get('password')?.toString() ?? ''
 
-    const { error: signInError } = await authClient.signIn.email({ email, password })
+    const { data, error: signInError } = await authClient.signIn.email({ email, password })
 
     setIsPending(false)
 
-    if (signInError) {
+    if (signInError || !data) {
       setError('Email ou senha incorretos.')
       return
     }
 
-    router.push('/')
+    const role = (data.user as { role?: string }).role
+    router.push(role === 'PROFESSOR' ? '/professor' : '/aluno')
     router.refresh()
   }
 
