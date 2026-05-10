@@ -42,7 +42,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         {Icon && <Icon className="size-4 text-muted-foreground" />}
         {prefix && <span className="text-input">{prefix}</span>}
         <input
-          type={isHidden ? 'password' : type}
+          type={hidable ? (isHidden ? 'password' : 'text') : type}
           className={cn(
             'flex-1 border-0 bg-transparent p-0 px-1 text-base text-foreground placeholder-muted-foreground outline-none',
             'read-only:cursor-not-allowed',

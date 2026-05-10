@@ -6,10 +6,9 @@ import {
   AlertDialogContent, AlertDialogDescription,
   AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { Badge } from '@/components/ui/badge'
 import {
   Dialog, DialogContent, DialogDescription,
-  DialogHeader, DialogTitle,
+  DialogTitle,
 } from '@/components/ui/dialog'
 import { deleteProvaAluno } from '@/http/delete-prova-aluno'
 import type { GetAlunosProfessor } from '@/http/get-alunos'
@@ -39,23 +38,25 @@ function initials(nome: string) {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
 }
 
-const AVATAR_GRADIENTS = [
-  'linear-gradient(135deg, oklch(0.495 0.075 186), oklch(0.635 0.195 35))',
-  'linear-gradient(135deg, oklch(0.465 0.155 10), oklch(0.635 0.195 35))',
-  'linear-gradient(135deg, oklch(0.635 0.195 35), oklch(0.465 0.155 10))',
-]
+const AVATAR_GRADIENT = 'linear-gradient(135deg, oklch(0.465 0.155 10), oklch(0.635 0.195 35))'
 
-const RING_COLORS = [
-  'oklch(0.495 0.075 186)',
-  'oklch(0.465 0.155 10)',
-  'oklch(0.635 0.195 35)',
-]
+function getGcpColors(gcp: number, hasProvas: boolean) {
+  if (!hasProvas) return { color: '#CBD5E1', trackColor: '#E2E8F0' }
+  if (gcp >= 60) return { color: 'oklch(0.42 0.13 145)', trackColor: 'oklch(0.94 0.06 145)' }
+  if (gcp >= 40) return { color: 'oklch(0.58 0.19 35)',  trackColor: 'oklch(0.93 0.08 35)' }
+  return          { color: 'oklch(0.465 0.155 10)',       trackColor: 'oklch(0.96 0.02 10)' }
+}
 
-const RING_TRACK_COLORS = [
-  'oklch(0.92 0.03 186)',
-  'oklch(0.96 0.02 10)',
-  'oklch(0.93 0.08 35)',
-]
+function buildSparkline(provas: Array<{ gcp: number }>) {
+  if (provas.length === 0) return null
+  const pts = provas.map((p, i) => ({
+    x: provas.length === 1 ? 100 : 2 + (i / (provas.length - 1)) * 196,
+    y: 2 + 24 * (1 - Math.max(0, Math.min(100, p.gcp)) / 100),
+  }))
+  const line = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ')
+  const fill = line + ` L ${pts[pts.length - 1].x.toFixed(1)} 28 L ${pts[0].x.toFixed(1)} 28 Z`
+  return { line, fill, last: pts[pts.length - 1] }
+}
 
 function getStatus(gcpMedio: number, provasCount: number) {
   if (provasCount === 0) {
@@ -130,29 +131,25 @@ function GcpRing({ gcp, color, trackColor }: { gcp: number; color: string; track
 
 interface AlunoCardProps {
   aluno: GetAlunosProfessor
-  colorIndex: number
   onProvas: (aluno: GetAlunosProfessor) => void
 }
 
-function AlunoCard({ aluno, colorIndex, onProvas }: AlunoCardProps) {
-  const idx = colorIndex % 3
+function AlunoCard({ aluno, onProvas }: AlunoCardProps) {
   const status = getStatus(aluno.gcpMedio ?? 0, aluno.provas.length)
   const ultimaProva = aluno.provas[aluno.provas.length - 1]
-  const ringColor = aluno.provas.length > 0 ? RING_COLORS[idx] : '#CBD5E1'
-  const ringTrack = aluno.provas.length > 0 ? RING_TRACK_COLORS[idx] : '#E2E8F0'
+  const { color: ringColor, trackColor: ringTrack } = getGcpColors(aluno.gcpMedio ?? 0, aluno.provas.length > 0)
+  const sparkline = buildSparkline(aluno.provas)
 
   return (
     <article
       className="group relative overflow-hidden rounded-[20px] border border-border bg-white p-[18px] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-22px_rgba(15,23,42,0.18)]"
-      style={{
-        '--accent': RING_COLORS[idx],
-      } as React.CSSProperties}
+      style={{ '--accent': ringColor } as React.CSSProperties}
     >
       {/* Radial glow corner */}
       <div
         className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
         style={{
-          background: `radial-gradient(120% 60% at 100% 0%, ${RING_COLORS[idx]}14 0%, transparent 60%)`,
+          background: `radial-gradient(120% 60% at 100% 0%, ${ringColor}22 0%, transparent 60%)`,
         }}
       />
 
@@ -161,8 +158,8 @@ function AlunoCard({ aluno, colorIndex, onProvas }: AlunoCardProps) {
         <div
           className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] text-[14px] font-extrabold text-white"
           style={{
-            background: AVATAR_GRADIENTS[idx],
-            boxShadow: `0 8px 18px -10px ${RING_COLORS[idx]}99`,
+            background: AVATAR_GRADIENT,
+            boxShadow: '0 8px 18px -10px oklch(0.7 0.18 20 / 0.6)',
           }}
         >
           {initials(aluno.nome)}
@@ -192,14 +189,14 @@ function AlunoCard({ aluno, colorIndex, onProvas }: AlunoCardProps) {
 
       {/* GCP block */}
       <div
-        className="flex gap-4 rounded-[14px] border p-3.5"
+        className="flex min-h-[112px] gap-4 rounded-[14px] border p-3.5"
         style={{
           background: 'linear-gradient(180deg, var(--page-bg) 0%, transparent 100%)',
           borderColor: 'var(--color-border)',
           borderStyle: 'dashed',
         }}
       >
-        {aluno.provas.length > 0 ? (
+        {aluno.provas.length > 0 && sparkline ? (
           <>
             <GcpRing gcp={aluno.gcpMedio ?? 0} color={ringColor} trackColor={ringTrack} />
             <div className="flex flex-1 flex-col justify-center">
@@ -209,32 +206,22 @@ function AlunoCard({ aluno, colorIndex, onProvas }: AlunoCardProps) {
               >
                 Evolução · {aluno.provas.length} {aluno.provas.length === 1 ? 'prova' : 'provas'}
               </p>
-              {/* Sparkline decorativa */}
-              <svg
-                className="w-full"
-                height="28"
-                viewBox="0 0 200 28"
-                preserveAspectRatio="none"
-              >
+              <svg className="w-full" height="28" viewBox="0 0 200 28" preserveAspectRatio="none">
+                <path d={sparkline.fill} fill={ringColor} fillOpacity=".1" />
                 <path
-                  d="M2 22 L40 18 L80 14 L120 10 L160 7 L198 4"
+                  d={sparkline.line}
                   fill="none"
                   stroke={ringColor}
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
-                <path
-                  d="M2 22 L40 18 L80 14 L120 10 L160 7 L198 4 L198 28 L2 28 Z"
-                  fill={ringColor}
-                  fillOpacity=".1"
-                />
-                <circle cx="198" cy="4" r="2.5" fill={ringColor} />
+                <circle cx={sparkline.last.x} cy={sparkline.last.y} r="2.5" fill={ringColor} />
               </svg>
             </div>
           </>
         ) : (
-          <div className="flex w-full items-center justify-center py-3">
+          <div className="flex w-full items-center justify-center">
             <p className="text-[13px]" style={{ color: '#94a3b8' }}>
               Nenhuma prova realizada ainda
             </p>
@@ -259,14 +246,14 @@ function AlunoCard({ aluno, colorIndex, onProvas }: AlunoCardProps) {
         </div>
         <div className="rounded-xl border border-border bg-white px-3 py-2.5">
           <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.12em]" style={{ color: '#94a3b8' }}>
-            Última
+            Última Prova
           </p>
           <p className="font-heading text-[17px] font-bold tracking-tight" style={{ color: 'oklch(0.22 0.02 240)' }}>
             {ultimaProva ? (
               <>
                 {ultimaProva.nome}
                 <small className="ml-1 font-mono text-[11px] font-medium" style={{ color: '#94a3b8' }}>
-                  · {ultimaProva.gcp}
+                  · GCP {ultimaProva.gcp}
                 </small>
               </>
             ) : (
@@ -294,7 +281,7 @@ function AlunoCard({ aluno, colorIndex, onProvas }: AlunoCardProps) {
         ))}
         <button
           onClick={() => onProvas(aluno)}
-          className="flex flex-1 h-9 items-center justify-center gap-1.5 rounded-[10px] border border-border bg-white text-[12.5px] font-semibold transition-all hover:border-[var(--accent)] hover:text-[var(--accent)]"
+          className="flex flex-1 h-9 cursor-pointer items-center justify-center gap-1.5 rounded-[10px] border border-border bg-white text-[12.5px] font-semibold transition-all hover:border-[var(--accent)] hover:text-[var(--accent)]"
           style={{ color: 'oklch(0.36 0.015 240)' }}
         >
           <FileText size={13} />
@@ -381,16 +368,6 @@ export function TabelaAlunos({ alunos }: TabelaAlunosProps) {
           >
             Alunos
           </h2>
-          <span
-            className="rounded-full border px-2 py-0.5 font-mono text-[11px] font-semibold"
-            style={{
-              color: 'var(--color-secondary)',
-              background: 'oklch(0.96 0.015 186)',
-              borderColor: 'oklch(0.85 0.03 186)',
-            }}
-          >
-            {alunos.length} ATIVOS
-          </span>
         </div>
 
         <div className="flex items-center gap-2">
@@ -453,11 +430,10 @@ export function TabelaAlunos({ alunos }: TabelaAlunosProps) {
       {/* ── Cards view ── */}
       {viewMode === 'cards' && (
         <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}>
-          {filtered.map((aluno, i) => (
+          {filtered.map((aluno) => (
             <AlunoCard
               key={aluno.slug}
               aluno={aluno}
-              colorIndex={i}
               onProvas={abrirModalProvas}
             />
           ))}
@@ -647,59 +623,114 @@ export function TabelaAlunos({ alunos }: TabelaAlunosProps) {
 
       {/* ── Modal de provas ── */}
       <Dialog open={modalAberto} onOpenChange={setModalAberto}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Provas — {alunoSelecionado?.nome}</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="gap-0 overflow-hidden rounded-[22px] border-border p-0 shadow-[0_24px_64px_-12px_rgba(15,23,42,0.22)] sm:max-w-[480px]">
+          {/* Header */}
+          <div className="border-b border-border px-6 pb-5 pr-12 pt-6">
+            <p
+              className="mb-1.5 font-mono text-[10px] uppercase tracking-[0.14em]"
+              style={{ color: '#94a3b8' }}
+            >
+              Provas do aluno
+            </p>
+            <DialogTitle className="font-heading text-[20px] font-bold leading-tight" style={{ color: 'oklch(0.22 0.02 240)' } as React.CSSProperties}>
+              {alunoSelecionado?.nome}
+            </DialogTitle>
+            <DialogDescription className="mt-1 text-[13px] leading-[1.5]" style={{ color: 'oklch(0.58 0.04 186)' } as React.CSSProperties}>
               Remova uma prova caso deseje que o aluno possa refazê-la.
             </DialogDescription>
-          </DialogHeader>
+          </div>
 
-          <div className="max-h-[60vh] space-y-2 overflow-y-auto pr-1">
+          {/* List */}
+          <div className="max-h-[58vh] overflow-y-auto px-4 py-4">
             {carregandoProvas ? (
-              <div className="flex items-center justify-center gap-2 py-10 text-muted-foreground">
+              <div className="flex items-center justify-center gap-2 py-10" style={{ color: '#94a3b8' }}>
                 <Loader2 className="size-5 animate-spin" />
-                <span>Carregando provas...</span>
+                <span className="text-[13px]">Carregando provas...</span>
               </div>
             ) : provasModal.length === 0 ? (
-              <p className="py-6 text-center text-sm text-muted-foreground">
+              <p className="py-8 text-center text-[13px]" style={{ color: '#94a3b8' }}>
                 Nenhuma prova cadastrada.
               </p>
             ) : (
-              provasModal.map((prova) => (
-                <div
-                  key={prova.id}
-                  className="flex items-center justify-between rounded-lg border p-4"
-                >
-                  <div className="flex items-center gap-3">
-                    <FileText className="size-5 text-muted-foreground" />
-                    <div>
-                      {prova.gcp ? (
-                        <p className="font-medium">{`${prova.ano} - GCP:${prova.gcp}`}</p>
-                      ) : (
-                        <p className="font-medium">{prova.ano}</p>
-                      )}
-                      <div className="mt-1">
-                        <Badge variant={prova.realizada ? 'secondary' : 'default'}>
-                          {prova.realizada ? 'Realizada' : 'Não realizada'}
-                        </Badge>
-                      </div>
-                    </div>
-                  </div>
-
-                  {prova.realizada && (
-                    <button
-                      className="flex cursor-pointer items-center gap-2 rounded-md bg-destructive px-3 py-1.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
-                      onClick={() => abrirConfirmacaoDeletar(prova.id, prova.ano)}
+              <div className="flex flex-col gap-2">
+                {provasModal.map((prova) => {
+                  const { color: gcpColor } = getGcpColors(prova.gcp ?? 0, prova.gcp != null)
+                  return (
+                    <div
+                      key={prova.id}
+                      className="flex items-center justify-between rounded-[14px] border border-border p-3.5"
+                      style={{ background: prova.realizada ? 'var(--page-bg)' : 'white' }}
                     >
-                      <Trash2 className="size-4" />
-                      Remover
-                    </button>
-                  )}
-                </div>
-              ))
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] border border-border"
+                          style={{ background: 'white' }}
+                        >
+                          <FileText size={15} style={{ color: prova.realizada ? 'var(--color-secondary)' : '#94a3b8' }} />
+                        </div>
+                        <div>
+                          <p className="font-heading text-[14px] font-bold leading-tight" style={{ color: 'oklch(0.22 0.02 240)' }}>
+                            {prova.ano}
+                          </p>
+                          <div className="mt-1 flex items-center gap-2">
+                            {prova.realizada ? (
+                              <span
+                                className="rounded-full px-2 py-0.5 font-mono text-[10px] font-semibold"
+                                style={{
+                                  color: 'oklch(0.42 0.13 145)',
+                                  background: 'oklch(0.94 0.06 145)',
+                                  border: '1px solid oklch(0.88 0.08 145)',
+                                }}
+                              >
+                                Realizada
+                              </span>
+                            ) : (
+                              <span
+                                className="rounded-full px-2 py-0.5 font-mono text-[10px] font-semibold"
+                                style={{ color: '#94a3b8', background: '#F1F5F9', border: '1px solid #E2E8F0' }}
+                              >
+                                Não realizada
+                              </span>
+                            )}
+                            {prova.gcp != null && (
+                              <span className="font-mono text-[10.5px] font-semibold" style={{ color: gcpColor }}>
+                                GCP {prova.gcp}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {prova.realizada && (
+                        <button
+                          className="flex cursor-pointer items-center gap-1.5 rounded-[10px] border px-3 py-1.5 text-[12px] font-semibold transition-all hover:bg-[oklch(0.465_0.155_10)] hover:text-white"
+                          style={{
+                            color: 'oklch(0.465 0.155 10)',
+                            borderColor: 'oklch(0.80 0.10 10)',
+                            background: 'oklch(0.96 0.02 10)',
+                          }}
+                          onClick={() => abrirConfirmacaoDeletar(prova.id, prova.ano)}
+                        >
+                          <Trash2 size={12} />
+                          Remover
+                        </button>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
             )}
           </div>
+
+          {/* Footer */}
+          {!carregandoProvas && provasModal.length > 0 && (
+            <div className="border-t border-border px-6 py-3">
+              <p className="text-center font-mono text-[10.5px]" style={{ color: '#94a3b8' }}>
+                {provasModal.filter(p => p.realizada).length} de {provasModal.length}{' '}
+                {provasModal.length === 1 ? 'prova realizada' : 'provas realizadas'}
+              </p>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
 

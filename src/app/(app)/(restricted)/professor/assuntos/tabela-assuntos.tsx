@@ -106,16 +106,6 @@ export function TabelaAssuntos({
           >
             Assuntos
           </h2>
-          <span
-            className="rounded-full border px-2 py-0.5 font-mono text-[11px] font-semibold"
-            style={{
-              color: 'var(--color-secondary)',
-              background: 'oklch(0.96 0.015 186)',
-              borderColor: 'oklch(0.85 0.03 186)',
-            }}
-          >
-            {assuntos.length} TOTAL
-          </span>
         </div>
 
         <div className="flex items-center gap-2">

@@ -224,30 +224,14 @@ export function SignInForm() {
 
       {/* ── Lado formulário ── */}
       <div className="flex flex-col bg-white px-6 py-8 sm:px-12">
-        {/* Topo */}
-        <div className="flex items-center justify-between">
-          {/* Logo — visível só no mobile */}
-          <div className="lg:hidden">
-            <Image
-              src="/images/horizontal_gray_orange.svg"
-              alt="Nexum Academy"
-              width={90}
-              height={20}
-            />
-          </div>
-          <div
-            className="ml-auto flex items-center gap-1.5 text-[13px]"
-            style={{ color: 'oklch(0.58 0.04 186)' }}
-          >
-            <span className="hidden sm:inline">Não tem conta?</span>
-            <a
-              href="mailto:contato@nexumacademy.com.br"
-              className="font-black hover:underline"
-              style={{ color: 'var(--color-primary)' }}
-            >
-              Fale com seu professor
-            </a>
-          </div>
+        {/* Topo — logo mobile only */}
+        <div className="lg:hidden">
+          <Image
+            src="/images/horizontal_gray_orange.svg"
+            alt="Nexum Academy"
+            width={90}
+            height={20}
+          />
         </div>
 
         {/* Formulário centralizado */}
@@ -288,7 +272,6 @@ export function SignInForm() {
                 name="email"
                 id="email"
                 type="email"
-                placeholder="seu@email.com"
                 icon={Mail}
                 autoComplete="email"
                 required
@@ -298,27 +281,17 @@ export function SignInForm() {
 
             {/* Senha */}
             <div className="flex flex-col gap-1.5">
-              <div className="flex items-center justify-between">
-                <label
-                  htmlFor="password"
-                  className="text-[12px] font-black"
-                  style={{ color: 'oklch(0.45 0.08 186)' }}
-                >
-                  Senha
-                </label>
-                <a
-                  href="#"
-                  className="text-[12px] font-black hover:underline"
-                  style={{ color: 'var(--color-primary)' }}
-                >
-                  Esqueci minha senha
-                </a>
-              </div>
+              <label
+                htmlFor="password"
+                className="text-[12px] font-black"
+                style={{ color: 'oklch(0.45 0.08 186)' }}
+              >
+                Senha
+              </label>
               <Input
                 name="password"
                 id="password"
                 type="password"
-                placeholder="••••••••"
                 icon={Lock}
                 hidable
                 autoComplete="current-password"
@@ -379,7 +352,7 @@ export function SignInForm() {
               ?
             </div>
             <p>
-              Problemas para entrar?{' '}
+              Tem alguma dúvida ou não tem cadastro?{' '}
               <a
                 href="mailto:contato@nexumacademy.com.br"
                 className="font-black hover:underline"
