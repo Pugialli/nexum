@@ -38,6 +38,18 @@ Plataforma para professores acompanharem o progresso de alunos nos estudos para 
 
 ## Changelog
 
+### 0.9.0
+- Redesign visual completo da plataforma com foco em consistência e responsividade mobile
+- Landing page (`/`) totalmente reformulada com nova identidade visual
+- Página de login redesenhada com layout mobile-friendly
+- `app-topbar.tsx` — novo componente de topbar compartilhado entre as áreas autenticadas
+- `aluno-sidebar.tsx` e `professor-sidebar.tsx` extraídos como componentes dedicados e redesenhados
+- Todas as páginas da área do aluno adaptadas para mobile (caderno de erros, cartão resposta, dashboard, completar perfil, perfil)
+- Todas as páginas da área do professor adaptadas para mobile (tabela de alunos, tabela de provas, tabela de assuntos, formulários de prova, perfil, cadastro)
+- Gráficos do dashboard (`GcpLineChart`, `HabilidadesChart`, `TestsBarChart`, modais) com layout responsivo
+- Formulários de cadastro e edição revisados visualmente (`ProvaForm`, `AlunoForm`, `AssuntoForm`, forms de perfil)
+- Componentes base de UI (`input`, `sonner`, `badge`, `button`, `card`, `table`) atualizados para o novo design system
+
 ### 0.8.3
 - Caderno de erros retorna `dificuldade` e `habilidade` por questão (`getErros` atualizado)
 - Cards do caderno ordenados por dificuldade dentro de cada grupo de assunto
