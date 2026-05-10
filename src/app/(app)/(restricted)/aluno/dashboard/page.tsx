@@ -160,6 +160,8 @@ export default async function Page() {
         errosPorProva={data.errosPorProva}
         habilidades={data.habilidades}
         habilidadesInfo={habilidades}
+        cadernoTotal={data.cadernoTotal}
+        cadernoRevisados={data.cadernoRevisados}
       />
     </div>
   )

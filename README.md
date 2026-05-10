@@ -38,6 +38,11 @@ Plataforma para professores acompanharem o progresso de alunos nos estudos para 
 
 ## Changelog
 
+### 0.9.2
+- Correções de build para Next.js 16: `DashboardAluno` recebe `cadernoTotal` e `cadernoRevisados` nas duas páginas que o usam (aluno e professor)
+- `revalidateTag` removido de `createAlunoAction` — assinatura mudou no Next.js 16; substituído por `revalidatePath` que já era suficiente
+- `src/middleware.ts` migrado para `src/proxy.ts` com função renomeada de `middleware` para `proxy` (convenção Next.js 16)
+
 ### 0.9.1
 - Dashboard do aluno: card "Erros no caderno" agora exibe pendentes reais (total − revisados via `CadernoErro`) com barra de progresso e texto "X de Y revisados"
 - Cartão resposta: aviso de atenção e tabela de questões só aparecem após selecionar a prova; botões A–E com `cursor-pointer`
