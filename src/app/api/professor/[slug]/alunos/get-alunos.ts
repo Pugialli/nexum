@@ -17,6 +17,7 @@ export async function getAlunos({ slug }: GetAlunosProps): Promise<GetAlunosProf
   const alunos = await prisma.aluno.findMany({
     where: {
       idProfessor: professor.id,
+      user: { role: 'ALUNO' },
     },
     select: {
       user: {

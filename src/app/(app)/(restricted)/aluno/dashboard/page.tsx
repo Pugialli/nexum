@@ -23,7 +23,8 @@ export default async function Page() {
           .toFixed(1)
           .replace('.', ',')
       : '—'
-  const totalErros = Object.values(data.errosPorProva).flat().length
+  const { cadernoTotal, cadernoRevisados } = data
+  const cadernoPendentes = cadernoTotal - cadernoRevisados
 
   if (semProvas) {
     return (
@@ -106,20 +107,48 @@ export default async function Page() {
         <div className="relative overflow-hidden rounded-[18px] border border-border bg-white p-5">
           <div className="absolute inset-x-0 top-0 h-[3px]" style={{ background: 'oklch(0.465 0.155 10)' }} />
           <div className="flex items-start justify-between gap-4">
-            <div>
+            <div className="min-w-0">
               <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.14em]" style={{ color: '#94a3b8' }}>
                 Erros no caderno
               </p>
               <p className="font-heading text-[36px] font-extrabold leading-none tracking-tight" style={{ color: 'oklch(0.465 0.155 10)' }}>
-                {totalErros}
+                {cadernoPendentes}
                 <small className="ml-2 font-mono text-[11px] font-semibold tracking-[0.04em]" style={{ color: '#94a3b8' }}>
                   pendentes
                 </small>
               </p>
+              {cadernoTotal > 0 && (
+                <div className="mt-2.5">
+                  <div className="mb-1 flex items-center justify-between gap-2">
+                    <span className="font-mono text-[10px]" style={{ color: '#94a3b8' }}>
+                      {cadernoRevisados} de {cadernoTotal} revisados
+                    </span>
+                    <span className="font-mono text-[10px] font-semibold" style={{ color: 'oklch(0.465 0.155 10)' }}>
+                      {Math.round((cadernoRevisados / cadernoTotal) * 100)}%
+                    </span>
+                  </div>
+                  <div className="h-1 overflow-hidden rounded-full" style={{ background: 'oklch(0.465 0.155 10 / 0.12)' }}>
+                    <div
+                      className="h-full rounded-full transition-all"
+                      style={{
+                        width: `${Math.round((cadernoRevisados / cadernoTotal) * 100)}%`,
+                        background: 'oklch(0.465 0.155 10)',
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
-            <svg className="shrink-0" width="76" height="56" viewBox="0 0 76 56" fill="none" style={{ color: 'oklch(0.465 0.155 10)' }}>
-              <circle cx="38" cy="28" r="20" fill="none" stroke="currentColor" strokeOpacity=".18" strokeWidth="6" />
-              <path d="M38 8 a 20 20 0 0 1 17.32 30" fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
+            <svg className="shrink-0 -rotate-90" width="56" height="56" viewBox="0 0 56 56" fill="none" style={{ color: 'oklch(0.465 0.155 10)' }}>
+              <circle cx="28" cy="28" r="20" fill="none" stroke="currentColor" strokeOpacity=".15" strokeWidth="6" />
+              <circle
+                cx="28" cy="28" r="20"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="6"
+                strokeLinecap="round"
+                strokeDasharray={`${cadernoTotal > 0 ? (cadernoRevisados / cadernoTotal) * 125.66 : 0} 125.66`}
+              />
             </svg>
           </div>
         </div>

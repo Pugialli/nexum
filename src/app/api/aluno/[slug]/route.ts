@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server"
 import { getAlunoSlug } from "./get-aluno"
+import { arquivarAluno, patchAlunoNome, resetarSenhaAluno } from "./patch-aluno"
 import { updateAluno, type UpdateAlunoProps } from "./update-aluno"
 
 export async function PUT(request: NextRequest) {
@@ -22,6 +23,31 @@ export async function PUT(request: NextRequest) {
       { message: "Erro interno do servidor" },
       { status: 500 }
     )
+  }
+}
+
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ slug: string }> },
+) {
+  try {
+    const { slug } = await params
+    const body = await request.json()
+
+    if (body.action === 'arquivar') {
+      await arquivarAluno(slug)
+    } else if (body.action === 'resetar-senha') {
+      await resetarSenhaAluno(slug)
+    } else if (typeof body.nome === 'string') {
+      await patchAlunoNome(slug, body.nome)
+    } else {
+      return NextResponse.json({ message: 'Requisição inválida' }, { status: 400 })
+    }
+
+    return NextResponse.json({ success: true })
+  } catch (err) {
+    console.error('PATCH /aluno error:', err)
+    return NextResponse.json({ message: 'Erro interno do servidor' }, { status: 500 })
   }
 }
 

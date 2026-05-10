@@ -121,8 +121,8 @@ export function ProvaForm({ habilidades, assuntos, prova }: ProvaFormProps) {
                   onClick={recalcularNotaMaxima}
                   disabled={isRecalculating}
                   title="Recalcular"
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] border border-border bg-white transition-colors hover:bg-[var(--page-bg)] disabled:opacity-50"
-                  style={{ color: '#94a3b8' }}
+                  className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-[10px] border border-border bg-white transition-colors hover:bg-[var(--page-bg)] disabled:opacity-50"
+                  style={{ color: 'var(--color-secondary)' }}
                 >
                   <RotateCcw size={14} className={isRecalculating ? 'animate-spin' : ''} />
                 </button>
@@ -235,7 +235,7 @@ export function ProvaForm({ habilidades, assuntos, prova }: ProvaFormProps) {
 
                 <td className="border-b border-border px-4 py-2">
                   <Select name={`questoes[${i}].assuntoValue`} defaultValue={questao.assuntoValue}>
-                    <SelectTrigger className="h-8 w-44 rounded-[8px] text-[12px]">
+                    <SelectTrigger className="h-8 w-56 rounded-[8px] text-[12px]">
                       <SelectValue placeholder="Selecione" />
                     </SelectTrigger>
                     <SelectContent>

@@ -17,6 +17,7 @@ interface Carreira {
 
 interface AlunoProfileFormProps {
   mode: "complete" | "edit"
+  redirectTo?: string
   initialData?: {
     nome?: string
     email?: string
@@ -28,12 +29,12 @@ interface AlunoProfileFormProps {
   }
 }
 
-export function AlunoProfileForm({ mode, initialData }: AlunoProfileFormProps) {
+export function AlunoProfileForm({ mode, redirectTo = '/', initialData }: AlunoProfileFormProps) {
   const { user } = useAuth()
   const router = useRouter()
   const [{ success, message, errors }, handleSubmit, isPending] = useFormState(
     updateAlunoAction,
-    () => router.push('/'),
+    () => router.push(redirectTo),
   )
 
   const [carreiras, setCarreiras] = useState<Carreira[]>([])
@@ -75,7 +76,7 @@ export function AlunoProfileForm({ mode, initialData }: AlunoProfileFormProps) {
 
   return (
     <div
-      className="overflow-hidden rounded-[18px] border border-border bg-white"
+      className="rounded-[18px] border border-border bg-white"
       style={{ boxShadow: '0 1px 0 rgba(15,23,42,0.02)' }}
     >
       {/* Header */}

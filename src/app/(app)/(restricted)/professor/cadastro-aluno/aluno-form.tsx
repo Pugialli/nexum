@@ -1,6 +1,7 @@
 'use client'
 
 import { AlertTriangle, BadgeCheck, Loader2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { useFormState } from '@/hooks/use-form-state'
@@ -8,8 +9,9 @@ import { useFormState } from '@/hooks/use-form-state'
 import { createAlunoAction } from './actions'
 
 export function CreateAlunoForm() {
+  const router = useRouter()
   const [{ success, message }, handleSubmit, isPending] =
-    useFormState(createAlunoAction)
+    useFormState(createAlunoAction, () => { router.refresh() })
 
   return (
     <div

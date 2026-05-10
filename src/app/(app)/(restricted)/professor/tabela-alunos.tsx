@@ -10,15 +10,21 @@ import {
   Dialog, DialogContent, DialogDescription,
   DialogTitle,
 } from '@/components/ui/dialog'
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
+  DropdownMenuSeparator, DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { archiveAluno } from '@/http/archive-aluno'
 import { deleteProvaAluno } from '@/http/delete-prova-aluno'
 import type { GetAlunosProfessor } from '@/http/get-alunos'
 import { getProvas } from '@/http/get-provas'
+import { resetAlunoPassword } from '@/http/reset-aluno-password'
 import {
   BarChart3, FileText, LayoutGrid, List,
-  Loader2, Plus, RotateCcw, Search, Trash2,
+  Loader2, MoreHorizontal, Pencil, Plus, RotateCcw, Search, Trash2, UserX,
 } from 'lucide-react'
 import Link from 'next/link'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 export interface TabelaAlunosProps {
@@ -40,8 +46,20 @@ function initials(nome: string) {
 
 const AVATAR_GRADIENT = 'linear-gradient(135deg, oklch(0.465 0.155 10), oklch(0.635 0.195 35))'
 
+const AVATAR_GRADIENTS = [
+  'linear-gradient(135deg, oklch(0.465 0.155 10), oklch(0.635 0.195 35))',
+  'linear-gradient(135deg, oklch(0.38 0.10 186), oklch(0.55 0.14 186))',
+  'linear-gradient(135deg, oklch(0.52 0.17 50), oklch(0.68 0.15 85))',
+]
+
+const RING_COLORS = [
+  'oklch(0.465 0.155 10)',
+  'oklch(0.42 0.13 186)',
+  'oklch(0.58 0.19 35)',
+]
+
 function getGcpColors(gcp: number, hasProvas: boolean) {
-  if (!hasProvas) return { color: '#CBD5E1', trackColor: '#E2E8F0' }
+  if (!hasProvas) return { color: '#94a3b8', trackColor: '#E2E8F0' }
   if (gcp >= 60) return { color: 'oklch(0.42 0.13 145)', trackColor: 'oklch(0.94 0.06 145)' }
   if (gcp >= 40) return { color: 'oklch(0.58 0.19 35)',  trackColor: 'oklch(0.93 0.08 35)' }
   return          { color: 'oklch(0.465 0.155 10)',       trackColor: 'oklch(0.96 0.02 10)' }
@@ -132,9 +150,12 @@ function GcpRing({ gcp, color, trackColor }: { gcp: number; color: string; track
 interface AlunoCardProps {
   aluno: GetAlunosProfessor
   onProvas: (aluno: GetAlunosProfessor) => void
+  onRemove: (aluno: GetAlunosProfessor) => void
+  onResetSenha: (slug: string, nome: string) => void
+  resetting: boolean
 }
 
-function AlunoCard({ aluno, onProvas }: AlunoCardProps) {
+function AlunoCard({ aluno, onProvas, onRemove, onResetSenha, resetting }: AlunoCardProps) {
   const status = getStatus(aluno.gcpMedio ?? 0, aluno.provas.length)
   const ultimaProva = aluno.provas[aluno.provas.length - 1]
   const { color: ringColor, trackColor: ringTrack } = getGcpColors(aluno.gcpMedio ?? 0, aluno.provas.length > 0)
@@ -265,20 +286,14 @@ function AlunoCard({ aluno, onProvas }: AlunoCardProps) {
 
       {/* Actions */}
       <div className="mt-3.5 flex gap-2">
-        {[
-          { label: 'Senha', href: `/professor/resetar-senha/${aluno.slug}`, onClick: undefined },
-          { label: 'Dashboard', href: `/professor/aluno/${aluno.slug}/dashboard`, onClick: undefined },
-        ].map(({ label, href }) => (
-          <Link
-            key={label}
-            href={href}
-            className="flex flex-1 h-9 items-center justify-center gap-1.5 rounded-[10px] border border-border bg-white text-[12.5px] font-semibold transition-all hover:border-[var(--accent)] hover:text-[var(--accent)]"
-            style={{ color: 'oklch(0.36 0.015 240)' }}
-          >
-            {label === 'Senha' ? <RotateCcw size={13} /> : <BarChart3 size={13} />}
-            {label}
-          </Link>
-        ))}
+        <Link
+          href={`/professor/aluno/${aluno.slug}/dashboard`}
+          className="flex flex-1 h-9 items-center justify-center gap-1.5 rounded-[10px] border border-border bg-white text-[12.5px] font-semibold transition-all hover:border-[var(--accent)] hover:text-[var(--accent)]"
+          style={{ color: 'oklch(0.36 0.015 240)' }}
+        >
+          <BarChart3 size={13} />
+          Dashboard
+        </Link>
         <button
           onClick={() => onProvas(aluno)}
           className="flex flex-1 h-9 cursor-pointer items-center justify-center gap-1.5 rounded-[10px] border border-border bg-white text-[12.5px] font-semibold transition-all hover:border-[var(--accent)] hover:text-[var(--accent)]"
@@ -287,6 +302,43 @@ function AlunoCard({ aluno, onProvas }: AlunoCardProps) {
           <FileText size={13} />
           Provas
         </button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-[10px] border border-border bg-white transition-all hover:border-[var(--accent)] hover:text-[var(--accent)]"
+              style={{ color: '#94a3b8' }}
+            >
+              <MoreHorizontal size={15} />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-[180px]" style={{ width: 180 }}>
+            <DropdownMenuItem
+              className="cursor-pointer"
+              disabled={resetting}
+              onClick={() => onResetSenha(aluno.slug, aluno.nome)}
+            >
+              {resetting
+                ? <Loader2 size={13} className="animate-spin" />
+                : <RotateCcw size={13} />}
+              Resetar senha
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href={`/professor/aluno/${aluno.slug}/editar`} className="flex items-center gap-2">
+                <Pencil size={13} />
+                Editar perfil
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              variant="destructive"
+              className="cursor-pointer"
+              onClick={() => onRemove(aluno)}
+            >
+              <UserX size={13} />
+              Remover da turma
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </article>
   )
@@ -295,8 +347,13 @@ function AlunoCard({ aluno, onProvas }: AlunoCardProps) {
 // ── Main component ─────────────────────────────────────────────────────────
 
 export function TabelaAlunos({ alunos }: TabelaAlunosProps) {
+  const [alunosLocal, setAlunosLocal] = useState(alunos)
+  useEffect(() => { setAlunosLocal(alunos) }, [alunos])
+
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards')
   const [search, setSearch] = useState('')
+
+  // Modais de provas
   const [modalAberto, setModalAberto] = useState(false)
   const [alertAberto, setAlertAberto] = useState(false)
   const [alunoSelecionado, setAlunoSelecionado] = useState<GetAlunosProfessor | null>(null)
@@ -308,9 +365,43 @@ export function TabelaAlunos({ alunos }: TabelaAlunosProps) {
     nomeProva: string
   } | null>(null)
 
-  const filtered = alunos.filter((a) =>
+  // Reset de senha
+  const [resetandoSlug, setResetandoSlug] = useState<string | null>(null)
+
+  // Modal de remoção
+  const [removendoAluno, setRemovendoAluno] = useState<GetAlunosProfessor | null>(null)
+  const [arquivando, setArquivando] = useState(false)
+
+  const filtered = alunosLocal.filter((a) =>
     a.nome.toLowerCase().includes(search.toLowerCase())
   )
+
+  const handleResetSenha = async (slug: string, nome: string) => {
+    setResetandoSlug(slug)
+    try {
+      await resetAlunoPassword(slug)
+      toast.success(`Senha de ${nome} resetada para nexum123.`)
+    } catch {
+      toast.error(`Erro ao resetar a senha de ${nome}.`)
+    } finally {
+      setResetandoSlug(null)
+    }
+  }
+
+  const confirmarRemocao = async () => {
+    if (!removendoAluno) return
+    setArquivando(true)
+    try {
+      await archiveAluno(removendoAluno.slug)
+      setAlunosLocal((prev) => prev.filter((a) => a.slug !== removendoAluno.slug))
+      setRemovendoAluno(null)
+      toast.success('Aluno removido da turma.')
+    } catch {
+      toast.error('Erro ao remover o aluno.')
+    } finally {
+      setArquivando(false)
+    }
+  }
 
   const abrirModalProvas = useCallback(async (aluno: GetAlunosProfessor) => {
     setAlunoSelecionado(aluno)
@@ -357,8 +448,91 @@ export function TabelaAlunos({ alunos }: TabelaAlunosProps) {
     }
   }
 
+  const alunosComGcp = alunosLocal.filter((a) => a.gcpMedio != null && a.provas.length > 0)
+  const gcpMedio =
+    alunosComGcp.length > 0
+      ? alunosComGcp.reduce((acc, a) => acc + (a.gcpMedio ?? 0), 0) / alunosComGcp.length
+      : null
+  const totalProvas = alunosLocal.reduce((acc, a) => acc + a.provas.length, 0)
+
   return (
     <>
+      {/* ── Stat cards ── */}
+      <div className="mb-7 grid grid-cols-1 gap-4 sm:grid-cols-3">
+        {/* Total de alunos */}
+        <div className="relative overflow-hidden rounded-[18px] border border-border bg-white p-5">
+          <div className="absolute inset-x-0 top-0 h-[3px]" style={{ background: 'var(--color-primary)' }} />
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.14em]" style={{ color: '#94a3b8' }}>
+                Total de alunos
+              </p>
+              <p className="font-heading text-[36px] font-extrabold leading-none tracking-tight" style={{ color: 'var(--color-primary)' }}>
+                {alunosLocal.length}
+                <small className="ml-2 font-mono text-[11px] font-semibold tracking-[0.04em]" style={{ color: '#94a3b8' }}>
+                  cadastrados
+                </small>
+              </p>
+            </div>
+            <svg className="shrink-0" width="76" height="56" viewBox="0 0 76 56" fill="none" style={{ color: 'var(--color-primary)' }}>
+              <path d="M2 44 L14 36 L26 40 L38 24 L50 30 L62 14 L74 20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M2 44 L14 36 L26 40 L38 24 L50 30 L62 14 L74 20 L74 56 L2 56 Z" fill="currentColor" fillOpacity=".1" />
+              <circle cx="74" cy="20" r="3" fill="currentColor" />
+            </svg>
+          </div>
+        </div>
+
+        {/* GCP médio */}
+        <div className="relative overflow-hidden rounded-[18px] border border-border bg-white p-5">
+          <div className="absolute inset-x-0 top-0 h-[3px]" style={{ background: 'var(--color-secondary)' }} />
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.14em]" style={{ color: '#94a3b8' }}>
+                GCP médio da turma
+              </p>
+              <p className="font-heading text-[36px] font-extrabold leading-none tracking-tight" style={{ color: 'var(--color-secondary)' }}>
+                {gcpMedio != null ? gcpMedio.toFixed(1).replace('.', ',') : '—'}
+                {gcpMedio != null && (
+                  <small className="ml-2 font-mono text-[11px] font-semibold tracking-[0.04em]" style={{ color: '#94a3b8' }}>
+                    / 100
+                  </small>
+                )}
+              </p>
+            </div>
+            <svg className="shrink-0" width="76" height="56" viewBox="0 0 76 56" fill="none" style={{ color: 'var(--color-secondary)' }}>
+              <rect x="2"  y="34" width="8" height="22" rx="2" fill="currentColor" fillOpacity=".25" />
+              <rect x="14" y="26" width="8" height="30" rx="2" fill="currentColor" fillOpacity=".4" />
+              <rect x="26" y="20" width="8" height="36" rx="2" fill="currentColor" fillOpacity=".55" />
+              <rect x="38" y="14" width="8" height="42" rx="2" fill="currentColor" fillOpacity=".7" />
+              <rect x="50" y="22" width="8" height="34" rx="2" fill="currentColor" fillOpacity=".85" />
+              <rect x="62" y="10" width="8" height="46" rx="2" fill="currentColor" />
+            </svg>
+          </div>
+        </div>
+
+        {/* Provas realizadas */}
+        <div className="relative overflow-hidden rounded-[18px] border border-border bg-white p-5">
+          <div className="absolute inset-x-0 top-0 h-[3px]" style={{ background: 'oklch(0.465 0.155 10)' }} />
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.14em]" style={{ color: '#94a3b8' }}>
+                Provas realizadas
+              </p>
+              <p className="font-heading text-[36px] font-extrabold leading-none tracking-tight" style={{ color: 'oklch(0.465 0.155 10)' }}>
+                {totalProvas}
+                <small className="ml-2 font-mono text-[11px] font-semibold tracking-[0.04em]" style={{ color: '#94a3b8' }}>
+                  no total
+                </small>
+              </p>
+            </div>
+            <svg className="shrink-0" width="76" height="56" viewBox="0 0 76 56" fill="none" style={{ color: 'oklch(0.465 0.155 10)' }}>
+              <circle cx="38" cy="28" r="20" fill="none" stroke="currentColor" strokeOpacity=".18" strokeWidth="6" />
+              <path d="M38 8 a 20 20 0 0 1 17.32 30" fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
       {/* ── Section header ── */}
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2.5">
@@ -435,6 +609,9 @@ export function TabelaAlunos({ alunos }: TabelaAlunosProps) {
               key={aluno.slug}
               aluno={aluno}
               onProvas={abrirModalProvas}
+              onRemove={setRemovendoAluno}
+              onResetSenha={handleResetSenha}
+              resetting={resetandoSlug === aluno.slug}
             />
           ))}
 
@@ -580,20 +757,14 @@ export function TabelaAlunos({ alunos }: TabelaAlunosProps) {
                     {/* Ações */}
                     <td className="border-b border-border px-[18px] py-3.5">
                       <div className="flex justify-end gap-1.5">
-                        {[
-                          { title: 'Resetar senha', href: `/professor/resetar-senha/${aluno.slug}`, icon: RotateCcw },
-                          { title: 'Dashboard', href: `/professor/aluno/${aluno.slug}/dashboard`, icon: BarChart3 },
-                        ].map(({ title, href, icon: Icon }) => (
-                          <Link
-                            key={title}
-                            href={href}
-                            title={title}
-                            className="flex h-8 w-8 items-center justify-center rounded-[9px] border border-border bg-white transition-all hover:border-[var(--color-secondary)] hover:bg-[oklch(0.96_0.015_186)] hover:text-[var(--color-secondary)]"
-                            style={{ color: '#94a3b8' }}
-                          >
-                            <Icon size={14} />
-                          </Link>
-                        ))}
+                        <Link
+                          href={`/professor/aluno/${aluno.slug}/dashboard`}
+                          title="Dashboard"
+                          className="flex h-8 w-8 items-center justify-center rounded-[9px] border border-border bg-white transition-all hover:border-[var(--color-secondary)] hover:bg-[oklch(0.96_0.015_186)] hover:text-[var(--color-secondary)]"
+                          style={{ color: '#94a3b8' }}
+                        >
+                          <BarChart3 size={14} />
+                        </Link>
                         <button
                           title="Provas"
                           onClick={() => abrirModalProvas(aluno)}
@@ -602,6 +773,41 @@ export function TabelaAlunos({ alunos }: TabelaAlunosProps) {
                         >
                           <FileText size={14} />
                         </button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <button
+                              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-[9px] border border-border bg-white transition-all hover:border-[var(--color-secondary)] hover:bg-[oklch(0.96_0.015_186)] hover:text-[var(--color-secondary)]"
+                              style={{ color: '#94a3b8' }}
+                            >
+                              <MoreHorizontal size={14} />
+                            </button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-[180px]" style={{ width: 180 }}>
+                            <DropdownMenuItem
+                              className="cursor-pointer"
+                              onClick={() => handleResetSenha(aluno.slug, aluno.nome)}
+                              disabled={resetandoSlug === aluno.slug}
+                            >
+                              <RotateCcw size={13} className={resetandoSlug === aluno.slug ? 'animate-spin' : ''} />
+                              {resetandoSlug === aluno.slug ? 'Resetando...' : 'Resetar senha'}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                              <Link href={`/professor/aluno/${aluno.slug}/editar`} className="flex items-center gap-2">
+                                <Pencil size={13} />
+                                Editar perfil
+                              </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              variant="destructive"
+                              className="cursor-pointer"
+                              onClick={() => setRemovendoAluno(aluno)}
+                            >
+                              <UserX size={13} />
+                              Remover da turma
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                     </td>
                   </tr>
@@ -734,7 +940,48 @@ export function TabelaAlunos({ alunos }: TabelaAlunosProps) {
         </DialogContent>
       </Dialog>
 
-      {/* ── Alert de confirmação ── */}
+      {/* ── Modal de remoção ── */}
+      <Dialog open={!!removendoAluno} onOpenChange={(open) => { if (!open && !arquivando) setRemovendoAluno(null) }}>
+        <DialogContent className="gap-0 overflow-hidden rounded-[22px] border-border p-0 shadow-[0_24px_64px_-12px_rgba(15,23,42,0.22)] sm:max-w-[420px]">
+          <div className="border-b border-border px-6 pb-5 pr-12 pt-6">
+            <p className="mb-1.5 font-mono text-[10px] uppercase tracking-[0.14em]" style={{ color: '#94a3b8' }}>
+              Remover aluno
+            </p>
+            <DialogTitle className="font-heading text-[20px] font-bold leading-tight" style={{ color: 'oklch(0.22 0.02 240)' } as React.CSSProperties}>
+              {removendoAluno?.nome}
+            </DialogTitle>
+            <DialogDescription className="mt-2 text-[13px] leading-[1.6]" style={{ color: 'oklch(0.45 0.02 240)' } as React.CSSProperties}>
+              Este aluno será movido para ex-aluno e não aparecerá mais na sua turma. A ação pode ser revertida manualmente.
+            </DialogDescription>
+          </div>
+          <div className="flex gap-2 px-6 py-4">
+            <button
+              onClick={() => setRemovendoAluno(null)}
+              disabled={arquivando}
+              className="flex flex-1 h-9 cursor-pointer items-center justify-center rounded-[10px] border border-border bg-white text-[13px] font-semibold transition-all hover:bg-[var(--page-bg)] disabled:opacity-50"
+              style={{ color: 'oklch(0.36 0.015 240)' }}
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={confirmarRemocao}
+              disabled={arquivando}
+              className="flex flex-1 h-9 cursor-pointer items-center justify-center gap-2 rounded-[10px] text-[13px] font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50"
+              style={{
+                background: 'linear-gradient(180deg, oklch(0.465 0.155 10) 0%, oklch(0.38 0.13 10) 100%)',
+                boxShadow: '0 1px 0 rgba(255,255,255,0.15) inset',
+              }}
+            >
+              {arquivando
+                ? <Loader2 size={14} className="animate-spin" />
+                : <><UserX size={14} /> Remover</>
+              }
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── Alert de confirmação de remoção de prova ── */}
       <AlertDialog open={alertAberto} onOpenChange={setAlertAberto}>
         <AlertDialogContent>
           <AlertDialogHeader>

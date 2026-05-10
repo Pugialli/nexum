@@ -77,7 +77,7 @@ export default function CartaoRespostaPage() {
     <div className="mx-auto w-full max-w-[860px] px-4 py-6 sm:px-7 sm:py-8">
       {/* Card */}
       <div
-        className="overflow-hidden rounded-[18px] border border-border bg-white"
+        className="rounded-[18px] border border-border bg-white"
         style={{ boxShadow: '0 1px 0 rgba(15,23,42,0.02)' }}
       >
         {/* Card header */}
@@ -157,100 +157,106 @@ export default function CartaoRespostaPage() {
               )}
             </div>
 
-            {/* Warning */}
-            <div
-              className="flex items-start gap-3 rounded-[12px] border px-4 py-3"
-              style={{
-                background: 'oklch(0.98 0.025 85)',
-                borderColor: 'oklch(0.88 0.08 85)',
-              }}
-            >
-              <AlertTriangle size={15} className="mt-px shrink-0" style={{ color: 'oklch(0.62 0.14 60)' }} />
-              <div>
-                <p className="font-mono text-[10.5px] uppercase tracking-[0.12em]" style={{ color: 'oklch(0.52 0.1 60)' }}>
-                  Atenção
-                </p>
-                <p className="mt-0.5 text-[13px]" style={{ color: 'oklch(0.42 0.08 60)' }}>
-                  Você tem 135 minutos para responder esta prova.
-                </p>
-              </div>
-            </div>
-
-            {/* Questions */}
-            <div
-              className="overflow-hidden rounded-[14px] border border-border"
-              style={{ boxShadow: '0 1px 0 rgba(15,23,42,0.02)' }}
-            >
-              {/* Column headers */}
+            {/* Warning — só aparece após selecionar a prova */}
+            {selectedProva && (
               <div
-                className="grid items-center border-b border-border px-4 py-2.5"
+                className="flex items-start gap-3 rounded-[12px] border px-4 py-3"
                 style={{
-                  gridTemplateColumns: '56px 1fr 1fr 1fr 1fr 1fr',
-                  background: 'linear-gradient(180deg, var(--page-bg), transparent)',
+                  background: 'oklch(0.98 0.025 85)',
+                  borderColor: 'oklch(0.88 0.08 85)',
                 }}
               >
-                <span className="font-mono text-[10px] uppercase tracking-[0.14em]" style={{ color: '#94a3b8' }}>#</span>
-                {OPTIONS.map((o) => (
-                  <span key={o} className="text-center font-mono text-[10px] uppercase tracking-[0.14em]" style={{ color: '#94a3b8' }}>{o}</span>
-                ))}
+                <AlertTriangle size={15} className="mt-px shrink-0" style={{ color: 'oklch(0.62 0.14 60)' }} />
+                <div>
+                  <p className="font-mono text-[10.5px] uppercase tracking-[0.12em]" style={{ color: 'oklch(0.52 0.1 60)' }}>
+                    Atenção
+                  </p>
+                  <p className="mt-0.5 text-[13px]" style={{ color: 'oklch(0.42 0.08 60)' }}>
+                    Você tem 135 minutos para responder esta prova.
+                  </p>
+                </div>
               </div>
+            )}
 
-              {QUESTIONS.map((qNumber, index) => (
+            {/* Questions + Submit — só aparecem após selecionar a prova */}
+            {selectedProva && (
+              <>
                 <div
-                  key={qNumber}
-                  className="grid items-center px-4 py-2"
+                  className="overflow-hidden rounded-[14px] border border-border"
+                  style={{ boxShadow: '0 1px 0 rgba(15,23,42,0.02)' }}
+                >
+                  {/* Column headers */}
+                  <div
+                    className="grid items-center border-b border-border px-4 py-2.5"
+                    style={{
+                      gridTemplateColumns: '56px 1fr 1fr 1fr 1fr 1fr',
+                      background: 'linear-gradient(180deg, var(--page-bg), transparent)',
+                    }}
+                  >
+                    <span className="font-mono text-[10px] uppercase tracking-[0.14em]" style={{ color: '#94a3b8' }}>#</span>
+                    {OPTIONS.map((o) => (
+                      <span key={o} className="text-center font-mono text-[10px] uppercase tracking-[0.14em]" style={{ color: '#94a3b8' }}>{o}</span>
+                    ))}
+                  </div>
+
+                  {QUESTIONS.map((qNumber, index) => (
+                    <div
+                      key={qNumber}
+                      className="grid items-center px-4 py-2"
+                      style={{
+                        gridTemplateColumns: '56px 1fr 1fr 1fr 1fr 1fr',
+                        borderBottom: index < QUESTIONS.length - 1 ? '1px solid var(--border)' : undefined,
+                        background: index % 2 !== 0 ? 'var(--page-bg)' : 'white',
+                      }}
+                    >
+                      <span className="font-mono text-[13px] font-semibold" style={{ color: 'oklch(0.36 0.015 240)' }}>
+                        {qNumber}
+                      </span>
+                      {OPTIONS.map((opt) => {
+                        const selected = answers[qNumber] === opt
+                        return (
+                          <div key={opt} className="flex justify-center">
+                            <button
+                              type="button"
+                              onClick={() => handleAnswerChange(qNumber, opt)}
+                              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full font-mono text-[12px] font-semibold transition-all"
+                              style={
+                                selected
+                                  ? {
+                                      background: 'var(--color-primary)',
+                                      color: '#fff',
+                                      boxShadow: '0 2px 8px -2px var(--color-primary)',
+                                    }
+                                  : {
+                                      border: '1.5px solid oklch(0.88 0.01 240)',
+                                      color: '#94a3b8',
+                                      background: 'white',
+                                    }
+                              }
+                            >
+                              {opt}
+                            </button>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Submit */}
+                <button
+                  type="submit"
+                  disabled={isPending}
+                  className="flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-[10px] text-[14px] font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50"
                   style={{
-                    gridTemplateColumns: '56px 1fr 1fr 1fr 1fr 1fr',
-                    borderBottom: index < QUESTIONS.length - 1 ? '1px solid var(--border)' : undefined,
-                    background: index % 2 !== 0 ? 'var(--page-bg)' : 'white',
+                    background: 'linear-gradient(180deg, var(--color-primary) 0%, oklch(0.58 0.19 35) 100%)',
+                    boxShadow: '0 1px 0 rgba(255,255,255,0.25) inset, 0 8px 22px -10px var(--color-primary)',
                   }}
                 >
-                  <span className="font-mono text-[13px] font-semibold" style={{ color: 'oklch(0.36 0.015 240)' }}>
-                    {qNumber}
-                  </span>
-                  {OPTIONS.map((opt) => {
-                    const selected = answers[qNumber] === opt
-                    return (
-                      <div key={opt} className="flex justify-center">
-                        <button
-                          type="button"
-                          onClick={() => handleAnswerChange(qNumber, opt)}
-                          className="flex h-8 w-8 items-center justify-center rounded-full font-mono text-[12px] font-semibold transition-all"
-                          style={
-                            selected
-                              ? {
-                                  background: 'var(--color-primary)',
-                                  color: '#fff',
-                                  boxShadow: '0 2px 8px -2px var(--color-primary)',
-                                }
-                              : {
-                                  border: '1.5px solid oklch(0.88 0.01 240)',
-                                  color: '#94a3b8',
-                                  background: 'white',
-                                }
-                          }
-                        >
-                          {opt}
-                        </button>
-                      </div>
-                    )
-                  })}
-                </div>
-              ))}
-            </div>
-
-            {/* Submit */}
-            <button
-              type="submit"
-              disabled={!selectedProva || isPending}
-              className="flex h-10 w-full items-center justify-center gap-2 rounded-[10px] text-[14px] font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50"
-              style={{
-                background: 'linear-gradient(180deg, var(--color-primary) 0%, oklch(0.58 0.19 35) 100%)',
-                boxShadow: '0 1px 0 rgba(255,255,255,0.25) inset, 0 8px 22px -10px var(--color-primary)',
-              }}
-            >
-              {isPending ? <Loader2 size={16} className="animate-spin" /> : 'Enviar prova'}
-            </button>
+                  {isPending ? <Loader2 size={16} className="animate-spin" /> : 'Enviar prova'}
+                </button>
+              </>
+            )}
           </div>
         </form>
       </div>

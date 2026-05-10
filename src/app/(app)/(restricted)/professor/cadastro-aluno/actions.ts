@@ -5,7 +5,7 @@ import { HTTPError } from 'ky'
 import { loggedUser } from '@/auth/auth'
 import { createAluno } from '@/http/create-aluno'
 import { createAlunoSchema } from '@/lib/validators/aluno'
-import { revalidateTag } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 
 export async function createAlunoAction(data: FormData) {
   const user = await loggedUser()
@@ -29,7 +29,8 @@ export async function createAlunoAction(data: FormData) {
       slugProfessor,
     })
 
-    revalidateTag(`${slugProfessor}/alunos`, {})
+    revalidateTag(`${slugProfessor}/alunos`)
+    revalidatePath('/professor')
   } catch (err) {
     if (err instanceof HTTPError) {
       const { message } = await err.response.json()

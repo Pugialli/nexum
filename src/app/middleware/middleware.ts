@@ -19,6 +19,12 @@ export async function middleware(request: NextRequest) {
     if (userRole !== 'ALUNO') {
       return NextResponse.redirect(new URL('/professor', request.url))
     }
+
+    // Força troca de senha na primeira vez (senha padrão nexum123)
+    const mustResetPassword = (session.user as { resetPassword?: boolean }).resetPassword
+    if (mustResetPassword && pathname !== '/aluno/completar-perfil') {
+      return NextResponse.redirect(new URL('/aluno/completar-perfil', request.url))
+    }
   }
 
   if (pathname.startsWith('/professor')) {

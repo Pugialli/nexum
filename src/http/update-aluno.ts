@@ -39,11 +39,11 @@ export async function updateAluno({
     carreira,
     telefone,
     slug,
+    resetPassword: false,
   }
 
   if (password) {
     body.password = password
-    body.resetPassword = false
   }
 
   await api.put(`aluno/${slug}`, {
