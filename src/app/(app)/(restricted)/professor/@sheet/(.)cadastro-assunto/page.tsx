@@ -15,7 +15,7 @@ export default function CreateAssuntoModal({ onNovoAssunto }: CreateAssuntoModal
   const router = useRouter()
 
   return (
-    <Sheet defaultOpen onOpenChange={(open) => !open && router.back()}>
+    <Sheet defaultOpen onOpenChange={(open) => !open && router.push('/professor/assunto')}>
       <InterceptedSheetContent side="bottom">
         <SheetHeader>
           <SheetTitle>Criar assunto</SheetTitle>

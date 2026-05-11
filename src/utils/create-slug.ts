@@ -1,7 +1,10 @@
 export function createSlug(email: string, date = new Date()) {
   const normalizedEmail = email.trim().toLowerCase()
 
-  const username = normalizedEmail.split("@")[0]
+  const username = normalizedEmail
+    .split("@")[0]
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
 
   const month = String(date.getMonth() + 1).padStart(2, "0")
   const year = String(date.getFullYear()).slice(-2)

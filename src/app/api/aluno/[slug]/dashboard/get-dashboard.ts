@@ -26,6 +26,8 @@ export interface DashboardData {
   provas: ProvaResult[]
   errosPorProva: Record<string, SimuladoError[]>
   habilidades: HabilidadeResult[]
+  cadernoTotal: number
+  cadernoRevisados: number
 }
 
 export async function getDashboardBySlug(slug: string): Promise<DashboardData | null> {
@@ -59,7 +61,7 @@ export async function getDashboardBySlug(slug: string): Promise<DashboardData | 
   })
 
   if (provaAlunos.length === 0) {
-    return { provas: [], errosPorProva: {}, habilidades: [] }
+    return { provas: [], errosPorProva: {}, habilidades: [], cadernoTotal: 0, cadernoRevisados: 0 }
   }
 
   // 3. Monta histórico de provas
@@ -109,5 +111,17 @@ export async function getDashboardBySlug(slug: string): Promise<DashboardData | 
     }))
     .sort((a, b) => b.errorRate - a.errorRate)
 
-  return { provas, errosPorProva, habilidades }
+  // 6. Busca progresso real do caderno de erros
+  const cadernoErros = await prisma.cadernoErro.findMany({
+    where: {
+      resposta: {
+        provaAluno: { idAluno: user.id },
+      },
+    },
+    select: { revisao3: true },
+  })
+  const cadernoTotal = cadernoErros.length
+  const cadernoRevisados = cadernoErros.filter((e) => e.revisao3).length
+
+  return { provas, errosPorProva, habilidades, cadernoTotal, cadernoRevisados }
 }

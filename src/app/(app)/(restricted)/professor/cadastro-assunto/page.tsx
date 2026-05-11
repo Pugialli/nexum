@@ -1,9 +1,8 @@
-import { CreateAssuntoForm } from './assunto-form'
+﻿import { CreateAssuntoForm } from './assunto-form'
 
 export default function CadastroAssuntoPage() {
   return (
-    <div className="min-h-screen w-full items-center justify-start p-4 space-y-4">
-      <h1 className="font-bold">Cadastrar assunto</h1>
+    <div className="mx-auto w-full max-w-[560px] px-4 py-6 sm:px-7 sm:py-8">
       <CreateAssuntoForm />
     </div>
   )

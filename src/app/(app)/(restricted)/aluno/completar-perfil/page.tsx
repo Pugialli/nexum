@@ -1,9 +1,9 @@
-import { AlunoProfileForm } from "./aluno-profile-form";
+﻿import { AlunoProfileForm } from "./aluno-profile-form"
 
 export default function CompleteProfilePage() {
   return (
-    <div className="flex min-h-screen w-full items-center justify-center bg-background p-4">
+    <div className="mx-auto w-full max-w-[600px] px-4 py-6 sm:px-7 sm:py-8">
       <AlunoProfileForm mode="complete" />
     </div>
-  );
+  )
 }

@@ -38,6 +38,36 @@ Plataforma para professores acompanharem o progresso de alunos nos estudos para 
 
 ## Changelog
 
+### 0.9.2
+- Correções de build para Next.js 16: `DashboardAluno` recebe `cadernoTotal` e `cadernoRevisados` nas duas páginas que o usam (aluno e professor)
+- `revalidateTag` removido de `createAlunoAction` — assinatura mudou no Next.js 16; substituído por `revalidatePath` que já era suficiente
+- `src/middleware.ts` migrado para `src/proxy.ts` com função renomeada de `middleware` para `proxy` (convenção Next.js 16)
+
+### 0.9.1
+- Dashboard do aluno: card "Erros no caderno" agora exibe pendentes reais (total − revisados via `CadernoErro`) com barra de progresso e texto "X de Y revisados"
+- Cartão resposta: aviso de atenção e tabela de questões só aparecem após selecionar a prova; botões A–E com `cursor-pointer`
+- Dropdown "⋯" nos cards de aluno segue a cor de status (`--accent`) em vez de verde fixo; cor "sem provas" ajustada para slate-400
+- Middleware de reset de senha: alunos com `resetPassword: true` são redirecionados para `/aluno/completar-perfil` em qualquer rota; `resetPassword` zerado sempre ao salvar o perfil
+- `src/middleware.ts` criado na posição correta para Next.js (injeta `x-pathname` via header sem usar Prisma no Edge runtime); check de `resetPassword` movido para o layout do aluno (Node.js)
+- Slug de aluno sanitizado: pontos e caracteres especiais no username do e-mail são convertidos para hífen (`aluno.teste` → `aluno-teste`)
+- Ações de aluno unificadas em dropdown "⋯": Resetar senha (inline, toast com nome), Editar perfil, Remover da turma; dialog de remoção no design system
+- Toast de reset de senha inclui o nome do aluno em ambas as views (cards e tabela)
+- Filtro de alunos por `role = ALUNO` no backend — ex-alunos não aparecem na listagem
+- Overflow `hidden` removido dos cards de formulário (Cartão Resposta, Completar Perfil) para dropdown/select não ser cortado
+- Sheet "Criar assunto" redireciona para `/professor/assunto` ao fechar em vez de voltar ao histórico
+
+### 0.9.0
+- Redesign visual completo da plataforma com foco em consistência e responsividade mobile
+- Landing page (`/`) totalmente reformulada com nova identidade visual
+- Página de login redesenhada com layout mobile-friendly
+- `app-topbar.tsx` — novo componente de topbar compartilhado entre as áreas autenticadas
+- `aluno-sidebar.tsx` e `professor-sidebar.tsx` extraídos como componentes dedicados e redesenhados
+- Todas as páginas da área do aluno adaptadas para mobile (caderno de erros, cartão resposta, dashboard, completar perfil, perfil)
+- Todas as páginas da área do professor adaptadas para mobile (tabela de alunos, tabela de provas, tabela de assuntos, formulários de prova, perfil, cadastro)
+- Gráficos do dashboard (`GcpLineChart`, `HabilidadesChart`, `TestsBarChart`, modais) com layout responsivo
+- Formulários de cadastro e edição revisados visualmente (`ProvaForm`, `AlunoForm`, `AssuntoForm`, forms de perfil)
+- Componentes base de UI (`input`, `sonner`, `badge`, `button`, `card`, `table`) atualizados para o novo design system
+
 ### 0.8.3
 - Caderno de erros retorna `dificuldade` e `habilidade` por questão (`getErros` atualizado)
 - Cards do caderno ordenados por dificuldade dentro de cada grupo de assunto

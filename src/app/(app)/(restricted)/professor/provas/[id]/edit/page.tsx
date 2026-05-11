@@ -1,4 +1,4 @@
-import { getAssuntos } from "@/http/get-assuntos"
+﻿import { getAssuntos } from "@/http/get-assuntos"
 import { getHabilidades } from "@/http/get-habilidades"
 import { getProva } from "@/http/get-prova"
 import { ProvaForm } from "../../cadastro-prova/prova-form"
@@ -17,8 +17,7 @@ export default async function EditProvaPage({ params }: EditProvaPageProps) {
   ])
 
   return (
-    <div className="space-y-8 p-8">
-      <h1 className="text-2xl font-bold">Editar Prova</h1>
+    <div className="mx-auto w-full max-w-[1100px] px-3 py-6 sm:px-4 sm:py-8">
       <ProvaForm habilidades={habilidades} assuntos={assuntos} prova={prova} />
     </div>
   )

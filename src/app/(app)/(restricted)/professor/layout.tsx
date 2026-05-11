@@ -11,22 +11,26 @@ interface AdminLayoutProps {
   sheet: ReactNode
 }
 
-export default async function ProfessorLayout({
-  children,
-  sheet,
-}: AdminLayoutProps) {
+export default async function ProfessorLayout({ children, sheet }: AdminLayoutProps) {
   const user = await requireAuth()
 
   if (user.role !== 'PROFESSOR') {
     redirect('/aluno')
   }
-  
+
   return (
-    <div>
+    <main
+      className="flex flex-1 flex-col"
+      style={{
+        backgroundColor: 'var(--page-bg)',
+        backgroundImage: 'var(--dot-grid)',
+        backgroundSize: 'var(--dot-size)',
+      }}
+    >
       <Sheet>
         {children}
       </Sheet>
       {sheet}
-    </div>
+    </main>
   )
 }

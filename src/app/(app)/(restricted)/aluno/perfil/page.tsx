@@ -1,15 +1,13 @@
-// app/(app)/profile/edit/page.tsx
-import { loggedUser } from "@/auth/auth";
-import { getAluno } from "@/http/get-aluno";
-import { AlunoProfileForm } from "../completar-perfil/aluno-profile-form";
+﻿import { loggedUser } from "@/auth/auth"
+import { getAluno } from "@/http/get-aluno"
+import { AlunoProfileForm } from "../completar-perfil/aluno-profile-form"
 
 export default async function EditProfilePage() {
   const user = await loggedUser()
-
   const alunoData = await getAluno(user!.slug)
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <div className="mx-auto w-full max-w-[600px] px-4 py-6 sm:px-7 sm:py-8">
       <AlunoProfileForm
         mode="edit"
         initialData={{

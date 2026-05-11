@@ -1,28 +1,15 @@
-import { PlusSquare } from 'lucide-react'
-import Link from 'next/link'
-
-import { loggedUser } from '@/auth/auth'
-import { Button } from '@/components/ui/button'
+﻿import { loggedUser } from '@/auth/auth'
 import { getAlunos } from '@/http/get-alunos'
+
 import { TabelaAlunos } from './tabela-alunos'
 
 export default async function Home() {
   const user = await loggedUser()
-
-  const alunosProfessor = user && await getAlunos(user.slug)
+  const alunos = user ? await getAlunos(user.slug) : []
 
   return (
-    <div className="space-y-8 p-8">
-      <h1 className="text-2xl font-bold">Alunos</h1>
-
-      <Button size="lg" asChild>
-        <Link href={`/professor/cadastro-aluno`}>
-          <PlusSquare className="size-6" />
-          Novo aluno
-        </Link>
-      </Button>
-
-      {alunosProfessor && <TabelaAlunos alunos={alunosProfessor} />}
+    <div className="mx-auto w-full max-w-[1280px] px-4 py-6 sm:px-7 sm:py-8">
+      <TabelaAlunos alunos={alunos} />
     </div>
   )
 }
