@@ -8,7 +8,7 @@
   },
   "scripts": {
     "generate": "prisma generate",
-    "dev": "prisma generate && next dev --port 9002 --hostname 0.0.0.0",
+    "dev": "next dev --port 9002 --hostname 0.0.0.0",
     "build": "prisma generate && eslint src --fix && next build",
     "start": "next start --port 9002 --hostname 0.0.0.0",
     "lint": "eslint src --fix",

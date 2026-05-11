@@ -90,6 +90,16 @@ export function CadernoErroCard({
         </p>
       </div>
 
+      {/* Prova */}
+      <div className="hidden sm:block">
+        <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+          Prova
+        </p>
+        <p className={cn("text-sm text-foreground whitespace-nowrap", isDone && "line-through text-muted-foreground")}>
+          {provaAno}
+        </p>
+      </div>
+
       {/* Dificuldade */}
       <div>
         <p className="mb-1 font-mono text-[9.5px] uppercase tracking-[0.14em]" style={{ color: '#94a3b8' }}>Nível</p>
