@@ -1,11 +1,13 @@
 'use client'
 
+import type React from 'react'
 import type { ProvaDetalhada } from '@/app/api/prova/[id]/get-prova'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useFormState } from '@/hooks/use-form-state'
 import type { Assunto } from '@/http/get-assuntos'
 import type { Habilidade } from '@/http/get-habilidades'
+import { cn } from '@/lib/utils'
 import { AlertTriangle, BadgeCheck, Loader2, RotateCcw } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { createProvaAction, updateProvaAction } from './actions'
@@ -25,6 +27,7 @@ export function ProvaForm({ habilidades, assuntos, prova }: ProvaFormProps) {
 
   const [notaMaxima, setNotaMaxima] = useState(prova?.notaMaxima ?? 0)
   const [isRecalculating, setIsRecalculating] = useState(false)
+  const [gabaritosErrorSet, setGabaritosErrorSet] = useState<Set<number>>(new Set())
 
   const notaMinimaRef = useRef<HTMLInputElement>(null)
   const pesosRef = {
@@ -37,6 +40,24 @@ export function ProvaForm({ habilidades, assuntos, prova }: ProvaFormProps) {
   const dificuldadesRef = useRef<string[]>(
     Array.from({ length: TOTAL_QUESTOES }, (_, i) => String(prova?.questoes[i]?.dificuldade ?? 1))
   )
+  const gabaritosRef = useRef<string[]>(
+    Array.from({ length: TOTAL_QUESTOES }, (_, i) => prova?.questoes[i]?.gabarito ?? '')
+  )
+
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const indices = gabaritosRef.current
+      .map((g, i) => (!g ? i : -1))
+      .filter((i) => i !== -1)
+
+    if (indices.length > 0) {
+      e.preventDefault()
+      setGabaritosErrorSet(new Set(indices))
+      document.getElementById(`questao-row-${indices[0]}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      return
+    }
+    setGabaritosErrorSet(new Set())
+    handleSubmit(e)
+  }
 
   const recalcularNotaMaxima = () => {
     setIsRecalculating(true)
@@ -49,12 +70,15 @@ export function ProvaForm({ habilidades, assuntos, prova }: ProvaFormProps) {
       5: Number(pesosRef[5].current?.value ?? 1),
     }
     const dificuldades = dificuldadesRef.current.map(Number)
-    const contagem = [1, 2, 3, 4, 5].map((d) => dificuldades.filter((dif) => dif === d).length)
+    const gabaritos = gabaritosRef.current
+    const contagem = [1, 2, 3, 4, 5].map((d) =>
+      dificuldades.filter((dif, i) => dif === d && gabaritos[i] !== 'ANULADA').length
+    )
     const resultado = contagem.reduce(
       (acc, qtd, i) => acc + qtd * pesosAtuais[(i + 1) as keyof typeof pesosAtuais],
       notaMinimaAtual
     )
-    setNotaMaxima(resultado)
+    setNotaMaxima(Math.round(resultado * 100) / 100)
     setIsRecalculating(false)
   }
 
@@ -70,7 +94,18 @@ export function ProvaForm({ habilidades, assuntos, prova }: ProvaFormProps) {
   const labelCls = "font-mono text-[10.5px] uppercase tracking-[0.14em]"
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+    <form onSubmit={handleFormSubmit} className="flex flex-col gap-6">
+      {gabaritosErrorSet.size > 0 && (
+        <Alert variant="destructive">
+          <AlertTriangle className="size-4" />
+          <AlertTitle>Gabarito incompleto</AlertTitle>
+          <AlertDescription>
+            {gabaritosErrorSet.size === 1
+              ? `Questão ${QUESTAO_INICIAL + [...gabaritosErrorSet][0]} sem gabarito selecionado`
+              : `${gabaritosErrorSet.size} questões sem gabarito selecionado`}
+          </AlertDescription>
+        </Alert>
+      )}
       {success === false && message && (
         <Alert variant="destructive">
           <AlertTriangle className="size-4" />
@@ -110,12 +145,12 @@ export function ProvaForm({ habilidades, assuntos, prova }: ProvaFormProps) {
             </div>
             <div className="flex flex-col gap-1.5">
               <label className={labelCls} style={{ color: '#94a3b8' }} htmlFor="notaMinima">Nota Mínima</label>
-              <input ref={notaMinimaRef} name="notaMinima" id="notaMinima" type="number" defaultValue={prova?.notaMinima ?? 0} className={fieldCls} style={{ color: 'oklch(0.22 0.02 240)' }} />
+              <input ref={notaMinimaRef} name="notaMinima" id="notaMinima" type="number" min={0} step={0.1} defaultValue={prova?.notaMinima ?? 0} className={fieldCls} style={{ color: 'oklch(0.22 0.02 240)' }} />
             </div>
             <div className="flex flex-col gap-1.5">
               <label className={labelCls} style={{ color: '#94a3b8' }} htmlFor="notaMaxima">Nota Máxima</label>
               <div className="flex items-center gap-2">
-                <input id="notaMaxima" type="number" value={notaMaxima} disabled className={fieldCls} style={{ color: '#94a3b8' }} />
+                <input id="notaMaxima" type="number" value={+notaMaxima.toFixed(2)} disabled className={fieldCls} style={{ color: '#94a3b8' }} />
                 <button
                   type="button"
                   onClick={recalcularNotaMaxima}
@@ -139,7 +174,8 @@ export function ProvaForm({ habilidades, assuntos, prova }: ProvaFormProps) {
                   name={`peso${n}`}
                   id={`peso${n}`}
                   type="number"
-                  min={1}
+                  min={0.1}
+                  step={0.1}
                   defaultValue={prova?.[`peso${n}` as keyof typeof prova] as number ?? 1}
                   className={fieldCls}
                   style={{ color: 'oklch(0.22 0.02 240)' }}
@@ -184,21 +220,34 @@ export function ProvaForm({ habilidades, assuntos, prova }: ProvaFormProps) {
           </thead>
           <tbody>
             {questoes.map((questao, i) => (
-              <tr key={questao.numero} className="transition-colors hover:bg-[var(--page-bg)]">
+              <tr id={`questao-row-${i}`} key={questao.numero} className="transition-colors hover:bg-[var(--page-bg)]">
                 <td className="border-b border-border px-4 py-2">
                   <input type="hidden" name={`questoes[${i}].numero`} value={questao.numero} />
                   <span className="font-mono text-[12px]" style={{ color: '#94a3b8' }}>{questao.numero}</span>
                 </td>
 
                 <td className="border-b border-border px-4 py-2">
-                  <Select name={`questoes[${i}].gabarito`} defaultValue={questao.gabarito}>
-                    <SelectTrigger className="h-8 w-20 rounded-[8px] text-[12px]">
+                  <Select
+                    name={`questoes[${i}].gabarito`}
+                    defaultValue={questao.gabarito}
+                    onValueChange={(val) => {
+                      gabaritosRef.current[i] = val
+                      setGabaritosErrorSet((prev) => {
+                        if (!prev.has(i)) return prev
+                        const next = new Set(prev)
+                        next.delete(i)
+                        return next
+                      })
+                    }}
+                  >
+                    <SelectTrigger className={cn('h-8 w-28 rounded-[8px] text-[12px]', gabaritosErrorSet.has(i) && 'border-red-400 focus:border-red-400')}>
                       <SelectValue placeholder="—" />
                     </SelectTrigger>
                     <SelectContent>
                       {['A', 'B', 'C', 'D', 'E'].map((g) => (
                         <SelectItem key={g} value={g}>{g}</SelectItem>
                       ))}
+                      <SelectItem value="ANULADA" className="text-amber-600 font-medium">Anulada</SelectItem>
                     </SelectContent>
                   </Select>
                 </td>

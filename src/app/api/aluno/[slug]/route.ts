@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server"
+import { deleteAluno } from "./delete-aluno"
 import { getAlunoSlug } from "./get-aluno"
 import { arquivarAluno, patchAlunoNome, resetarSenhaAluno } from "./patch-aluno"
 import { updateAluno, type UpdateAlunoProps } from "./update-aluno"
@@ -48,6 +49,20 @@ export async function PATCH(
   } catch (err) {
     console.error('PATCH /aluno error:', err)
     return NextResponse.json({ message: 'Erro interno do servidor' }, { status: 500 })
+  }
+}
+
+export async function DELETE(
+  _request: Request,
+  { params }: { params: Promise<{ slug: string }> },
+) {
+  try {
+    const { slug } = await params
+    await deleteAluno(slug)
+    return new NextResponse(null, { status: 204 })
+  } catch (err) {
+    console.error('DELETE /aluno error:', err)
+    return NextResponse.json({ message: 'Erro ao excluir aluno' }, { status: 500 })
   }
 }
 

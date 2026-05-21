@@ -30,9 +30,11 @@ export async function createProva(data: ProvaSchema) {
 
 function calcularNotaMaxima(data: ProvaSchema): number {
   const pesos = [data.peso1, data.peso2, data.peso3, data.peso4, data.peso5]
-  return pesos.reduce((acc, peso, i) => {
+  const questoesValidas = data.questoes.filter((q) => q.gabarito !== 'ANULADA')
+  const total = pesos.reduce((acc, peso, i) => {
     const dificuldade = i + 1
-    const qtd = data.questoes.filter((q) => q.dificuldade === dificuldade).length
+    const qtd = questoesValidas.filter((q) => q.dificuldade === dificuldade).length
     return acc + qtd * peso
   }, data.notaMinima)
+  return Math.round(total * 100) / 100
 }

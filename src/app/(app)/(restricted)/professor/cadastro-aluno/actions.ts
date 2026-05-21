@@ -29,7 +29,7 @@ export async function createAlunoAction(data: FormData) {
       slugProfessor,
     })
 
-    revalidatePath('/professor')
+    revalidatePath('/professor', 'layout')
   } catch (err) {
     if (err instanceof HTTPError) {
       const { message } = await err.response.json()

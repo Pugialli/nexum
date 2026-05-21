@@ -38,10 +38,23 @@ Plataforma para professores acompanharem o progresso de alunos nos estudos para 
 
 ## Changelog
 
+### 0.9.3
+- Padronização de camadas: front → `src/http/` → `src/app/api/` → Prisma em todos os fluxos
+- Rota `DELETE /api/aluno/[slug]` criada com handler `delete-aluno.ts` (exclusão permanente, ainda sem UI)
+- `src/http/delete-aluno.ts` criado (era `delete-aluno.txt` com path errado `alunos/` e `revalidateTag` incompatível com Next.js 16)
+- `DELETE /api/prova/[id]` refatorado: Prisma extraído para handler `delete-prova.ts` (eliminada chamada direta ao Prisma na route)
+- Corrigido erro de TypeScript no build: `DashboardAlunoProps` usa `Omit<DashboardData, 'cadernoTotal' | 'cadernoRevisados'>` pois esses campos são consumidos diretamente nas pages (afetava dashboard do aluno e do professor)
+- Removido `revalidateTag` de `cadastro-aluno/actions.ts` (assinatura mudou no Next.js 16); substituído por `revalidatePath('/professor', 'layout')`
+
 ### 0.9.2
-- Correções de build para Next.js 16: `DashboardAluno` recebe `cadernoTotal` e `cadernoRevisados` nas duas páginas que o usam (aluno e professor)
-- `revalidateTag` removido de `createAlunoAction` — assinatura mudou no Next.js 16; substituído por `revalidatePath` que já era suficiente
-- `src/middleware.ts` migrado para `src/proxy.ts` com função renomeada de `middleware` para `proxy` (convenção Next.js 16)
+- Questões anuladas: opção "Anulada" no gabarito (salva como `ANULADA`); questões anuladas são ignoradas no cálculo do GCP, não geram entrada no caderno de erros e não contam no total de questões
+- Pesos e notas em decimal: `peso1`–`peso5`, `notaMaxima` e `gcp` migrados de `Int` para `Float` no schema; inputs do formulário com `step={0.1}`; nota mínima também aceita decimal
+- `calcularNotaMaxima` arredonda para 2 casas decimais (`Math.round * 100 / 100`) em cliente e servidor, corrigindo dízimas periódicas por erro de ponto flutuante IEEE 754
+- Nota máxima exclui questões anuladas do cálculo de pesos
+- Botão de deletar prova na tabela com modal de confirmação e remoção otimista da linha
+- Validação de gabarito no submit do formulário: scroll automático até a primeira questão sem gabarito + borda vermelha em todos os selects vazios; borda some ao selecionar
+- `cursor: pointer` aplicado globalmente em `globals.css` (`button, [role="button"]`) em vez de componente a componente
+- Migration: `20260521_peso_decimal`
 
 ### 0.9.1
 - Dashboard do aluno: card "Erros no caderno" agora exibe pendentes reais (total − revisados via `CadernoErro`) com barra de progresso e texto "X de Y revisados"

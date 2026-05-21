@@ -2,6 +2,10 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+button, [role="button"] {
+  cursor: pointer;
+}
+
 /* Nexum Brand Design Tokens - Tailwind Compatible */
 /* Add this to your globals.css or main CSS file */
 

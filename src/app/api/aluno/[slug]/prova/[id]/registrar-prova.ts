@@ -82,7 +82,8 @@ export async function registrarProva({
   const respostasParaInserir = questoes.map((questao) => {
     const respostaAluno = respostasMap.get(questao.numero)
     const respostaFinal = respostaAluno ?? 'N/A'
-    const acertou = respostaAluno ? questao.gabarito === respostaAluno : false
+    const anulada = questao.gabarito === 'ANULADA'
+    const acertou = !anulada && respostaAluno ? questao.gabarito === respostaAluno : false
 
     return {
       idQuestao: questao.id,
@@ -90,11 +91,15 @@ export async function registrarProva({
       resposta: respostaFinal,
       resultado: acertou,
       dificuldade: questao.dificuldade,
+      anulada,
     }
   })
 
-  // Calcula o GCP: soma dos pesos das questões acertadas por dificuldade
-  const gcp = respostasParaInserir.reduce((total, r) => {
+  // Questões anuladas são ignoradas: não entram no GCP nem no CadernoErro
+  const respostasValidas = respostasParaInserir.filter((r) => !r.anulada)
+
+  // Calcula o GCP: soma dos pesos das questões válidas acertadas por dificuldade
+  const gcp = respostasValidas.reduce((total, r) => {
     if (!r.resultado) return total
     return total + (pesosPorDificuldade[r.dificuldade] ?? 0)
   }, 0)
@@ -115,7 +120,7 @@ export async function registrarProva({
     }),
   ])
 
-  const erros = respostasParaInserir.filter((r) => !r.resultado)
+  const erros = respostasValidas.filter((r) => !r.resultado)
 
   if (erros.length > 0) {
     await prisma.cadernoErro.createMany({
@@ -126,12 +131,12 @@ export async function registrarProva({
     })
   }
 
-  const acertos = respostasParaInserir.filter((r) => r.resultado).length
-  const naoRespondidas = respostasParaInserir.filter((r) => r.resposta === 'N/A').length
+  const acertos = respostasValidas.filter((r) => r.resultado).length
+  const naoRespondidas = respostasValidas.filter((r) => r.resposta === 'N/A').length
 
   return {
     message: 'Prova enviada com sucesso',
-    total: respostasParaInserir.length,
+    total: respostasValidas.length,
     acertos,
     naoRespondidas,
     gcp,

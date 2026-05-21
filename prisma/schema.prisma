@@ -108,13 +108,13 @@ model Professor {
 model Prova {
   id          String   @id @default(uuid())
   ano         String
-  notaMinima  Int      @map("nota_minima")
-  notaMaxima  Int      @map("nota_maxima")
-  peso1       Int      @default(1) @map("peso_1")
-  peso2       Int      @default(1) @map("peso_2")
-  peso3       Int      @default(1) @map("peso_3")
-  peso4       Int      @default(1) @map("peso_4")
-  peso5       Int      @default(1) @map("peso_5")
+  notaMinima  Float    @map("nota_minima")
+  notaMaxima  Float    @map("nota_maxima")
+  peso1       Float    @default(1) @map("peso_1")
+  peso2       Float    @default(1) @map("peso_2")
+  peso3       Float    @default(1) @map("peso_3")
+  peso4       Float    @default(1) @map("peso_4")
+  peso5       Float    @default(1) @map("peso_5")
   statusProva Boolean  @default(false) @map("status_prova")
   dataCriacao DateTime @default(now()) @map("data_criacao")
 
@@ -146,7 +146,7 @@ model ProvaAluno {
   idAluno   String   @map("id_aluno")
   idProva   String   @map("id_prova")
   createdAt DateTime @default(now()) @map("created_at")
-  gcp       Int
+  gcp       Float
 
   prova     Prova      @relation(fields: [idProva], references: [id], onDelete: Cascade)
   aluno     Aluno      @relation(fields: [idAluno], references: [idUser], onDelete: Cascade)
