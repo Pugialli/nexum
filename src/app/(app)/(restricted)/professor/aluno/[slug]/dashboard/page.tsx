@@ -90,8 +90,6 @@ export default async function Page({ params }: PageProps) {
         errosPorProva={data.errosPorProva}
         habilidades={data.habilidades}
         habilidadesInfo={habilidades}
-        cadernoTotal={data.cadernoTotal}
-        cadernoRevisados={data.cadernoRevisados}
       />
     </div>
   )
