@@ -1,3 +1,4 @@
+import { prisma } from '@/lib/prisma'
 import { provaSchema } from '@/lib/validators/prova'
 import { NextResponse } from 'next/server'
 import { getProva } from './get-prova'
@@ -31,4 +32,13 @@ export async function PUT(
   const prova = await updateProva(id, result.data)
 
   return NextResponse.json(prova)
+}
+
+export async function DELETE(
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params
+  await prisma.prova.delete({ where: { id } })
+  return new NextResponse(null, { status: 204 })
 }

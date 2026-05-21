@@ -1,8 +1,11 @@
 'use client'
 
 import type { ProvaSumary } from '@/app/api/prova/get-provas'
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { deleteProva } from '@/http/delete-prova'
 import { updateProvaStatus } from '@/http/update-prova-status'
-import { Pencil, Plus, Search } from 'lucide-react'
+import { Loader2, Pencil, Plus, Search, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 
@@ -18,7 +21,10 @@ export function TabelaProvas({ provas }: TabelaProvasProps) {
   const [statusMap, setStatusMap] = useState<Record<string, boolean>>(
     () => Object.fromEntries(provas.map((p) => [p.id, p.statusProva]))
   )
+  const [provasList, setProvasList] = useState<ProvaSumary[]>(provas)
   const [search, setSearch] = useState('')
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   const handleStatusChange = async (id: string) => {
     const novoStatus = !statusMap[id]
@@ -30,12 +36,25 @@ export function TabelaProvas({ provas }: TabelaProvasProps) {
     }
   }
 
-  const filtered = provas.filter((p) =>
+  const filtered = provasList.filter((p) =>
     p.ano.toLowerCase().includes(search.toLowerCase())
   )
 
   const abertas = Object.values(statusMap).filter(Boolean).length
-  const fechadas = provas.length - abertas
+  const fechadas = provasList.length - abertas
+
+  const handleDelete = async () => {
+    if (!deletingId) return
+    setIsDeleting(true)
+    try {
+      await deleteProva(deletingId)
+      setProvasList((prev) => prev.filter((p) => p.id !== deletingId))
+      setStatusMap((prev) => { const next = { ...prev }; delete next[deletingId]; return next })
+      setDeletingId(null)
+    } finally {
+      setIsDeleting(false)
+    }
+  }
 
   return (
     <>
@@ -206,14 +225,14 @@ export function TabelaProvas({ provas }: TabelaProvasProps) {
                   {/* Nota Mínima */}
                   <td className="border-b border-border px-[18px] py-3.5">
                     <span className="font-mono text-[13px]" style={{ color: 'oklch(0.36 0.015 240)' }}>
-                      {prova.notaMinima}
+                      {+prova.notaMinima.toFixed(2)}
                     </span>
                   </td>
 
                   {/* Nota Máxima */}
                   <td className="border-b border-border px-[18px] py-3.5">
                     <span className="font-mono text-[13px]" style={{ color: 'oklch(0.36 0.015 240)' }}>
-                      {prova.notaMaxima}
+                      {+prova.notaMaxima.toFixed(2)}
                     </span>
                   </td>
 
@@ -249,7 +268,7 @@ export function TabelaProvas({ provas }: TabelaProvasProps) {
 
                   {/* Ações */}
                   <td className="border-b border-border px-[18px] py-3.5">
-                    <div className="flex justify-end">
+                    <div className="flex justify-end gap-2">
                       <Link
                         href={`/professor/provas/${prova.id}/edit`}
                         title="Editar prova"
@@ -258,6 +277,14 @@ export function TabelaProvas({ provas }: TabelaProvasProps) {
                       >
                         <Pencil size={14} />
                       </Link>
+                      <button
+                        onClick={() => setDeletingId(prova.id)}
+                        title="Excluir prova"
+                        className="flex h-8 w-8 items-center justify-center rounded-[9px] border border-border bg-white transition-all hover:border-red-300 hover:bg-red-50 hover:text-red-500"
+                        style={{ color: '#94a3b8' }}
+                      >
+                        <Trash2 size={14} />
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -275,6 +302,29 @@ export function TabelaProvas({ provas }: TabelaProvasProps) {
           </span>
         </div>
       </div>
+      <Dialog open={!!deletingId} onOpenChange={(open) => { if (!open) setDeletingId(null) }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Excluir prova</DialogTitle>
+            <DialogDescription>
+              Esta ação não pode ser desfeita. A prova e todos os dados associados (respostas, caderno de erros) serão removidos permanentemente.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeletingId(null)} disabled={isDeleting}>
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={isDeleting}
+            >
+              {isDeleting ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+              Excluir
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }
