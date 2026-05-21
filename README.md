@@ -38,6 +38,14 @@ Plataforma para professores acompanharem o progresso de alunos nos estudos para 
 
 ## Changelog
 
+### 0.9.3
+- Padronização de camadas: front → `src/http/` → `src/app/api/` → Prisma em todos os fluxos
+- Rota `DELETE /api/aluno/[slug]` criada com handler `delete-aluno.ts` (exclusão permanente, ainda sem UI)
+- `src/http/delete-aluno.ts` criado (era `delete-aluno.txt` com path errado `alunos/` e `revalidateTag` incompatível com Next.js 16)
+- `DELETE /api/prova/[id]` refatorado: Prisma extraído para handler `delete-prova.ts` (eliminada chamada direta ao Prisma na route)
+- Corrigido erro de TypeScript no build: `DashboardAlunoProps` usa `Omit<DashboardData, 'cadernoTotal' | 'cadernoRevisados'>` pois esses campos são consumidos diretamente nas pages (afetava dashboard do aluno e do professor)
+- Removido `revalidateTag` de `cadastro-aluno/actions.ts` (assinatura mudou no Next.js 16); substituído por `revalidatePath('/professor', 'layout')`
+
 ### 0.9.2
 - Questões anuladas: opção "Anulada" no gabarito (salva como `ANULADA`); questões anuladas são ignoradas no cálculo do GCP, não geram entrada no caderno de erros e não contam no total de questões
 - Pesos e notas em decimal: `peso1`–`peso5`, `notaMaxima` e `gcp` migrados de `Int` para `Float` no schema; inputs do formulário com `step={0.1}`; nota mínima também aceita decimal

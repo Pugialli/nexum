@@ -1,6 +1,6 @@
-import { prisma } from '@/lib/prisma'
 import { provaSchema } from '@/lib/validators/prova'
 import { NextResponse } from 'next/server'
+import { deleteProva } from './delete-prova'
 import { getProva } from './get-prova'
 import { updateProva } from './update-prova'
 
@@ -39,6 +39,6 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
-  await prisma.prova.delete({ where: { id } })
+  await deleteProva(id)
   return new NextResponse(null, { status: 204 })
 }

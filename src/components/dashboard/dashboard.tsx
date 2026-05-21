@@ -4,7 +4,7 @@ import { GcpLineChart } from "./gcp-line-chart"
 import { HabilidadesChart } from "./habilidades-chart"
 import { TestsBarChart } from "./tests-bar-chart"
 
-interface DashboardAlunoProps extends DashboardData {
+interface DashboardAlunoProps extends Omit<DashboardData, 'cadernoTotal' | 'cadernoRevisados'> {
   habilidadesInfo: Habilidade[]
 }
 
