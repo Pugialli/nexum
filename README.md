@@ -38,6 +38,13 @@ Plataforma para professores acompanharem o progresso de alunos nos estudos para 
 
 ## Changelog
 
+### 0.9.4
+- `src/proxy.ts` criado na posição correta para Next.js 16 (convenção `proxy` substituiu `middleware`) com a função renomeada para `proxy`
+- Corrigido loop de redirecionamento em `/aluno/completar-perfil` ao vir da página de login: `src/proxy.ts` e `src/app/middleware/middleware.ts` estavam em locais ignorados pelo Next.js, então nenhum middleware rodava; o `AlunoLayout` tentava ler `x-pathname` (nunca definido) e redirecionava infinitamente
+- Corrigido bug no header injection: o arquivo anterior setava `response.headers` em vez de injetar via `NextResponse.next({ request: { headers } })`, tornando o header invisível para Server Components
+- `src/proxy.ts` (arquivo antigo, lógica incompleta) e `src/app/middleware/middleware.ts` removidos
+- Adicionado `data-scroll-behavior="smooth"` ao `<html>` em `layout.tsx` (aviso do Next.js 16 sobre scroll suave em transições de rota)
+
 ### 0.9.3
 - Padronização de camadas: front → `src/http/` → `src/app/api/` → Prisma em todos os fluxos
 - Rota `DELETE /api/aluno/[slug]` criada com handler `delete-aluno.ts` (exclusão permanente, ainda sem UI)
