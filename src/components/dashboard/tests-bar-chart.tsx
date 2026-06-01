@@ -9,7 +9,7 @@ import type { Habilidade } from "@/http/get-habilidades"
 import { SimuladoErrorsModal, type SimuladoError } from "./simulado-errors-modal"
 
 const chartConfig = {
-  score: { label: "Acertos", color: "var(--color-primary)" },
+  nota: { label: "Nota", color: "var(--color-primary)" },
 }
 
 interface TooltipPayloadItem { payload: ProvaResult }
@@ -38,6 +38,12 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
         <p className="flex justify-between gap-6 font-mono text-[11px]">
           <span style={{ color: '#94a3b8' }}>Acertos</span>
           <span className="font-semibold" style={{ color: 'var(--color-primary)' }}>{d.score}</span>
+        </p>
+        <p className="flex justify-between gap-6 font-mono text-[11px]">
+          <span style={{ color: '#94a3b8' }}>Nota</span>
+          <span className="font-semibold" style={{ color: 'var(--color-primary)' }}>
+            {d.nota.toFixed(1)}
+          </span>
         </p>
         <p className="flex justify-between gap-6 font-mono text-[11px]">
           <span style={{ color: '#94a3b8' }}>GCP</span>
@@ -86,7 +92,7 @@ export function TestsBarChart({ data, errosPorProva, habilidadesInfo }: TestsBar
               Desempenho nos Simulados
             </h3>
             <p className="mt-0.5 text-[12px]" style={{ color: '#94a3b8' }}>
-              Acertos por simulado — clique em uma barra para ver os erros
+              Nota por simulado — clique em uma barra para ver os erros
             </p>
           </div>
           <span
@@ -97,7 +103,7 @@ export function TestsBarChart({ data, errosPorProva, habilidadesInfo }: TestsBar
               borderColor: 'oklch(0.88 0.06 50)',
             }}
           >
-            {data.length} provas
+            {data.length} {data.length === 1 ? 'prova' : 'provas'}
           </span>
         </div>
 
@@ -119,13 +125,14 @@ export function TestsBarChart({ data, errosPorProva, habilidadesInfo }: TestsBar
                 axisLine={false}
                 tick={{ fontSize: 11, fontFamily: 'var(--font-mono)', fill: '#94a3b8' }}
               />
-              <YAxis hide domain={[0, 45]} />
+              <YAxis hide domain={[0, 'auto']} />
               <ChartTooltip cursor={{ fill: 'oklch(0.97 0.005 240)', radius: 6 }} content={<CustomTooltip />} />
-              <Bar dataKey="score" fill="url(#barGrad)" radius={[6, 6, 0, 0]} className="cursor-pointer" onClick={handleBarClick}>
+              <Bar dataKey="nota" fill="url(#barGrad)" radius={[6, 6, 0, 0]} className="cursor-pointer" onClick={handleBarClick}>
                 <LabelList
-                  dataKey="score"
+                  dataKey="nota"
                   position="top"
                   style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fill: '#94a3b8', fontWeight: 600 }}
+                  formatter={(v: number) => v.toFixed(1)}
                 />
                 {data.map((entry) => (
                   <Cell key={entry.provaId} />

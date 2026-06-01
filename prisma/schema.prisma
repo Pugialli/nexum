@@ -147,6 +147,7 @@ model ProvaAluno {
   idProva   String   @map("id_prova")
   createdAt DateTime @default(now()) @map("created_at")
   gcp       Float
+  nota      Float
 
   prova     Prova      @relation(fields: [idProva], references: [id], onDelete: Cascade)
   aluno     Aluno      @relation(fields: [idAluno], references: [idUser], onDelete: Cascade)

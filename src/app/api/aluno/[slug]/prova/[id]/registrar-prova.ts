@@ -50,6 +50,8 @@ export async function registrarProva({
       peso3: true,
       peso4: true,
       peso5: true,
+      notaMinima: true,
+      notaMaxima: true,
     },
   })
 
@@ -69,7 +71,8 @@ export async function registrarProva({
     data: {
       idAluno: alunoId,
       idProva: provaId,
-      gcp: 0, // será atualizado abaixo
+      gcp: 0,
+      nota: 0,
     },
   })
 
@@ -98,11 +101,17 @@ export async function registrarProva({
   // Questões anuladas são ignoradas: não entram no GCP nem no CadernoErro
   const respostasValidas = respostasParaInserir.filter((r) => !r.anulada)
 
-  // Calcula o GCP: soma dos pesos das questões válidas acertadas por dificuldade
-  const gcp = respostasValidas.reduce((total, r) => {
+  // Soma bruta dos pesos das questões válidas acertadas por dificuldade
+  const rawScore = respostasValidas.reduce((total, r) => {
     if (!r.resultado) return total
     return total + (pesosPorDificuldade[r.dificuldade] ?? 0)
   }, 0)
+
+  const nota = prova.notaMinima + rawScore
+  const range = prova.notaMaxima - prova.notaMinima
+  const gcp = range > 0
+    ? Math.round(((nota - prova.notaMinima) / range) * 100 * 10) / 10
+    : 0
 
   // Insere as respostas e atualiza o GCP em paralelo
   await Promise.all([
@@ -116,7 +125,7 @@ export async function registrarProva({
     }),
     prisma.provaAluno.update({
       where: { id: provaAluno.id },
-      data: { gcp },
+      data: { gcp, nota },
     }),
   ])
 

@@ -88,6 +88,7 @@ export async function seedDadosMock(prisma: PrismaClient, alunoId: string) {
         idAluno: alunoId,
         idProva: prova.id,
         gcp: prog.gcp,
+        nota: prova.notaMinima + (prog.gcp / 100) * (prova.notaMaxima - prova.notaMinima),
         createdAt: dataProva,
       },
     })

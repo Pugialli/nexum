@@ -38,6 +38,18 @@ Plataforma para professores acompanharem o progresso de alunos nos estudos para 
 
 ## Changelog
 
+### 0.9.6
+- Corrigido erro de build: `registrar-prova.ts` e `seed-mock.ts` passam `nota` no `create` de `ProvaAluno` (campo obrigatório após migration); `registrar-prova` usa placeholder `0` sobrescrito pelo `update` subsequente, `seed-mock` deriva o valor via fórmula inversa do GCP mock
+
+### 0.9.5
+- Campo `nota Float` adicionado em `ProvaAluno` (migration `add_nota_prova_aluno`); tornado não-nullable após backfill (`make_nota_required`)
+- `nota = notaMinima + rawScore` calculada e salva no submit do cartão resposta junto com o GCP
+- GCP corrigido: era soma bruta dos pesos das questões certas; agora é `(nota - notaMinima) / (notaMaxima - notaMinima) * 100` (arredondado para 1 decimal)
+- Dashboard — gráfico "Desempenho nos Simulados": barras exibem `nota` em vez de acertos; label com 1 casa decimal; subtítulo atualizado
+- Tooltips de ambos os gráficos exibem Data, Acertos, Nota e GCP
+- `POST /api/admin/backfill-notas` criado para recalcular `nota` e `gcp` de registros existentes
+- Badge "N provas" corrigido para singular quando há apenas 1 prova
+
 ### 0.9.4
 - `src/proxy.ts` criado na posição correta para Next.js 16 (convenção `proxy` substituiu `middleware`) com a função renomeada para `proxy`
 - Corrigido loop de redirecionamento em `/aluno/completar-perfil` ao vir da página de login: `src/proxy.ts` e `src/app/middleware/middleware.ts` estavam em locais ignorados pelo Next.js, então nenhum middleware rodava; o `AlunoLayout` tentava ler `x-pathname` (nunca definido) e redirecionava infinitamente

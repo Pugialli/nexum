@@ -6,6 +6,7 @@ export interface ProvaResult {
   ano: string
   score: number
   gcp: number
+  nota: number
   date: string
 }
 
@@ -72,6 +73,7 @@ export async function getDashboardBySlug(slug: string): Promise<DashboardData | 
       ano: pa.prova.ano,
       score: acertos,
       gcp: pa.gcp,
+      nota: pa.nota,
       date: pa.createdAt.toLocaleDateString('pt-BR'),
     }
   })

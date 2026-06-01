@@ -7,6 +7,8 @@ interface ChartDataItem {
   ano: string
   gcp: number
   score: number
+  nota: number
+  date: string
 }
 
 interface TooltipPayloadItem { payload: ChartDataItem }
@@ -33,12 +35,22 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
       </p>
       <div className="mt-2 flex flex-col gap-1">
         <p className="flex justify-between gap-6 font-mono text-[11px]">
-          <span style={{ color: '#94a3b8' }}>GCP</span>
-          <span className="font-semibold" style={{ color: 'var(--color-secondary)' }}>{d.gcp}%</span>
+          <span style={{ color: '#94a3b8' }}>Data</span>
+          <span style={{ color: 'oklch(0.22 0.02 240)' }}>{d.date}</span>
         </p>
         <p className="flex justify-between gap-6 font-mono text-[11px]">
           <span style={{ color: '#94a3b8' }}>Acertos</span>
           <span style={{ color: 'oklch(0.22 0.02 240)' }}>{d.score}</span>
+        </p>
+        <p className="flex justify-between gap-6 font-mono text-[11px]">
+          <span style={{ color: '#94a3b8' }}>Nota</span>
+          <span className="font-semibold" style={{ color: 'var(--color-primary)' }}>
+            {d.nota.toFixed(1)}
+          </span>
+        </p>
+        <p className="flex justify-between gap-6 font-mono text-[11px]">
+          <span style={{ color: '#94a3b8' }}>GCP</span>
+          <span className="font-semibold" style={{ color: 'var(--color-secondary)' }}>{d.gcp}%</span>
         </p>
       </div>
     </div>
