@@ -38,6 +38,11 @@ Plataforma para professores acompanharem o progresso de alunos nos estudos para 
 
 ## Changelog
 
+### 1.0.0
+
+**Plataforma lançada**
+- Nexum em produção
+
 ### 0.9.7
 
 **Cadastro de prova — questão anulada**
