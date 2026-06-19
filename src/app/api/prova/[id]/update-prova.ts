@@ -2,37 +2,35 @@ import { prisma } from '@/lib/prisma'
 import type { ProvaSchema } from '@/lib/validators/prova'
 
 export async function updateProva(id: string, data: ProvaSchema) {
-  return await prisma.$transaction(async (tx) => {
-    const prova = await tx.prova.update({
-      where: { id },
-      data: {
-        ano: data.ano,
-        notaMinima: data.notaMinima,
-        notaMaxima: calcularNotaMaxima(data),
-        peso1: data.peso1,
-        peso2: data.peso2,
-        peso3: data.peso3,
-        peso4: data.peso4,
-        peso5: data.peso5,
-      },
-    })
-
-    await Promise.all(
-      data.questoes.map((q) =>
-        tx.questao.updateMany({
-          where: { idProva: id, numero: q.numero },
-          data: {
-            gabarito: q.gabarito,
-            dificuldade: q.dificuldade,
-            habilidadeValue: q.habilidadeValue,
-            assuntoValue: q.assuntoValue,
-          },
-        })
-      )
-    )
-
-    return prova
+  const prova = await prisma.prova.update({
+    where: { id },
+    data: {
+      ano: data.ano,
+      notaMinima: data.notaMinima,
+      notaMaxima: calcularNotaMaxima(data),
+      peso1: data.peso1,
+      peso2: data.peso2,
+      peso3: data.peso3,
+      peso4: data.peso4,
+      peso5: data.peso5,
+    },
   })
+
+  await Promise.all(
+    data.questoes.map((q) =>
+      prisma.questao.updateMany({
+        where: { idProva: id, numero: q.numero },
+        data: {
+          gabarito: q.gabarito,
+          dificuldade: q.dificuldade,
+          habilidadeValue: q.habilidadeValue,
+          assuntoValue: q.assuntoValue,
+        },
+      })
+    )
+  )
+
+  return prova
 }
 
 function calcularNotaMaxima(data: ProvaSchema): number {

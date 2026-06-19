@@ -6,6 +6,10 @@ button, [role="button"] {
   cursor: pointer;
 }
 
+button:disabled, [aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
 /* Nexum Brand Design Tokens - Tailwind Compatible */
 /* Add this to your globals.css or main CSS file */
 

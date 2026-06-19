@@ -29,9 +29,13 @@ export async function PUT(
     )
   }
 
-  const prova = await updateProva(id, result.data)
-
-  return NextResponse.json(prova)
+  try {
+    const prova = await updateProva(id, result.data)
+    return NextResponse.json(prova)
+  } catch (err) {
+    console.error('[updateProva]', err)
+    return NextResponse.json({ message: 'Erro ao atualizar prova' }, { status: 500 })
+  }
 }
 
 export async function DELETE(

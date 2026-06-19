@@ -28,6 +28,9 @@ export function ProvaForm({ habilidades, assuntos, prova }: ProvaFormProps) {
   const [notaMaxima, setNotaMaxima] = useState(prova?.notaMaxima ?? 0)
   const [isRecalculating, setIsRecalculating] = useState(false)
   const [gabaritosErrorSet, setGabaritosErrorSet] = useState<Set<number>>(new Set())
+  const [anuladas, setAnuladas] = useState<Set<number>>(
+    () => new Set(Array.from({ length: TOTAL_QUESTOES }, (_, i) => i).filter((i) => prova?.questoes[i]?.gabarito === 'ANULADA'))
+  )
 
   const notaMinimaRef = useRef<HTMLInputElement>(null)
   const pesosRef = {
@@ -232,6 +235,17 @@ export function ProvaForm({ habilidades, assuntos, prova }: ProvaFormProps) {
                     defaultValue={questao.gabarito}
                     onValueChange={(val) => {
                       gabaritosRef.current[i] = val
+                      setAnuladas((prev) => {
+                        const next = new Set(prev)
+                        if (val === 'ANULADA') {
+                          next.add(i)
+                          dificuldadesRef.current[i] = '0'
+                        } else {
+                          next.delete(i)
+                          if (dificuldadesRef.current[i] === '0') dificuldadesRef.current[i] = '1'
+                        }
+                        return next
+                      })
                       setGabaritosErrorSet((prev) => {
                         if (!prev.has(i)) return prev
                         const next = new Set(prev)
@@ -253,46 +267,88 @@ export function ProvaForm({ habilidades, assuntos, prova }: ProvaFormProps) {
                 </td>
 
                 <td className="border-b border-border px-4 py-2">
-                  <Select
-                    name={`questoes[${i}].dificuldade`}
-                    defaultValue={String(questao.dificuldade)}
-                    onValueChange={(val) => { dificuldadesRef.current[i] = val }}
-                  >
-                    <SelectTrigger className="h-8 w-20 rounded-[8px] text-[12px]">
-                      <SelectValue placeholder="—" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {[1, 2, 3, 4, 5].map((d) => (
-                        <SelectItem key={d} value={String(d)}>{d}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  {anuladas.has(i) ? (
+                    <>
+                      <input type="hidden" name={`questoes[${i}].dificuldade`} value="0" />
+                      <Select disabled value="__">
+                        <SelectTrigger className="h-8 w-20 rounded-[8px] text-[12px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="__">—</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </>
+                  ) : (
+                    <Select
+                      name={`questoes[${i}].dificuldade`}
+                      defaultValue={String(questao.dificuldade)}
+                      onValueChange={(val) => { dificuldadesRef.current[i] = val }}
+                    >
+                      <SelectTrigger className="h-8 w-20 rounded-[8px] text-[12px]">
+                        <SelectValue placeholder="—" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {[1, 2, 3, 4, 5].map((d) => (
+                          <SelectItem key={d} value={String(d)}>{d}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
                 </td>
 
                 <td className="border-b border-border px-4 py-2">
-                  <Select name={`questoes[${i}].habilidadeValue`} defaultValue={String(questao.habilidadeValue)}>
-                    <SelectTrigger className="h-8 w-44 rounded-[8px] text-[12px]">
-                      <SelectValue placeholder="Selecione" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {habilidades.map((h) => (
-                        <SelectItem key={h.value} value={String(h.value)}>{h.value}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  {anuladas.has(i) ? (
+                    <>
+                      <input type="hidden" name={`questoes[${i}].habilidadeValue`} value="0" />
+                      <Select disabled value="__">
+                        <SelectTrigger className="h-8 w-44 rounded-[8px] text-[12px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="__">—</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </>
+                  ) : (
+                    <Select name={`questoes[${i}].habilidadeValue`} defaultValue={String(questao.habilidadeValue)}>
+                      <SelectTrigger className="h-8 w-44 rounded-[8px] text-[12px]">
+                        <SelectValue placeholder="Selecione" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {habilidades.filter((h) => h.value !== 0).map((h) => (
+                          <SelectItem key={h.value} value={String(h.value)}>{h.value}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
                 </td>
 
                 <td className="border-b border-border px-4 py-2">
-                  <Select name={`questoes[${i}].assuntoValue`} defaultValue={questao.assuntoValue}>
-                    <SelectTrigger className="h-8 w-56 rounded-[8px] text-[12px]">
-                      <SelectValue placeholder="Selecione" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {assuntos.map((a) => (
-                        <SelectItem key={a.value} value={a.value}>{a.label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  {anuladas.has(i) ? (
+                    <>
+                      <input type="hidden" name={`questoes[${i}].assuntoValue`} value="AA" />
+                      <Select disabled value="__">
+                        <SelectTrigger className="h-8 w-56 rounded-[8px] text-[12px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="__">—</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </>
+                  ) : (
+                    <Select name={`questoes[${i}].assuntoValue`} defaultValue={questao.assuntoValue}>
+                      <SelectTrigger className="h-8 w-56 rounded-[8px] text-[12px]">
+                        <SelectValue placeholder="Selecione" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {assuntos.filter((a) => a.value !== 'AA').map((a) => (
+                          <SelectItem key={a.value} value={a.value}>{a.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
                 </td>
               </tr>
             ))}

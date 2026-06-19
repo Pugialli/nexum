@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils"
 import { toDifficultyLabel } from "@/utils/dificuldade"
-import { useTransition } from "react"
+import { useState, useTransition } from "react"
 import { updateRevisaoAction } from "./actions"
 
 interface CadernoErroCardProps {
@@ -10,6 +10,7 @@ interface CadernoErroCardProps {
   idQuestao: string
   dificuldade: number
   questaoNumero: number
+  questaoGabarito: string
   provaAno: string
   revisao1: boolean
   revisao2: boolean
@@ -36,6 +37,7 @@ export function CadernoErroCard({
   idQuestao,
   dificuldade,
   questaoNumero,
+  questaoGabarito,
   provaAno,
   revisao1,
   revisao2,
@@ -43,6 +45,7 @@ export function CadernoErroCard({
   onRevisaoChange,
 }: CadernoErroCardProps) {
   const [isPending, startTransition] = useTransition()
+  const [showGabarito, setShowGabarito] = useState(false)
 
   const rev = [revisao1, revisao2, revisao3]
   const isDone = revisao1 && revisao2 && revisao3
@@ -72,7 +75,7 @@ export function CadernoErroCard({
   return (
     <div
       className={cn(
-        "grid grid-cols-[1fr_auto_auto] items-center gap-x-4 sm:grid-cols-[1fr_auto_auto_auto] sm:gap-x-5",
+        "flex items-start justify-between gap-x-4",
         "rounded-[10px] border border-border px-4 py-3 transition-opacity duration-300",
         isDone && "opacity-40",
         isPending && "pointer-events-none"
@@ -81,9 +84,9 @@ export function CadernoErroCard({
     >
       {/* Questão */}
       <div>
-        <p className="font-mono text-[9.5px] uppercase tracking-[0.14em]" style={{ color: '#94a3b8' }}>Questão</p>
+        <p className="mb-1 font-mono text-[9.5px] uppercase tracking-[0.14em]" style={{ color: '#94a3b8' }}>Questão</p>
         <p
-          className={cn("font-heading text-[15px] font-bold tracking-tight", isDone && "line-through")}
+          className={cn("py-1 font-heading text-[15px] font-bold tracking-tight", isDone && "line-through")}
           style={{ color: isDone ? '#94a3b8' : 'oklch(0.22 0.02 240)' }}
         >
           {questaoNumero}
@@ -92,10 +95,11 @@ export function CadernoErroCard({
 
       {/* Prova */}
       <div className="hidden sm:block">
-        <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
-          Prova
-        </p>
-        <p className={cn("text-sm text-foreground whitespace-nowrap", isDone && "line-through text-muted-foreground")}>
+        <p className="mb-1 font-mono text-[9.5px] uppercase tracking-[0.14em]" style={{ color: '#94a3b8' }}>Prova</p>
+        <p
+          className={cn("py-1 text-[13px]", isDone && "line-through")}
+          style={{ color: isDone ? '#94a3b8' : 'oklch(0.36 0.015 240)' }}
+        >
           {provaAno}
         </p>
       </div>
@@ -104,22 +108,35 @@ export function CadernoErroCard({
       <div>
         <p className="mb-1 font-mono text-[9.5px] uppercase tracking-[0.14em]" style={{ color: '#94a3b8' }}>Nível</p>
         <span
-          className="rounded-full px-2 py-0.5 font-mono text-[10px] font-semibold"
+          className="inline-flex items-center justify-center rounded-full px-2 py-1 font-mono text-[11px] font-semibold"
           style={{ color: diffStyle.color, background: diffStyle.bg, border: `1px solid ${diffStyle.border}` }}
         >
           {diffLabel}
         </span>
       </div>
 
-      {/* Prova */}
-      <div className="hidden sm:block">
-        <p className="font-mono text-[9.5px] uppercase tracking-[0.14em]" style={{ color: '#94a3b8' }}>Prova</p>
-        <p
-          className={cn("font-mono text-[13px]", isDone && "line-through")}
-          style={{ color: isDone ? '#94a3b8' : 'oklch(0.36 0.015 240)' }}
+      {/* Gabarito */}
+      <div
+        className="cursor-pointer select-none"
+        onClick={() => setShowGabarito((v) => !v)}
+        title={showGabarito ? 'Ocultar gabarito' : 'Ver gabarito'}
+      >
+        <p className="mb-1 font-mono text-[9.5px] uppercase tracking-[0.14em]" style={{ color: '#94a3b8' }}>Gabarito</p>
+        <span
+          className="inline-flex items-center justify-center rounded-full py-1 font-mono text-[11px] font-semibold"
+          style={{
+            width: '3rem',
+            ...(showGabarito
+              ? {
+                  color: isDone ? '#94a3b8' : 'var(--color-secondary)',
+                  background: isDone ? '#F1F5F9' : 'oklch(0.96 0.03 195)',
+                  border: `1px solid ${isDone ? '#E2E8F0' : 'oklch(0.82 0.07 195)'}`,
+                }
+              : { color: '#cbd5e1', background: 'white', border: '1px solid #E2E8F0' }),
+          }}
         >
-          {provaAno}
-        </p>
+          {showGabarito ? questaoGabarito : '● ● ●'}
+        </span>
       </div>
 
       {/* Revisão */}

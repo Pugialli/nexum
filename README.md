@@ -38,6 +38,28 @@ Plataforma para professores acompanharem o progresso de alunos nos estudos para 
 
 ## Changelog
 
+### 0.9.7
+
+**Cadastro de prova — questão anulada**
+- Ao selecionar "Anulada" no gabarito, os campos Dificuldade, Habilidade e Assunto são automaticamente desabilitados e preenchidos com valores fixos (`0`, `0`, `AA`)
+- Os campos desabilitados usam o mesmo componente Select (com chevron e tamanho idêntico) para preservar o layout
+- Habilidade `0` e assunto `AA` filtrados das listas de opções — só são enviados quando gabarito = `ANULADA`
+- Cursor `not-allowed` em botões desabilitados garantido via `globals.css` (sobrepõe `button { cursor: pointer }` que estava fora de `@layer`)
+- Validator atualizado para aceitar `dificuldade = 0`
+
+**Cadastro de prova — correção de timeout no update**
+- Substituído `prisma.$transaction(async tx => {...})` (interactive transaction com timeout de 5 s) por `Promise.all` direto — resolve erro P2028 ao salvar provas com 45 questões
+- Route handler `PUT /api/prova/[id]` agora retorna JSON estruturado em erros, evitando crash no `JSON.parse` do action
+
+**Caderno de erros — card reformulado**
+- Removido campo "Prova" duplicado que causava quebra de linha no layout do card
+- Layout migrado para `flex justify-between items-start` — itens distribuídos uniformemente pela largura do card, labels alinhados pelo topo
+- Adicionado campo **Gabarito** com toggle de visibilidade por clique; oculto por padrão (`● ● ●`) e revelado ao clicar; todos os gabaritos iniciam ocultos ao carregar a página
+- Badge do Gabarito com largura fixa (`3rem`) para não mudar de tamanho ao revelar a letra, conteúdo centralizado
+- Badge do Nível igualado em altura ao badge do Gabarito (`py-1 text-[11px]`)
+- Fonte do campo Prova equalizada com o restante da página (removido `font-mono`)
+- `mb-1` adicionado ao label e `py-1` ao valor de Questão e Prova para alinhar verticalmente com o texto interno dos badges de Nível e Gabarito
+
 ### 0.9.6
 - Corrigido erro de build: `registrar-prova.ts` e `seed-mock.ts` passam `nota` no `create` de `ProvaAluno` (campo obrigatório após migration); `registrar-prova` usa placeholder `0` sobrescrito pelo `update` subsequente, `seed-mock` deriva o valor via fórmula inversa do GCP mock
 

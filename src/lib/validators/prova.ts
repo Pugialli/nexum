@@ -5,7 +5,7 @@ const questaoSchema = z.object({
   gabarito: z.enum(['A', 'B', 'C', 'D', 'E', 'ANULADA'], {
     message: 'Gabarito deve ser A, B, C, D, E ou ANULADA',
   }),
-  dificuldade: z.coerce.number().min(1).max(5),
+  dificuldade: z.coerce.number().min(0).max(5),
   habilidadeValue: z.coerce.number(),
   assuntoValue: z.string().min(1, 'Assunto é obrigatório'),
 })
