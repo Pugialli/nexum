@@ -38,6 +38,13 @@ Plataforma para professores acompanharem o progresso de alunos nos estudos para 
 
 ## Changelog
 
+### 1.0.1
+
+**Caderno de erros — layout mobile do card**
+- Campo Prova agora visível no mobile (antes oculto com `hidden sm:block`)
+- Card reestruturado em duas linhas no mobile: linha 1 (Questão + Prova) e linha 2 (Nível + Gabarito + Rev.)
+- No desktop (sm+) os grupos usam `sm:contents` e todos os itens voltam a ocupar uma única linha horizontal
+
 ### 1.0.0
 
 **Plataforma lançada**

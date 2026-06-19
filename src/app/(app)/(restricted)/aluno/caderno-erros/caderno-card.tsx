@@ -75,97 +75,103 @@ export function CadernoErroCard({
   return (
     <div
       className={cn(
-        "flex items-start justify-between gap-x-4",
+        "flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-x-4",
         "rounded-[10px] border border-border px-4 py-3 transition-opacity duration-300",
         isDone && "opacity-40",
         isPending && "pointer-events-none"
       )}
       style={{ background: isDone ? 'var(--page-bg)' : 'white' }}
     >
-      {/* Questão */}
-      <div>
-        <p className="mb-1 font-mono text-[9.5px] uppercase tracking-[0.14em]" style={{ color: '#94a3b8' }}>Questão</p>
-        <p
-          className={cn("py-1 font-heading text-[15px] font-bold tracking-tight", isDone && "line-through")}
-          style={{ color: isDone ? '#94a3b8' : 'oklch(0.22 0.02 240)' }}
-        >
-          {questaoNumero}
-        </p>
+      {/* Linha 1 (mobile) — Questão + Prova */}
+      <div className="flex justify-between sm:contents">
+        {/* Questão */}
+        <div>
+          <p className="mb-1 font-mono text-[9.5px] uppercase tracking-[0.14em]" style={{ color: '#94a3b8' }}>Questão</p>
+          <p
+            className={cn("py-1 font-heading text-[15px] font-bold tracking-tight", isDone && "line-through")}
+            style={{ color: isDone ? '#94a3b8' : 'oklch(0.22 0.02 240)' }}
+          >
+            {questaoNumero}
+          </p>
+        </div>
+
+        {/* Prova */}
+        <div>
+          <p className="mb-1 font-mono text-[9.5px] uppercase tracking-[0.14em]" style={{ color: '#94a3b8' }}>Prova</p>
+          <p
+            className={cn("py-1 text-[13px]", isDone && "line-through")}
+            style={{ color: isDone ? '#94a3b8' : 'oklch(0.36 0.015 240)' }}
+          >
+            {provaAno}
+          </p>
+        </div>
       </div>
 
-      {/* Prova */}
-      <div className="hidden sm:block">
-        <p className="mb-1 font-mono text-[9.5px] uppercase tracking-[0.14em]" style={{ color: '#94a3b8' }}>Prova</p>
-        <p
-          className={cn("py-1 text-[13px]", isDone && "line-through")}
-          style={{ color: isDone ? '#94a3b8' : 'oklch(0.36 0.015 240)' }}
-        >
-          {provaAno}
-        </p>
-      </div>
+      {/* Linha 2 (mobile) — Nível + Gabarito + Rev */}
+      <div className="flex justify-between sm:contents">
+        {/* Dificuldade */}
+        <div>
+          <p className="mb-1 font-mono text-[9.5px] uppercase tracking-[0.14em]" style={{ color: '#94a3b8' }}>Nível</p>
+          <span
+            className="inline-flex items-center justify-center rounded-full px-2 py-1 font-mono text-[11px] font-semibold"
+            style={{ color: diffStyle.color, background: diffStyle.bg, border: `1px solid ${diffStyle.border}` }}
+          >
+            {diffLabel}
+          </span>
+        </div>
 
-      {/* Dificuldade */}
-      <div>
-        <p className="mb-1 font-mono text-[9.5px] uppercase tracking-[0.14em]" style={{ color: '#94a3b8' }}>Nível</p>
-        <span
-          className="inline-flex items-center justify-center rounded-full px-2 py-1 font-mono text-[11px] font-semibold"
-          style={{ color: diffStyle.color, background: diffStyle.bg, border: `1px solid ${diffStyle.border}` }}
+        {/* Gabarito */}
+        <div
+          className="cursor-pointer select-none"
+          onClick={() => setShowGabarito((v) => !v)}
+          title={showGabarito ? 'Ocultar gabarito' : 'Ver gabarito'}
         >
-          {diffLabel}
-        </span>
-      </div>
+          <p className="mb-1 font-mono text-[9.5px] uppercase tracking-[0.14em]" style={{ color: '#94a3b8' }}>Gabarito</p>
+          <span
+            className="inline-flex items-center justify-center rounded-full py-1 font-mono text-[11px] font-semibold"
+            style={{
+              width: '3rem',
+              ...(showGabarito
+                ? {
+                    color: isDone ? '#94a3b8' : 'var(--color-secondary)',
+                    background: isDone ? '#F1F5F9' : 'oklch(0.96 0.03 195)',
+                    border: `1px solid ${isDone ? '#E2E8F0' : 'oklch(0.82 0.07 195)'}`,
+                  }
+                : { color: '#cbd5e1', background: 'white', border: '1px solid #E2E8F0' }),
+            }}
+          >
+            {showGabarito ? questaoGabarito : '● ● ●'}
+          </span>
+        </div>
 
-      {/* Gabarito */}
-      <div
-        className="cursor-pointer select-none"
-        onClick={() => setShowGabarito((v) => !v)}
-        title={showGabarito ? 'Ocultar gabarito' : 'Ver gabarito'}
-      >
-        <p className="mb-1 font-mono text-[9.5px] uppercase tracking-[0.14em]" style={{ color: '#94a3b8' }}>Gabarito</p>
-        <span
-          className="inline-flex items-center justify-center rounded-full py-1 font-mono text-[11px] font-semibold"
-          style={{
-            width: '3rem',
-            ...(showGabarito
-              ? {
-                  color: isDone ? '#94a3b8' : 'var(--color-secondary)',
-                  background: isDone ? '#F1F5F9' : 'oklch(0.96 0.03 195)',
-                  border: `1px solid ${isDone ? '#E2E8F0' : 'oklch(0.82 0.07 195)'}`,
+        {/* Revisão */}
+        <div>
+          <p className="mb-1.5 font-mono text-[9.5px] uppercase tracking-[0.14em]" style={{ color: '#94a3b8' }}>Rev.</p>
+          <div className="flex items-center gap-1.5">
+            {[0, 1, 2].map((idx) => (
+              <label
+                key={idx}
+                className={cn(
+                  "flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border font-mono text-[10px] font-semibold transition-all select-none",
+                  isDisabled(idx) && "cursor-not-allowed opacity-30"
+                )}
+                style={
+                  rev[idx]
+                    ? { background: 'var(--color-secondary)', borderColor: 'var(--color-secondary)', color: '#fff' }
+                    : { background: 'white', borderColor: '#E2E8F0', color: '#94a3b8' }
                 }
-              : { color: '#cbd5e1', background: 'white', border: '1px solid #E2E8F0' }),
-          }}
-        >
-          {showGabarito ? questaoGabarito : '● ● ●'}
-        </span>
-      </div>
-
-      {/* Revisão */}
-      <div>
-        <p className="mb-1.5 font-mono text-[9.5px] uppercase tracking-[0.14em]" style={{ color: '#94a3b8' }}>Rev.</p>
-        <div className="flex items-center gap-1.5">
-          {[0, 1, 2].map((idx) => (
-            <label
-              key={idx}
-              className={cn(
-                "flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border font-mono text-[10px] font-semibold transition-all select-none",
-                isDisabled(idx) && "cursor-not-allowed opacity-30"
-              )}
-              style={
-                rev[idx]
-                  ? { background: 'var(--color-secondary)', borderColor: 'var(--color-secondary)', color: '#fff' }
-                  : { background: 'white', borderColor: '#E2E8F0', color: '#94a3b8' }
-              }
-            >
-              <input
-                type="checkbox"
-                className="sr-only"
-                checked={rev[idx]}
-                disabled={isDisabled(idx)}
-                onChange={() => handleCheck(idx)}
-              />
-              {idx + 1}
-            </label>
-          ))}
+              >
+                <input
+                  type="checkbox"
+                  className="sr-only"
+                  checked={rev[idx]}
+                  disabled={isDisabled(idx)}
+                  onChange={() => handleCheck(idx)}
+                />
+                {idx + 1}
+              </label>
+            ))}
+          </div>
         </div>
       </div>
     </div>
