@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server"
 import { deleteAluno } from "./delete-aluno"
 import { getAlunoSlug } from "./get-aluno"
-import { arquivarAluno, patchAlunoNome, resetarSenhaAluno } from "./patch-aluno"
+import { arquivarAluno, corrigirAluno, patchAlunoNome, resetarSenhaAluno, restaurarAluno } from "./patch-aluno"
 import { updateAluno, type UpdateAlunoProps } from "./update-aluno"
 
 export async function PUT(request: NextRequest) {
@@ -37,8 +37,15 @@ export async function PATCH(
 
     if (body.action === 'arquivar') {
       await arquivarAluno(slug)
+    } else if (body.action === 'restaurar') {
+      await restaurarAluno(slug)
     } else if (body.action === 'resetar-senha') {
       await resetarSenhaAluno(slug)
+    } else if (body.action === 'corrigir') {
+      if (typeof body.nome !== 'string' || typeof body.email !== 'string') {
+        return NextResponse.json({ message: 'Nome e e-mail são obrigatórios' }, { status: 400 })
+      }
+      await corrigirAluno(slug, body.nome.trim(), body.email.trim())
     } else if (typeof body.nome === 'string') {
       await patchAlunoNome(slug, body.nome)
     } else {

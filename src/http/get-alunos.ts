@@ -5,6 +5,8 @@ import { api } from './api-client'
 export interface GetAlunosProfessor {
   slug: string
   nome: string
+  email: string
+  resetPassword: boolean
   gcpMedio: number
   dataIngresso: string
   provas: {

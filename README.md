@@ -38,6 +38,28 @@ Plataforma para professores acompanharem o progresso de alunos nos estudos para 
 
 ## Changelog
 
+### 1.0.2
+
+**Bug — Questões anuladas no dashboard**
+- Questões com `gabarito = 'ANULADA'` eram salvas na tabela `Resposta` com `resultado = false` e apareciam como erros nas habilidades e na lista de erros por prova
+- `errosPorProva` agora filtra `r.questao.gabarito !== 'ANULADA'` antes de mapear os erros
+- Cálculo de habilidades defasadas ignora questões anuladas (`continue` no loop por resposta)
+
+**Melhoria — Página de ex-alunos**
+- Nova aba "Ex-alunos" na tela do professor, acessível via `?tab=exalunos`
+- `TabSwitcher` client component com navegação por searchParams
+- Endpoint `GET /api/professor/[slug]/exalunos` lista alunos com `role = EXALUNO` do professor
+- Cards e tabela de ex-alunos com GCP histórico, provas realizadas e data de ingresso
+- Ação **Restaurar aluno** (`PATCH action: 'restaurar'`): reverte `role` de `EXALUNO` para `ALUNO` com confirmação em dialog
+- Ação **Excluir permanentemente** (`DELETE /api/aluno/[slug]`): remove o registro do banco com aviso explícito de irreversibilidade
+- Atualização otimista do estado local em ambas as ações
+
+**Melhoria — Correção rápida de perfil antes do 1º login**
+- Dropdown do aluno exibe **"Corrigir perfil"** no lugar de "Editar perfil" enquanto `resetPassword = true` (aluno ainda não fez o primeiro login)
+- Abre dialog leve com apenas os campos Nome e E-mail — sem abrir o formulário completo
+- Após o primeiro login o item volta a ser **"Editar perfil"** (link para o form completo)
+- `PATCH action: 'corrigir'` com `{ nome, email }` no backend; `corrigirAluno` valida e persiste ambos os campos
+
 ### 1.0.1
 
 **Caderno de erros — layout mobile do card**

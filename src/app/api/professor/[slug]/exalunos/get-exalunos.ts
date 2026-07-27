@@ -2,22 +2,21 @@ import type { GetAlunosProfessor } from '@/http/get-alunos'
 import { prisma } from '@/lib/prisma'
 import { dateToString } from '@/utils/string-to-date'
 
-interface GetAlunosProps {
+interface GetExAlunosProps {
   slug: string
 }
-export async function getAlunos({ slug }: GetAlunosProps): Promise<GetAlunosProfessor[]> {
+
+export async function getExAlunos({ slug }: GetExAlunosProps): Promise<GetAlunosProfessor[]> {
   const professor = await prisma.user.findUnique({
     where: { slug },
     select: { id: true },
   })
-  if (!professor) {
-    throw new Error('Professor não encontrado')
-  }
+  if (!professor) throw new Error('Professor não encontrado')
 
-  const alunos = await prisma.aluno.findMany({
+  const exalunos = await prisma.aluno.findMany({
     where: {
       idProfessor: professor.id,
-      user: { role: 'ALUNO' },
+      user: { role: 'EXALUNO' },
     },
     select: {
       user: {
@@ -42,15 +41,17 @@ export async function getAlunos({ slug }: GetAlunosProps): Promise<GetAlunosProf
       },
     },
     orderBy: {
-      user: {
-        nome: 'asc',
-      },
+      user: { nome: 'asc' },
     },
   })
 
-  return alunos.map((aluno) => {
-    const gcpMedio = aluno.provaAlunos.length > 0 ?
-      Math.round(aluno.provaAlunos.reduce((sum, pa) => sum + pa.gcp, 0) / aluno.provaAlunos.length) : 0
+  return exalunos.map((aluno) => {
+    const gcpMedio =
+      aluno.provaAlunos.length > 0
+        ? Math.round(
+            aluno.provaAlunos.reduce((sum, pa) => sum + pa.gcp, 0) / aluno.provaAlunos.length,
+          )
+        : 0
     return {
       slug: aluno.user.slug,
       nome: aluno.user.nome,
@@ -61,8 +62,8 @@ export async function getAlunos({ slug }: GetAlunosProps): Promise<GetAlunosProf
       provas: aluno.provaAlunos.map((pa) => ({
         id: pa.prova.id,
         nome: pa.prova.ano,
-        gcp: pa.gcp
-      }))
+        gcp: pa.gcp,
+      })),
     }
   })
 }

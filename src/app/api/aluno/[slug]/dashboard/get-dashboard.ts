@@ -82,7 +82,7 @@ export async function getDashboardBySlug(slug: string): Promise<DashboardData | 
   const errosPorProva: Record<string, SimuladoError[]> = {}
   provaAlunos.forEach((pa) => {
     errosPorProva[pa.idProva] = pa.respostas
-      .filter((r) => !r.resultado)
+      .filter((r) => !r.resultado && r.questao.gabarito !== 'ANULADA')
       .map((r) => ({
         number: r.questao.numero,
         difficulty: toDifficultyLabel(r.questao.dificuldade),
@@ -96,6 +96,7 @@ export async function getDashboardBySlug(slug: string): Promise<DashboardData | 
 
   for (const pa of provaAlunos) {
     for (const r of pa.respostas) {
+      if (r.questao.gabarito === 'ANULADA') continue
       const skillKey = `H${r.questao.habilidade.value}`
       const existing = habilidadeMap.get(skillKey) ?? { errorCount: 0, totalCount: 0 }
       habilidadeMap.set(skillKey, {

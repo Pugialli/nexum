@@ -15,13 +15,14 @@ import {
   DropdownMenuSeparator, DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { archiveAluno } from '@/http/archive-aluno'
+import { corrigirAluno } from '@/http/corrigir-aluno'
 import { deleteProvaAluno } from '@/http/delete-prova-aluno'
 import type { GetAlunosProfessor } from '@/http/get-alunos'
 import { getProvas } from '@/http/get-provas'
 import { resetAlunoPassword } from '@/http/reset-aluno-password'
 import {
   BarChart3, FileText, LayoutGrid, List,
-  Loader2, MoreHorizontal, Pencil, Plus, RotateCcw, Search, Trash2, UserX,
+  Loader2, MoreHorizontal, Pencil, Plus, RotateCcw, Search, Trash2, UserX, PenLine,
 } from 'lucide-react'
 import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
@@ -152,10 +153,11 @@ interface AlunoCardProps {
   onProvas: (aluno: GetAlunosProfessor) => void
   onRemove: (aluno: GetAlunosProfessor) => void
   onResetSenha: (slug: string, nome: string) => void
+  onCorrigir: (aluno: GetAlunosProfessor) => void
   resetting: boolean
 }
 
-function AlunoCard({ aluno, onProvas, onRemove, onResetSenha, resetting }: AlunoCardProps) {
+function AlunoCard({ aluno, onProvas, onRemove, onResetSenha, onCorrigir, resetting }: AlunoCardProps) {
   const status = getStatus(aluno.gcpMedio ?? 0, aluno.provas.length)
   const ultimaProva = aluno.provas[aluno.provas.length - 1]
   const { color: ringColor, trackColor: ringTrack } = getGcpColors(aluno.gcpMedio ?? 0, aluno.provas.length > 0)
@@ -322,12 +324,22 @@ function AlunoCard({ aluno, onProvas, onRemove, onResetSenha, resetting }: Aluno
                 : <RotateCcw size={13} />}
               Resetar senha
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href={`/professor/aluno/${aluno.slug}/editar`} className="flex items-center gap-2">
-                <Pencil size={13} />
-                Editar perfil
-              </Link>
-            </DropdownMenuItem>
+            {aluno.resetPassword ? (
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => onCorrigir(aluno)}
+              >
+                <PenLine size={13} />
+                Corrigir perfil
+              </DropdownMenuItem>
+            ) : (
+              <DropdownMenuItem asChild className="cursor-pointer">
+                <Link href={`/professor/aluno/${aluno.slug}/editar`} className="flex items-center gap-2">
+                  <Pencil size={13} />
+                  Editar perfil
+                </Link>
+              </DropdownMenuItem>
+            )}
             <DropdownMenuSeparator />
             <DropdownMenuItem
               variant="destructive"
@@ -372,6 +384,19 @@ export function TabelaAlunos({ alunos }: TabelaAlunosProps) {
   const [removendoAluno, setRemovendoAluno] = useState<GetAlunosProfessor | null>(null)
   const [arquivando, setArquivando] = useState(false)
 
+  // Modal de correção de nome/e-mail
+  const [corrigindoAluno, setCorrigindoAluno] = useState<GetAlunosProfessor | null>(null)
+  const [corrigirNome, setCorrigirNome] = useState('')
+  const [corrigirEmail, setCorrigirEmail] = useState('')
+  const [salvandoCorrecao, setSalvandoCorrecao] = useState(false)
+
+  useEffect(() => {
+    if (corrigindoAluno) {
+      setCorrigirNome(corrigindoAluno.nome)
+      setCorrigirEmail(corrigindoAluno.email)
+    }
+  }, [corrigindoAluno])
+
   const filtered = alunosLocal.filter((a) =>
     a.nome.toLowerCase().includes(search.toLowerCase())
   )
@@ -400,6 +425,26 @@ export function TabelaAlunos({ alunos }: TabelaAlunosProps) {
       toast.error('Erro ao remover o aluno.')
     } finally {
       setArquivando(false)
+    }
+  }
+
+  const handleSalvarCorrecao = async () => {
+    if (!corrigindoAluno) return
+    const nome = corrigirNome.trim()
+    const email = corrigirEmail.trim()
+    if (!nome || !email) return
+    setSalvandoCorrecao(true)
+    try {
+      await corrigirAluno(corrigindoAluno.slug, nome, email)
+      setAlunosLocal((prev) =>
+        prev.map((a) => a.slug === corrigindoAluno.slug ? { ...a, nome, email } : a)
+      )
+      setCorrigindoAluno(null)
+      toast.success('Dados do aluno corrigidos.')
+    } catch {
+      toast.error('Erro ao salvar. Verifique se o e-mail já não está em uso.')
+    } finally {
+      setSalvandoCorrecao(false)
     }
   }
 
@@ -611,6 +656,7 @@ export function TabelaAlunos({ alunos }: TabelaAlunosProps) {
               onProvas={abrirModalProvas}
               onRemove={setRemovendoAluno}
               onResetSenha={handleResetSenha}
+              onCorrigir={setCorrigindoAluno}
               resetting={resetandoSlug === aluno.slug}
             />
           ))}
@@ -791,12 +837,22 @@ export function TabelaAlunos({ alunos }: TabelaAlunosProps) {
                               <RotateCcw size={13} className={resetandoSlug === aluno.slug ? 'animate-spin' : ''} />
                               {resetandoSlug === aluno.slug ? 'Resetando...' : 'Resetar senha'}
                             </DropdownMenuItem>
-                            <DropdownMenuItem asChild>
-                              <Link href={`/professor/aluno/${aluno.slug}/editar`} className="flex items-center gap-2">
-                                <Pencil size={13} />
-                                Editar perfil
-                              </Link>
-                            </DropdownMenuItem>
+                            {aluno.resetPassword ? (
+                              <DropdownMenuItem
+                                className="cursor-pointer"
+                                onClick={() => setCorrigindoAluno(aluno)}
+                              >
+                                <PenLine size={13} />
+                                Corrigir perfil
+                              </DropdownMenuItem>
+                            ) : (
+                              <DropdownMenuItem asChild>
+                                <Link href={`/professor/aluno/${aluno.slug}/editar`} className="flex items-center gap-2">
+                                  <Pencil size={13} />
+                                  Editar perfil
+                                </Link>
+                              </DropdownMenuItem>
+                            )}
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
                               variant="destructive"
@@ -976,6 +1032,90 @@ export function TabelaAlunos({ alunos }: TabelaAlunosProps) {
                 ? <Loader2 size={14} className="animate-spin" />
                 : <><UserX size={14} /> Remover</>
               }
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── Modal de correção de nome/e-mail ── */}
+      <Dialog
+        open={!!corrigindoAluno}
+        onOpenChange={(open) => { if (!open && !salvandoCorrecao) setCorrigindoAluno(null) }}
+      >
+        <DialogContent className="gap-0 overflow-hidden rounded-[22px] border-border p-0 shadow-[0_24px_64px_-12px_rgba(15,23,42,0.22)] sm:max-w-[420px]">
+          <div className="border-b border-border px-6 pb-5 pr-12 pt-6">
+            <p className="mb-1.5 font-mono text-[10px] uppercase tracking-[0.14em]" style={{ color: '#94a3b8' }}>
+              Corrigir perfil
+            </p>
+            <DialogTitle
+              className="font-heading text-[20px] font-bold leading-tight"
+              style={{ color: 'oklch(0.22 0.02 240)' } as React.CSSProperties}
+            >
+              {corrigindoAluno?.nome}
+            </DialogTitle>
+            <DialogDescription
+              className="mt-1 text-[12.5px]"
+              style={{ color: '#94a3b8' } as React.CSSProperties}
+            >
+              Aguardando 1º login — apenas nome e e-mail podem ser corrigidos aqui.
+            </DialogDescription>
+          </div>
+          <div className="flex flex-col gap-3 px-6 py-5">
+            <div className="flex flex-col gap-1.5">
+              <label
+                className="font-mono text-[10.5px] uppercase tracking-[0.12em]"
+                style={{ color: '#94a3b8' }}
+              >
+                Nome
+              </label>
+              <input
+                value={corrigirNome}
+                onChange={(e) => setCorrigirNome(e.target.value)}
+                disabled={salvandoCorrecao}
+                className="h-9 w-full rounded-[10px] border border-border bg-white px-3 text-[13.5px] font-medium outline-none transition-all focus:border-[var(--color-primary)] disabled:opacity-50"
+                style={{ color: 'oklch(0.22 0.02 240)', fontFamily: 'inherit' }}
+                placeholder="Nome completo"
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label
+                className="font-mono text-[10.5px] uppercase tracking-[0.12em]"
+                style={{ color: '#94a3b8' }}
+              >
+                E-mail
+              </label>
+              <input
+                type="email"
+                value={corrigirEmail}
+                onChange={(e) => setCorrigirEmail(e.target.value)}
+                disabled={salvandoCorrecao}
+                className="h-9 w-full rounded-[10px] border border-border bg-white px-3 text-[13.5px] font-medium outline-none transition-all focus:border-[var(--color-primary)] disabled:opacity-50"
+                style={{ color: 'oklch(0.22 0.02 240)', fontFamily: 'inherit' }}
+                placeholder="email@exemplo.com"
+              />
+            </div>
+          </div>
+          <div className="flex gap-2 border-t border-border px-6 py-4">
+            <button
+              onClick={() => setCorrigindoAluno(null)}
+              disabled={salvandoCorrecao}
+              className="flex flex-1 h-9 cursor-pointer items-center justify-center rounded-[10px] border border-border bg-white text-[13px] font-semibold transition-all hover:bg-[var(--page-bg)] disabled:opacity-50"
+              style={{ color: 'oklch(0.36 0.015 240)' }}
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={handleSalvarCorrecao}
+              disabled={salvandoCorrecao || !corrigirNome.trim() || !corrigirEmail.trim()}
+              className="flex flex-1 h-9 cursor-pointer items-center justify-center gap-2 rounded-[10px] text-[13px] font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50"
+              style={{
+                background: 'linear-gradient(180deg, var(--color-primary) 0%, oklch(0.58 0.19 35) 100%)',
+                boxShadow: '0 1px 0 rgba(255,255,255,0.25) inset',
+              }}
+            >
+              {salvandoCorrecao
+                ? <Loader2 size={14} className="animate-spin" />
+                : <><PenLine size={14} /> Salvar</>}
             </button>
           </div>
         </DialogContent>

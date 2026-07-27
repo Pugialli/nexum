@@ -8,10 +8,24 @@ export async function patchAlunoNome(slug: string, nome: string) {
   })
 }
 
+export async function corrigirAluno(slug: string, nome: string, email: string) {
+  return prisma.user.update({
+    where: { slug },
+    data: { nome, email },
+  })
+}
+
 export async function arquivarAluno(slug: string) {
   return prisma.user.update({
     where: { slug },
     data: { role: 'EXALUNO' },
+  })
+}
+
+export async function restaurarAluno(slug: string) {
+  return prisma.user.update({
+    where: { slug },
+    data: { role: 'ALUNO' },
   })
 }
 
